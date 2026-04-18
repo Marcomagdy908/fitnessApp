@@ -1,0 +1,256 @@
+.exercises-page {
+  padding: 2rem;
+  background: #000000;
+  min-height: 100vh;
+}
+
+@media (max-width: 600px) {
+  .exercises-page {
+    padding: 1rem 0.75rem;
+  }
+}
+
+.exercises-title {
+  color: #f0f0f0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.exercises-count {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #3dffff;
+  background: rgba(61, 255, 255, 0.1);
+  border: 1px solid rgba(61, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  letter-spacing: 0.05em;
+  margin-left: 0.1rem;
+}
+
+/* ── Search ─────────────────────────────────────── */
+.exercises-search-wrap {
+  position: relative;
+  margin-bottom: 1rem;
+  max-width: 420px;
+}
+
+@media (max-width: 600px) {
+  .exercises-search-wrap {
+    max-width: 100%;
+  }
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #555;
+  font-size: 0.78rem;
+  pointer-events: none;
+}
+
+.exercises-search {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  color: #e0e0e0;
+  font-size: 0.8rem;
+  padding: 0.55rem 1rem 0.55rem 2.4rem;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.exercises-search::placeholder {
+  color: #444;
+}
+
+.exercises-search:focus {
+  border-color: rgba(61, 255, 255, 0.35);
+  background: rgba(61, 255, 255, 0.04);
+}
+
+/* ── Filters ────────────────────────────────────── */
+.exercises-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.filter-label-icon {
+  color: #444;
+  font-size: 0.72rem;
+  margin-right: 0.2rem;
+}
+
+.filter-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  color: #666;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.85rem;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.filter-btn:hover {
+  background: rgba(61, 255, 255, 0.06);
+  border-color: rgba(61, 255, 255, 0.2);
+  color: #3dffff;
+}
+
+.filter-btn.active {
+  background: rgba(61, 255, 255, 0.12);
+  border-color: rgba(61, 255, 255, 0.4);
+  color: #3dffff;
+}
+
+/* difficulty tint overrides */
+.filter-btn-beginner.active {
+  background: rgba(61, 210, 100, 0.12);
+  border-color: rgba(61, 210, 100, 0.4);
+  color: #3dd264;
+}
+.filter-btn-intermediate.active {
+  background: rgba(255, 185, 0, 0.12);
+  border-color: rgba(255, 185, 0, 0.4);
+  color: #ffb900;
+}
+.filter-btn-advanced.active {
+  background: rgba(255, 80, 80, 0.12);
+  border-color: rgba(255, 80, 80, 0.4);
+  color: #ff5050;
+}
+
+/* ── Empty state ────────────────────────────────── */
+.exercises-empty {
+  text-align: center;
+  color: #444;
+  font-size: 0.88rem;
+  margin-top: 4rem;
+}
+
+.exercises-title svg {
+  color: #3dffff;
+}
+
+/* ── Card ───────────────────────────────────────── */
+.exercise-card {
+  background: linear-gradient(135deg, #0d0d0d 0%, #141414 100%) !important;
+  border: 1px solid rgba(61, 255, 255, 0.12) !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  transition:
+    border-color 0.25s,
+    box-shadow 0.25s,
+    transform 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.exercise-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at top left,
+    rgba(61, 255, 255, 0.05) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.exercise-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 24px rgba(61, 255, 255, 0.1) !important;
+  border-color: rgba(61, 255, 255, 0.35) !important;
+}
+
+.exercise-card-img {
+  height: 170px;
+  object-fit: cover;
+  background: #0d0d0d;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Card Body ──────────────────────────────────── */
+.exercise-card .card-body {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+.exercise-card-title {
+  color: #f0f0f0 !important;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+/* ── Badges ─────────────────────────────────────── */
+.exercise-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+}
+
+/* ── Target label ───────────────────────────────── */
+.exercise-target {
+  font-size: 0.75rem;
+  color: #888 !important;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Instructions ───────────────────────────────── */
+.exercise-instructions {
+  font-size: 0.78rem;
+  color: #555 !important;
+  line-height: 1.55;
+}
+
+/* ── Meta pills ─────────────────────────────────── */
+.exercise-meta {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(61, 255, 255, 0.07);
+  color: #3dffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(61, 255, 255, 0.2);
+}

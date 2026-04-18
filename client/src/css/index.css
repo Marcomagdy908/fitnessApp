@@ -1,0 +1,57 @@
+:root {
+  font-family: "Courier New", Courier, monospace;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #000000 !important;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #000000 !important;
+}
+
+.navbar-container {
+  width: 85% !important;
+  height: 8vh !important;
+}
+
+h5 {
+  font-weight: 500 !important;
+}
+
+/* Desktop (>1200px): sidebar is fixed 220px, main content offset */
+.main-content {
+  margin-left: 220px;
+  padding-top: 8vh;
+  min-height: 100vh;
+  width: calc(100% - 220px);
+}
+
+/* Overlay mode & mobile: sidebar is not in flow, content is full-width */
+@media (max-width: 1200px) {
+  .navbar-container {
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding-top: 8vh;
+  }
+}
+
+/* Mobile: extra bottom padding to clear the bottom nav */
+@media (max-width: 768px) {
+  .main-content {
+    padding-bottom: 72px;
+  }
+}

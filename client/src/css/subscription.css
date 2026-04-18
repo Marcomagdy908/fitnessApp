@@ -1,0 +1,525 @@
+/* ── Subscription Page ───────────────────────────────────── */
+.sub-page {
+  padding: 2rem;
+  background: #000000;
+  min-height: 100vh;
+}
+
+@media (max-width: 600px) {
+  .sub-page {
+    padding: 1rem 0.75rem;
+  }
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.sub-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.sub-title {
+  color: #f0f0f0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 0.3rem;
+  letter-spacing: -0.01em;
+}
+
+.sub-title svg {
+  color: #ffc832;
+}
+
+.sub-subtitle {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 0 0 1.5rem;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── Billing Toggle ──────────────────────────────────────── */
+.billing-toggle {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 0.25rem;
+  gap: 0.25rem;
+}
+
+.billing-btn {
+  background: transparent;
+  border: none;
+  color: #555;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.4rem 1.1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.billing-btn.active {
+  background: rgba(61, 255, 255, 0.12);
+  color: #3dffff;
+  border: 1px solid rgba(61, 255, 255, 0.3);
+}
+
+.billing-discount-badge {
+  background: rgba(80, 230, 120, 0.2);
+  color: #50e678;
+  border-radius: 999px;
+  font-size: 0.58rem;
+  padding: 0.1rem 0.45rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+/* ── Stats Row ───────────────────────────────────────────── */
+.sub-stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 150px));
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+  justify-content: center;
+}
+
+.sub-stat-box {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 1rem;
+  text-align: center;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.sub-stat-box:hover {
+  background: rgba(255, 255, 255, 0.045);
+  transform: translateY(-2px);
+}
+
+.sub-stat-icon {
+  color: #3dffff;
+  font-size: 1.1rem;
+  margin-bottom: 0.4rem;
+}
+
+.sub-stat-val {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+
+.sub-stat-label {
+  font-size: 0.58rem;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ── Cards Grid ──────────────────────────────────────────── */
+.sub-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 300px));
+  gap: 1.25rem;
+  align-items: center;
+  justify-content: center
+}
+
+/* ── Individual Card ─────────────────────────────────────*/
+.sub-card {
+  border: 1px solid;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.sub-card:hover {
+  transform: translateY(-4px);
+}
+
+.sub-card--popular {
+  transform: translateY(-6px);
+}
+
+.sub-card--popular:hover {
+  transform: translateY(-10px);
+}
+
+.sub-card-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sub-card-inner {
+  padding: 1.75rem 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.sub-popular-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: 1px solid;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 0.22rem 0.7rem;
+  text-transform: uppercase;
+  z-index: 2;
+}
+
+.sub-plan-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.sub-plan-name {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.sub-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-bottom: 0.1rem;
+}
+
+.sub-price {
+  font-size: 2.4rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.sub-period {
+  font-size: 0.75rem;
+  color: #555;
+  font-weight: 600;
+}
+
+.sub-annual-note {
+  font-size: 0.62rem;
+  color: #50e678;
+  margin-bottom: 0.15rem;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.sub-plan-desc {
+  font-size: 0.78rem;
+  color: #555;
+  line-height: 1.5;
+  margin: 0.85rem 0 1.2rem;
+}
+
+/* ── Feature List ────────────────────────────────────────── */
+.sub-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 1.5rem;
+}
+
+.sub-feature {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  color: #bbb;
+}
+
+.sub-feature--excluded {
+  color: #2e2e2e;
+}
+
+.sub-feature-icon {
+  font-size: 0.7rem;
+  width: 16px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.sub-feature-text {
+  flex: 1;
+}
+
+/* ── CTA Button ──────────────────────────────────────────── */
+.sub-cta-btn {
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s, filter 0.2s;
+}
+
+.sub-cta-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+/* ── Section Heading ─────────────────────────────────────── */
+.sub-section-heading {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sub-section-heading::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Facilities Grid ─────────────────────────────────────── */
+.facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.facility-card {
+  background: linear-gradient(135deg, #0d0d0d 0%, #141414 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 1.2rem 1rem;
+  text-align: center;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.facility-card:hover {
+  border-color: rgba(61, 255, 255, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.facility-icon {
+  font-size: 1.5rem;
+  color: #3dffff;
+  margin-bottom: 0.6rem;
+}
+
+.facility-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #e0e0e0;
+  margin-bottom: 0.2rem;
+}
+
+.facility-desc {
+  font-size: 0.65rem;
+  color: #444;
+  line-height: 1.4;
+}
+
+/* ── Class List ──────────────────────────────────────────── */
+.classes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.class-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: linear-gradient(135deg, #0d0d0d 0%, #141414 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.class-row:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateX(4px);
+}
+
+.class-time {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #555;
+  letter-spacing: 0.05em;
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.class-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.class-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.class-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #e0e0e0;
+  margin-bottom: 0.1rem;
+}
+
+.class-trainer {
+  font-size: 0.65rem;
+  color: #444;
+  font-weight: 500;
+}
+
+.class-spots {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.class-book-btn {
+  background: rgba(61, 255, 255, 0.1);
+  border: 1px solid rgba(61, 255, 255, 0.25);
+  color: #3dffff;
+  border-radius: 8px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.class-book-btn:hover {
+  background: rgba(61, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* ── Testimonials ────────────────────────────────────────── */
+.sub-testimonials {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.testimonial-card {
+  background: linear-gradient(135deg, #0d0d0d 0%, #141414 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 1.1rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.testimonial-card:hover {
+  border-color: rgba(255, 200, 50, 0.2);
+  transform: translateY(-2px);
+}
+
+.testimonial-top {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.testimonial-avatar {
+  font-size: 1.4rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.testimonial-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #e0e0e0;
+}
+
+.testimonial-role {
+  font-size: 0.62rem;
+  color: #444;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.testimonial-stars {
+  font-size: 0.75rem;
+  color: #ffc832;
+  margin-left: auto;
+  letter-spacing: -0.05em;
+}
+
+.testimonial-text {
+  font-size: 0.75rem;
+  color: #666;
+  line-height: 1.55;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ── Contact Strip ───────────────────────────────────────── */
+.sub-contact-strip {
+  background: rgba(61, 255, 255, 0.04);
+  border: 1px solid rgba(61, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  font-size: 0.78rem;
+  color: #555;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+/* ── Fine Print ──────────────────────────────────────────── */
+.sub-fine-print {
+  text-align: center;
+  font-size: 0.65rem;
+  color: #2a2a2a;
+  padding-bottom: 2rem;
+}
