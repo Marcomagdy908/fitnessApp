@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../css/auth.css";
 
 type Strength = { label: string; color: string; width: string };
@@ -24,10 +24,11 @@ export default function SignUp() {
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
 
   const strength = getStrength(password);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (!name || !email || !password || !confirm) {
@@ -42,9 +43,27 @@ export default function SignUp() {
       setError("Please accept the Terms of Service.");
       return;
     }
-    // TODO: connect to backend auth
-    setSuccess(true);
-    console.log("Sign Up:", { name, email, password });
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+
+      setSuccess(true);
+      navigate("/"); // Automatically redirect to logged-in dashboard
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred");
+    }
   };
 
   return (

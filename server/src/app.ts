@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { env } from "./config/env";
 import { errorHandler, notFound } from "./middleware/errorHandler";
+import cookieParser from "cookie-parser";
 
 // Routes
 import authRoutes from "./routes/auth";
@@ -26,6 +27,7 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // ── Health Check ───────────────────────────────────────────────────────────────
 

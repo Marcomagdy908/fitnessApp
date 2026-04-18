@@ -17,16 +17,21 @@ export const protect = async (
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
+  let token;
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+  } else if (req.cookies && req.cookies.token) {
+    token = req.cookies.token;
+  }
+
+  if (!token) {
     res
       .status(401)
       .json({ success: false, message: "Not authorized — no token" });
     return;
   }
-
-  const token = authHeader.split(" ")[1];
 
   try {
     const decoded = jwt.verify(token, env.JWT_SECRET) as { id: number };

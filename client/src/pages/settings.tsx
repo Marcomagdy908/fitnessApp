@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
@@ -23,11 +23,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/settings.css";
 
-/* ─── Mock user state (swap with API calls later) ────────────── */
 const MOCK_PROFILE = {
-  name: "Marco Vitale",
-  email: "marco@example.com",
-  username: "@marcov",
   avatar: "https://i.pravatar.cc/150?img=11",
   joinDate: "February 2026",
 };
@@ -158,9 +154,28 @@ function Settings() {
   const [activeSection, setActiveSection] = useState("profile");
 
   /* Profile state */
-  const [name, setName] = useState(MOCK_PROFILE.name);
-  const [email, setEmail] = useState(MOCK_PROFILE.email);
-  const [username, setUsername] = useState(MOCK_PROFILE.username);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [avatar, setAvatar] = useState(MOCK_PROFILE.avatar);
+
+  // Fetch true user data from the database on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        const data = await res.json();
+        if (data.success && data.user) {
+          setName(data.user.name || "");
+          setEmail(data.user.email || "");
+          // You don't have username/avatar in db schema yet, but you could map them if you did
+        }
+      } catch (err) {
+        console.error("Error fetching profile", err);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   /* Preferences state */
   const [darkMode, setDarkMode] = useState(true);
@@ -237,9 +252,9 @@ function Settings() {
               <img src={MOCK_PROFILE.avatar} alt="avatar" />
             </div>
             <div className="settings-avatar-info">
-              <span className="settings-avatar-name">{MOCK_PROFILE.name}</span>
+              <span className="settings-avatar-name">{name || "Loading..."}</span>
               <span className="settings-avatar-email">
-                {MOCK_PROFILE.email}
+                {email || "Loading..."}
               </span>
               <span className="settings-avatar-since">
                 Member since {MOCK_PROFILE.joinDate}

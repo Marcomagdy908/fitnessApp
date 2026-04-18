@@ -1,5 +1,6 @@
 import SidebarNavigation from "./components/sidebarNavigation";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import ProtectedRoute from "./components/protectedRoute";
 import Dashboard from "./pages/dashboard";
 import Navbar from "./components/navbar";
 import Exercises from "./pages/exercises";
@@ -38,19 +39,21 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
 
         {/* Main app routes with sidebar/navbar */}
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/exercises" element={<Exercises />} />
-          <Route path="/exercises/:id" element={<ExerciseDetail />} />
-          <Route path="/progress" element={<Progress />} />
-          <Route path="/plans" element={<Plans />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/diet" element={<Diet />} />
-          <Route path="/subscription" element={<Subscription />} />
-          <Route path="/trainers" element={<Trainers />} />
-          <Route path="/meals" element={<MealsTracker />} />
-          <Route path="/exercise" element={<ExerciseTracker />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/exercises" element={<Exercises />} />
+            <Route path="/exercises/:id" element={<ExerciseDetail />} />
+            <Route path="/progress" element={<Progress />} />
+            <Route path="/plans" element={<Plans />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/diet" element={<Diet />} />
+            <Route path="/subscription" element={<Subscription />} />
+            <Route path="/trainers" element={<Trainers />} />
+            <Route path="/meals" element={<MealsTracker />} />
+            <Route path="/exercise" element={<ExerciseTracker />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
