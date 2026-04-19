@@ -13,6 +13,7 @@ import progressRoutes from "./routes/progress";
 import mealsRoutes from "./routes/meals";
 import trainersRoutes from "./routes/trainers";
 import subscriptionsRoutes from "./routes/subscriptions";
+import dashboardRoutes from "./routes/dashboard";
 
 const app = express();
 
@@ -25,7 +26,7 @@ app.use(
   }),
 );
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -49,6 +50,7 @@ app.use("/api/progress", progressRoutes);
 app.use("/api/meals", mealsRoutes);
 app.use("/api/trainers", trainersRoutes);
 app.use("/api/subscriptions", subscriptionsRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // ── Error Handling ─────────────────────────────────────────────────────────────
 

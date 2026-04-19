@@ -1,20 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faUtensils,
-  faPlus,
-  faTrash,
-  faFire,
-  faDrumstickBite,
-  faBreadSlice,
-  faDroplet,
-  faClock,
-  faCheck,
-  faTriangleExclamation,
-  faLeaf,
-  faLightbulb,
-  faXmark,
-  faChartPie,
+  faUtensils, faPlus, faTrash, faFire, faDrumstickBite,
+  faBreadSlice, faDroplet, faClock, faCheck, faTriangleExclamation,
+  faLeaf, faLightbulb, faXmark, faChartPie,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/meals.css";
 
@@ -29,40 +18,20 @@ interface LoggedMeal {
   fat: number;
   category: "breakfast" | "lunch" | "dinner" | "snack";
 }
+interface AltMeal {
+  id: number;
+  injury: string;
+  icon: string;
+  name: string;
+  benefit: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
 
-/* ─── Alternative meals for injured users ────────────────────── */
-const alternativeMeals: Record<string, { icon: string; name: string; benefit: string; calories: number; protein: number; carbs: number; fat: number }[]> = {
-  "Lower Back": [
-    { icon: "🐟", name: "Grilled Salmon + Quinoa", benefit: "Omega-3s reduce spinal inflammation", calories: 520, protein: 42, carbs: 40, fat: 18 },
-    { icon: "🥑", name: "Avocado & Egg Toast", benefit: "Healthy fats support nerve recovery", calories: 380, protein: 18, carbs: 28, fat: 22 },
-    { icon: "🍵", name: "Turmeric Chicken Soup", benefit: "Curcumin is a natural anti-inflammatory", calories: 310, protein: 36, carbs: 20, fat: 8 },
-  ],
-  "Knee": [
-    { icon: "🦴", name: "Bone Broth + Vegetables", benefit: "Collagen rebuilds cartilage", calories: 180, protein: 14, carbs: 12, fat: 4 },
-    { icon: "🍦", name: "Greek Yogurt & Berries", benefit: "Antioxidants reduce joint swelling", calories: 220, protein: 18, carbs: 24, fat: 4 },
-    { icon: "🥦", name: "Broccoli & Chicken Stir-fry", benefit: "Sulforaphane protects joint tissue", calories: 440, protein: 48, carbs: 24, fat: 12 },
-  ],
-  "Shoulder": [
-    { icon: "🥜", name: "Almond Butter Smoothie", benefit: "Vitamin E speeds tendon healing", calories: 380, protein: 20, carbs: 36, fat: 16 },
-    { icon: "🍳", name: "Eggs & Spinach Omelette", benefit: "Collagen amino acids repair rotator cuff", calories: 290, protein: 28, carbs: 6, fat: 16 },
-    { icon: "🍠", name: "Sweet Potato & Turkey Bowl", benefit: "Beta-carotene reduces inflammation", calories: 480, protein: 42, carbs: 48, fat: 8 },
-  ],
-  "Wrist": [
-    { icon: "🍊", name: "Citrus Fruit Salad", benefit: "Vitamin C boosts collagen synthesis", calories: 140, protein: 2, carbs: 34, fat: 1 },
-    { icon: "🐚", name: "Shrimp & Brown Rice", benefit: "Selenium supports tendon repair", calories: 380, protein: 38, carbs: 42, fat: 6 },
-    { icon: "🥛", name: "Kefir & Banana Smoothie", benefit: "Probiotics reduce systemic inflammation", calories: 260, protein: 14, carbs: 44, fat: 4 },
-  ],
-};
-
-/* ─── Calorie targets (matches settings defaults) ────────────── */
+/* ─── Calorie targets ────────────────────────────────────────── */
 const DAILY_TARGET = { calories: 2400, protein: 180, carbs: 270, fat: 70 };
-
-/* ─── Seed data ──────────────────────────────────────────────── */
-const seedMeals: LoggedMeal[] = [
-  { id: 1, time: "07:30", name: "Oatmeal + Protein Shake", calories: 480, protein: 42, carbs: 62, fat: 8, category: "breakfast" },
-  { id: 2, time: "10:00", name: "Greek Yogurt & Berries", calories: 220, protein: 18, carbs: 24, fat: 4, category: "snack" },
-  { id: 3, time: "13:00", name: "Chicken & Rice Bowl", calories: 660, protein: 52, carbs: 80, fat: 12, category: "lunch" },
-];
 
 /* ─── Category config ────────────────────────────────────────── */
 const categoryConfig = {
@@ -95,43 +64,130 @@ function MacroProgress({ label, value, target, color, icon }: { label: string; v
 
 /* ─── Component ──────────────────────────────────────────────── */
 function MealsTracker() {
-  const [meals, setMeals] = useState<LoggedMeal[]>(seedMeals);
+  const [meals, setMeals] = useState<LoggedMeal[]>([]);
+  const [altMeals, setAltMeals] = useState<AltMeal[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [activeInjury, setActiveInjury] = useState<string | null>("Lower Back"); // from profile
-
-  /* injuries from profile (placeholder state – swappable from Settings) */
-  const profileInjuries = ["Lower Back", "Knee"]; // placeholder
+  const [activeInjury, setActiveInjury] = useState<string | null>(null);
 
   /* form state */
-  const [form, setForm] = useState({ time: "", name: "", calories: "", protein: "", carbs: "", fat: "", category: "snack" as LoggedMeal["category"] });
+  const [form, setForm] = useState({
+    time: "", name: "", calories: "", protein: "", carbs: "", fat: "",
+    category: "snack" as LoggedMeal["category"],
+  });
+
+  /* ── Fetch today's meals ── */
+  useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    fetch(`/api/meals?date=${today}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success) {
+          setMeals(
+            data.data.map((m: any) => ({
+              id: m.id,
+              time: new Date(m.date).toTimeString().slice(0, 5),
+              name: m.name,
+              calories: m.calories,
+              protein: m.protein,
+              carbs: m.carbs,
+              fat: m.fat,
+              category: m.mealType as LoggedMeal["category"],
+            }))
+          );
+        }
+      });
+  }, []);
+
+  /* ── Fetch alternative meals (all injuries) ── */
+  useEffect(() => {
+    fetch("/api/meals/alternatives")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && data.data.length > 0) {
+          setAltMeals(data.data);
+          setActiveInjury(data.data[0].injury);
+        }
+      });
+  }, []);
+
+  /* Unique injury list */
+  const profileInjuries = [...new Set(altMeals.map((m) => m.injury))];
 
   const totals = meals.reduce(
     (acc, m) => ({ calories: acc.calories + m.calories, protein: acc.protein + m.protein, carbs: acc.carbs + m.carbs, fat: acc.fat + m.fat }),
     { calories: 0, protein: 0, carbs: 0, fat: 0 }
   );
 
-  const addMeal = () => {
+  const addMeal = async () => {
     if (!form.name || !form.calories) return;
-    const newMeal: LoggedMeal = {
-      id: Date.now(),
-      time: form.time || new Date().toTimeString().slice(0, 5),
+    const body = {
       name: form.name,
+      mealType: form.category,
       calories: Number(form.calories),
       protein: Number(form.protein) || 0,
       carbs: Number(form.carbs) || 0,
       fat: Number(form.fat) || 0,
-      category: form.category,
     };
-    setMeals((prev) => [...prev, newMeal].sort((a, b) => a.time.localeCompare(b.time)));
+    const res = await fetch("/api/meals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (data.success) {
+      const m = data.data;
+      setMeals((prev) => [...prev, {
+        id: m.id,
+        time: form.time || new Date().toTimeString().slice(0, 5),
+        name: m.name,
+        calories: m.calories,
+        protein: m.protein,
+        carbs: m.carbs,
+        fat: m.fat,
+        category: m.mealType,
+      }].sort((a, b) => a.time.localeCompare(b.time)));
+    }
     setForm({ time: "", name: "", calories: "", protein: "", carbs: "", fat: "", category: "snack" });
     setShowForm(false);
   };
 
-  const removeMeal = (id: number) => setMeals((prev) => prev.filter((m) => m.id !== id));
-
-  const remaining = {
-    calories: Math.max(0, DAILY_TARGET.calories - totals.calories),
+  const removeMeal = async (id: number) => {
+    await fetch(`/api/meals/${id}`, { method: "DELETE" });
+    setMeals((prev) => prev.filter((m) => m.id !== id));
   };
+
+  const logAltMeal = async (m: AltMeal) => {
+    const body = {
+      name: m.name,
+      mealType: "snack",
+      calories: m.calories,
+      protein: m.protein,
+      carbs: m.carbs,
+      fat: m.fat,
+    };
+    const res = await fetch("/api/meals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (data.success) {
+      const meal = data.data;
+      setMeals((prev) => [...prev, {
+        id: meal.id,
+        time: new Date().toTimeString().slice(0, 5),
+        name: meal.name,
+        calories: meal.calories,
+        protein: meal.protein,
+        carbs: meal.carbs,
+        fat: meal.fat,
+        category: "snack",
+      }]);
+    }
+  };
+
+  const remaining = { calories: Math.max(0, DAILY_TARGET.calories - totals.calories) };
+  const activeAltMeals = altMeals.filter((m) => m.injury === activeInjury);
 
   return (
     <div className="meals-page">
@@ -161,11 +217,9 @@ function MealsTracker() {
             <div>
               <div className="injury-banner-title">Injury Mode Active</div>
               <div className="injury-banner-sub">
-                Your profile has {profileInjuries.length} active injur{profileInjuries.length > 1 ? "ies" : "y"}:&nbsp;
-                {profileInjuries.map((inj, i) => (
-                  <span key={inj} className="injury-badge">
-                    {inj}{i < profileInjuries.length - 1 ? "" : ""}
-                  </span>
+                Active injur{profileInjuries.length > 1 ? "ies" : "y"}:&nbsp;
+                {profileInjuries.map((inj) => (
+                  <span key={inj} className="injury-badge">{inj}</span>
                 ))}
                 &nbsp;— see alternative meal suggestions below
               </div>
@@ -239,7 +293,7 @@ function MealsTracker() {
 
           <div className="meal-log-list">
             {meals.map((meal) => {
-              const cfg = categoryConfig[meal.category];
+              const cfg = categoryConfig[meal.category] ?? categoryConfig.snack;
               return (
                 <div key={meal.id} className="meal-log-row">
                   <div className="meal-log-emoji">{cfg.emoji}</div>
@@ -267,7 +321,6 @@ function MealsTracker() {
             })}
           </div>
 
-          {/* ── Add Meal Button (also in header) ── */}
           {!showForm && (
             <button className="meals-add-row-btn" onClick={() => setShowForm(true)}>
               <FontAwesomeIcon icon={faPlus} style={{ marginRight: 6 }} />
@@ -304,10 +357,10 @@ function MealsTracker() {
               </div>
 
               {/* Meals for selected injury */}
-              {activeInjury && alternativeMeals[activeInjury] ? (
+              {activeAltMeals.length > 0 ? (
                 <div className="alt-meals-list">
-                  {alternativeMeals[activeInjury].map((m, i) => (
-                    <div key={i} className="alt-meal-item">
+                  {activeAltMeals.map((m) => (
+                    <div key={m.id} className="alt-meal-item">
                       <div className="alt-meal-emoji">{m.icon}</div>
                       <div className="alt-meal-info">
                         <div className="alt-meal-name">{m.name}</div>
@@ -322,14 +375,7 @@ function MealsTracker() {
                           <span>F {m.fat}g</span>
                         </div>
                       </div>
-                      <button
-                        className="alt-meal-add-btn"
-                        title="Log this meal"
-                        onClick={() => {
-                          const time = new Date().toTimeString().slice(0, 5);
-                          setMeals((prev) => [...prev, { id: Date.now(), time, name: m.name, calories: m.calories, protein: m.protein, carbs: m.carbs, fat: m.fat, category: "snack" }]);
-                        }}
-                      >
+                      <button className="alt-meal-add-btn" title="Log this meal" onClick={() => logAltMeal(m)}>
                         <FontAwesomeIcon icon={faPlus} />
                       </button>
                     </div>

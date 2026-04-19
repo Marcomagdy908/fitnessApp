@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
@@ -23,16 +24,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/settings.css";
 
-const MOCK_PROFILE = {
-  avatar: "https://i.pravatar.cc/150?img=11",
-  joinDate: "February 2026",
-};
-
 const MOCK_GOALS = {
   weeklyWorkouts: 4,
   dailyCalories: 2400,
   weightGoal: 82, // kg
-  currentWeight: 86, // kg
+  currentWeight: 80, // kg
   height: 181, // cm
 };
 
@@ -152,12 +148,14 @@ function ToggleRow({
 /* ─── Main Component ─────────────────────────────────────────── */
 function Settings() {
   const [activeSection, setActiveSection] = useState("profile");
+  const navigate = useNavigate();
 
   /* Profile state */
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
-  const [avatar, setAvatar] = useState(MOCK_PROFILE.avatar);
+  const [avatar, setAvatar] = useState("https://cdn-icons-png.flaticon.com/512/149/149071.png");
+  const [joinDate, setJoinDate] = useState("");
 
   // Fetch true user data from the database on mount
   useEffect(() => {
@@ -168,7 +166,12 @@ function Settings() {
         if (data.success && data.user) {
           setName(data.user.name || "");
           setEmail(data.user.email || "");
-          // You don't have username/avatar in db schema yet, but you could map them if you did
+          setUsername(data.user.username || "");
+          if (data.user.avatar) setAvatar(data.user.avatar);
+          if (data.user.createdAt) {
+            const date = new Date(data.user.createdAt);
+            setJoinDate(date.toLocaleDateString("en-US", { month: "long", year: "numeric" }));
+          }
         }
       } catch (err) {
         console.error("Error fetching profile", err);
@@ -222,15 +225,55 @@ function Settings() {
 
   /* Saved feedback */
   const [saved, setSaved] = useState(false);
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const handleSave = async () => {
+    try {
+      const res = await fetch("/api/users/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          username,
+          avatar,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to save profile. Please try again.");
+      }
+
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      console.error(err);
+      alert(err instanceof Error ? err.message : "An error occurred");
+    }
   };
 
   const toggleNotif = (key: string) =>
     setNotifToggles((prev) => ({ ...prev, [key]: !prev[key] }));
   const togglePrivacy = (key: string) =>
     setPrivacyToggles((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  const handleLogout = async() => {
+    try {
+      const res = await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      if (data.success) {
+        navigate("/login");
+      }
+    } catch (err) {
+      console.error("Error logging out", err);
+    }
+
+    console.log("Logout");
+  };
 
   /* BMI calc */
   const bmi = (currentWeight / Math.pow(height / 100, 2)).toFixed(1);
@@ -249,7 +292,7 @@ function Settings() {
           {/* Avatar card */}
           <div className="settings-avatar-card">
             <div className="settings-avatar-ring">
-              <img src={MOCK_PROFILE.avatar} alt="avatar" />
+              <img src={avatar} alt="avatar" />
             </div>
             <div className="settings-avatar-info">
               <span className="settings-avatar-name">{name || "Loading..."}</span>
@@ -257,7 +300,7 @@ function Settings() {
                 {email || "Loading..."}
               </span>
               <span className="settings-avatar-since">
-                Member since {MOCK_PROFILE.joinDate}
+                Member since {joinDate}
               </span>
             </div>
           </div>
@@ -287,8 +330,23 @@ function Settings() {
               {/* Avatar upload */}
               <div className="settings-avatar-upload">
                 <div className="settings-avatar-upload-ring">
-                  <img src={MOCK_PROFILE.avatar} alt="avatar" />
+                  <img src={avatar} alt="avatar" />
                   <div className="settings-avatar-upload-overlay">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="settings-avatar-upload-input"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setAvatar(reader.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
                     <FontAwesomeIcon icon={faCamera} />
                   </div>
                 </div>
@@ -788,6 +846,9 @@ function Settings() {
               onClick={handleSave}
             >
               {saved ? "✓ Saved!" : "Save Changes"}
+            </button>
+            <button className="settings-btn-logout" onClick={handleLogout}>
+              Logout
             </button>
           </div>
         </div>

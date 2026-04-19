@@ -268,6 +268,13 @@
   font-size: 0.7rem;
 }
 
+.settings-avatar-upload-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
 /* ── Input fields ────────────────────────────────────── */
 .settings-fields {
   display: flex;
@@ -673,6 +680,24 @@
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.18);
   color: #aaa;
+}
+.settings-btn-logout {
+  background: rgba(255, 80, 80, 0.1);
+  border: 1px solid rgba(255, 80, 80, 0.3);
+  border-radius: 10px;
+  color: #ff5050;
+  display: flex;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.65rem 1.4rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+}
+
+.settings-btn-logout:hover {
+  background: rgba(255, 80, 80, 0.18);
+  transform: translateY(-1px);
 }
 
 .settings-btn-sm {

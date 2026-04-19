@@ -1,9 +1,9 @@
 import { Response, NextFunction } from "express";
 import { z } from "zod";
 import { db } from "../services/db";
-import { AuthRequest } from "../middleware/auth";
-import { MealLogRow } from "../types/db";
-import { ResultSetHeader } from "mysql2";
+import { AuthRequest } from '../middleware/auth';
+import { MealLogRow, AlternativeMealRow } from '../types/db';
+import { ResultSetHeader } from 'mysql2';
 
 const mealSchema = z.object({
   name: z.string().min(1),
@@ -87,6 +87,27 @@ export const deleteMeal = async (
       return;
     }
     res.json({ success: true, message: "Meal deleted" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getAlternativeMeals = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { injury } = req.query as { injury?: string };
+    let query = 'SELECT * FROM AlternativeMeal';
+    const params: any[] = [];
+    if (injury) {
+      query += ' WHERE injury = ?';
+      params.push(injury);
+    }
+    query += ' ORDER BY injury ASC, id ASC';
+    const [meals] = await db.query<AlternativeMealRow[] & { length: number }>(query, params);
+    res.json({ success: true, data: meals });
   } catch (err) {
     next(err);
   }

@@ -7,7 +7,6 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loggedin, setLoggedin] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,7 +32,6 @@ export default function Login() {
         throw new Error(data.message || "Login failed");
       }
 
-      setLoggedin(true);
       navigate("/"); // Redirect to dashboard
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred");

@@ -5,6 +5,7 @@ export interface UserRow extends RowDataPacket {
   email: string;
   password?: string;
   name: string;
+  username: string | null;
   avatar: string | null;
   role: string;
   createdAt: Date;
@@ -21,8 +22,49 @@ export interface ExerciseRow extends RowDataPacket {
   muscleGroups: string;
   imageUrl: string | null;
   videoUrl: string | null;
+  equipment: string;
+  defaultSets: number;
+  defaultReps: number;
+  defaultTimeSecs: number | null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface AlternativeMealRow extends RowDataPacket {
+  id: number;
+  injury: string;
+  icon: string;
+  name: string;
+  benefit: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  createdAt: Date;
+}
+
+export interface WorkoutSessionRow extends RowDataPacket {
+  id: number;
+  userId: number;
+  planId: number | null;
+  name: string;
+  durationSecs: number;
+  caloriesBurned: number;
+  date: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface WorkoutSessionSetRow extends RowDataPacket {
+  id: number;
+  sessionId: number;
+  exerciseId: number;
+  setNumber: number;
+  reps: number | null;
+  weight: number | null;
+  timeSecs: number | null;
+  isCompleted: boolean | number;
+  createdAt: Date;
 }
 
 export interface WorkoutPlanRow extends RowDataPacket {
