@@ -183,23 +183,63 @@ const testimonials = [
   },
 ];
 
+/* ─── Mock User Data ─────────────────────────────────────────── */
+const activeMembership = {
+  planId: "pro",
+  status: "Active",
+  nextBilling: "May 20, 2026",
+  billingCycle: "monthly",
+  memberSince: "Dec 2025",
+};
+
 /* ─── Component ──────────────────────────────────────────────── */
 function Subscription() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
+  const [showHistory, setShowHistory] = useState(false);
 
   const getPrice = (plan: MembershipPlan) =>
     billingCycle === "annual" ? plan.annualPrice : plan.price;
 
   return (
     <div className="sub-page">
+      {/* ── Active Membership Status (New) ── */}
+      <div className="active-mem-container">
+        <div className="active-mem-card">
+          <div className="active-mem-header">
+            <div className="active-mem-badge">
+              <FontAwesomeIcon icon={faCrown} />
+              Current Status: {activeMembership.status}
+            </div>
+            <div className="active-mem-plan">
+              {activeMembership.planId.toUpperCase()} PLAN
+            </div>
+          </div>
+          <div className="active-mem-body">
+            <div className="active-mem-info">
+              <span className="label">Next Billing:</span>
+              <span className="value">{activeMembership.nextBilling}</span>
+            </div>
+            <div className="active-mem-info">
+              <span className="label">Billing Cycle:</span>
+              <span className="value">{activeMembership.billingCycle}</span>
+            </div>
+            <div className="active-mem-info">
+              <span className="label">Member Since:</span>
+              <span className="value">{activeMembership.memberSince}</span>
+            </div>
+            <button className="active-mem-manage-btn">Manage Subscription</button>
+          </div>
+        </div>
+      </div>
+
       {/* ── Header ── */}
       <div className="sub-header">
         <h1 className="sub-title">
-          <FontAwesomeIcon icon={faCrown} className="me-2" />
-          Membership Plans
+          <FontAwesomeIcon icon={faStar} className="me-2" style={{ color: "var(--accent-cyan)" }} />
+          Upgrade Your Experience
         </h1>
         <p className="sub-subtitle">
-          Join ApexTrack Gym — world-class facilities, expert coaches, and a community that pushes you forward
+          Unlock premium features, custom meal plans, and 24/7 personal training support.
         </p>
 
         {/* Billing Toggle */}
@@ -238,15 +278,14 @@ function Subscription() {
         {plans.map((plan) => (
           <div
             key={plan.id}
-            className={`sub-card${plan.popular ? " sub-card--popular" : ""}`}
+            className={`sub-card${plan.popular ? " sub-card--popular" : ""}${activeMembership.planId === plan.id ? " sub-card--active" : ""}`}
             style={{
-              background: plan.bgGradient,
-              borderColor: plan.borderColor,
-              boxShadow: plan.popular
-                ? `0 0 40px ${plan.glowColor}, 0 0 0 1px ${plan.borderColor}`
-                : undefined,
+              borderColor: activeMembership.planId === plan.id ? "var(--accent-cyan)" : plan.borderColor,
             }}
           >
+            {activeMembership.planId === plan.id && (
+              <div className="active-tag">Current Plan</div>
+            )}
             {plan.popular && (
               <div
                 className="sub-card-glow"
@@ -290,16 +329,10 @@ function Subscription() {
               </div>
 
               <button
-                className="sub-cta-btn"
-                style={{
-                  background: plan.popular
-                    ? `linear-gradient(135deg, ${plan.accentColor}, #00cccc)`
-                    : `${plan.accentColor}18`,
-                  color: plan.popular ? "#000" : plan.accentColor,
-                  border: plan.popular ? "none" : `1px solid ${plan.accentColor}40`,
-                }}
+                className={`sub-cta-btn${activeMembership.planId === plan.id ? " sub-cta-btn--active" : ""}`}
+                disabled={activeMembership.planId === plan.id}
               >
-                {plan.cta}
+                {activeMembership.planId === plan.id ? "Manage Account" : plan.cta}
               </button>
             </div>
           </div>
@@ -349,32 +382,40 @@ function Subscription() {
         ))}
       </div>
 
-      {/* ── Testimonials ── */}
-      <div className="sub-section-heading" style={{ marginTop: "2rem", color: "#ffc832" }}>
-        <FontAwesomeIcon icon={faStar} />
-        Member Stories
-      </div>
-      <div className="sub-testimonials">
-        {testimonials.map((t, i) => (
-          <div key={i} className="testimonial-card">
-            <div className="testimonial-top">
-              <div className="testimonial-avatar">{t.avatar}</div>
-              <div>
-                <div className="testimonial-name">{t.name}</div>
-                <div className="testimonial-role">{t.role}</div>
-              </div>
-              <div className="testimonial-stars">{"★".repeat(t.stars)}</div>
+      {/* ── Billing History (New) ── */}
+      <div className="billing-history-wrap">
+        <button className="history-toggle-btn" onClick={() => setShowHistory(!showHistory)}>
+          <FontAwesomeIcon icon={faCalendarCheck} style={{ marginRight: 8 }} />
+          {showHistory ? "Hide Billing History" : "View Billing History"}
+        </button>
+        {showHistory && (
+          <div className="billing-history-table">
+            <div className="history-row header">
+              <span>Date</span>
+              <span>Invoice</span>
+              <span>Amount</span>
+              <span>Status</span>
             </div>
-            <p className="testimonial-text">"{t.text}"</p>
+            {[
+              { date: "Apr 20, 2026", id: "#INV-9821", amount: "$59.99", status: "Paid" },
+              { date: "Mar 20, 2026", id: "#INV-8422", amount: "$59.99", status: "Paid" },
+              { date: "Feb 20, 2026", id: "#INV-7210", amount: "$59.99", status: "Paid" },
+            ].map((row, i) => (
+              <div key={i} className="history-row">
+                <span>{row.date}</span>
+                <span className="inv-id">{row.id}</span>
+                <span>{row.amount}</span>
+                <span className="status-success">{row.status}</span>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
 
       {/* ── Contact Strip ── */}
       <div className="sub-contact-strip">
-        <FontAwesomeIcon icon={faPhoneVolume} style={{ color: "#3dffff", marginRight: "0.5rem" }} />
-        Have questions? Call us at <strong style={{ color: "#fff" }}>+1 (800) 555-0199</strong> or visit us at
-        <strong style={{ color: "#fff" }}> 24 Apex Boulevard, Downtown</strong>
+        <FontAwesomeIcon icon={faPhoneVolume} style={{ color: "var(--accent-cyan)", marginRight: "0.5rem" }} />
+        Have questions? Call us at <strong style={{ color: "var(--text-primary)" }}>+1 (800) 555-0199</strong>
       </div>
 
       <p className="sub-fine-print">

@@ -1,11 +1,43 @@
 :root {
+  /* ── Dark Theme (Default) ──────────────── */
+  --bg-primary: #000000;
+  --bg-secondary: #0d0d0d;
+  --bg-navbar: #050505;
+  --bg-card: linear-gradient(135deg, #0d0d0d 0%, #141414 100%);
+  --bg-surface: rgba(255, 255, 255, 0.03);
+  
+  --text-primary: #f0f0f0;
+  --text-secondary: #888888;
+  --text-dim: #555555;
+  --text-inverse: #000000;
+  
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.04);
+  
+  --accent-cyan: #3dffff;
+  --accent-cyan-dim: rgba(61, 255, 255, 0.15);
+  --accent-cyan-border: rgba(61, 255, 255, 0.3);
+  
+  --accent-purple: #a98dff;
+  --accent-purple-dim: rgba(123, 97, 255, 0.18);
+  --accent-purple-border: rgba(123, 97, 255, 0.35);
+  
+  --danger: #ff5050;
+  --danger-dim: rgba(255, 80, 80, 0.1);
+  
+  --success: #3dd264;
+  --success-dim: rgba(61, 210, 100, 0.14);
+
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+
   font-family: "Courier New", Courier, monospace;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #000000 !important;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,8 +45,44 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+:root[data-theme="light"] {
+  /* ── Light Theme ───────────────────────── */
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-navbar: #111827; /* Darker Navy/Gray for contrast in Light Mode */
+  --bg-card: linear-gradient(135deg, #ffffff 0%, #f1f3f5 100%);
+  --bg-surface: rgba(0, 0, 0, 0.03);
+  
+  --text-primary: #1a1d23;
+  --text-secondary: #4b5563;
+  --text-dim: #9ca3af;
+  --text-inverse: #ffffff;
+  
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-light: rgba(0, 0, 0, 0.04);
+  
+  --accent-cyan: #0891b2;
+  --accent-cyan-dim: rgba(8, 145, 178, 0.1);
+  --accent-cyan-border: rgba(8, 145, 178, 0.2);
+  
+  --accent-purple: #7c3aed;
+  --accent-purple-dim: rgba(124, 58, 237, 0.1);
+  --accent-purple-border: rgba(124, 58, 237, 0.2);
+  
+  --danger: #dc2626;
+  --danger-dim: rgba(220, 38, 38, 0.08);
+  
+  --success: #16a34a;
+  --success-dim: rgba(22, 163, 74, 0.08);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
 body {
-  background-color: #000000 !important;
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary);
+  margin: 0;
 }
 
 .navbar-container {

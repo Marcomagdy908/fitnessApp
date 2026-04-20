@@ -1,7 +1,7 @@
 /* ── Shared bootstrap overrides ── */
 .container,
 .container-fluid {
-  background-color: #000000 !important;
+  background-color: var(--bg-primary) !important;
   padding: 10px;
   border-radius: 16px;
   width: 98% !important;
@@ -14,15 +14,15 @@
   left: 0;
   top: 0;
   position: fixed;
-  background: #000;
-  box-shadow: 0.2px 0 0.8px 0px #b3b6b6;
+  background: var(--bg-secondary);
+  box-shadow: var(--shadow-sm);
   z-index: 200;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .isActive {
-  color: #3DFFFF !important;
-  background-color: rgba(61, 255, 255, 0.1) !important;
+  color: var(--accent-cyan) !important;
+  background-color: var(--accent-cyan-dim) !important;
 }
 
 .logo-container {
@@ -42,10 +42,10 @@
   top: 1rem;
   left: 1rem;
   z-index: 1100;
-  background: rgba(61, 255, 255, 0.1);
-  border: 1px solid rgba(61, 255, 255, 0.3);
+  background: var(--accent-cyan-dim);
+  border: 1px solid var(--accent-cyan-border);
   border-radius: 10px;
-  color: #3dffff;
+  color: var(--accent-cyan);
   font-size: 1.1rem;
   width: 40px;
   height: 40px;
@@ -53,12 +53,14 @@
   display: none;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s, transform 0.15s;
+  transition:
+    background 0.2s,
+    transform 0.15s;
   backdrop-filter: blur(8px);
 }
 
 .sidebar-toggle-btn:hover {
-  background: rgba(61, 255, 255, 0.2);
+  background: var(--accent-cyan-border);
   transform: scale(1.05);
 }
 
@@ -74,8 +76,12 @@
 }
 
 @keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* ── Mobile bottom navigation (≤768px) ── */
@@ -132,8 +138,8 @@
     left: 0;
     right: 0;
     height: 64px;
-    background: #0a0a0a;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
     z-index: 1000;
     justify-content: space-around;
     align-items: center;
@@ -157,11 +163,11 @@
   }
 
   .bottom-nav-item:hover {
-    background: rgba(61, 255, 255, 0.07);
+    background: var(--accent-cyan-dim);
   }
 
   .bottom-nav-item.isActive {
-    background: rgba(61, 255, 255, 0.1) !important;
+    background: var(--accent-cyan-dim) !important;
   }
 
   .bottom-nav-label {

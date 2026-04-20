@@ -1,7 +1,7 @@
 /* ── Meals Tracker Page ──────────────────────────────────── */
 .meals-page {
   padding: 2rem;
-  background: #000000;
+  background: var(--bg-primary);
   min-height: 100vh;
 }
 
@@ -22,7 +22,7 @@
 }
 
 .meals-title {
-  color: #f0f0f0;
+  color: var(--text-primary);
   font-size: 1.6rem;
   font-weight: 800;
   margin-bottom: 0.2rem;
@@ -30,7 +30,7 @@
 }
 
 .meals-title svg {
-  color: #3dffff;
+  color: var(--accent-cyan);
 }
 
 .meals-subtitle {
@@ -133,8 +133,8 @@
 
 /* ── Summary Card ────────────────────────────────────────── */
 .meals-summary-card {
-  background: linear-gradient(135deg, #0d0d12 0%, #10101a 100%);
-  border: 1px solid rgba(61, 255, 255, 0.12);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 1.5rem;
   margin-bottom: 1.25rem;
@@ -161,7 +161,7 @@
 .cal-ring-val {
   font-size: 1.3rem;
   font-weight: 900;
-  color: #fff;
+  color: var(--text-primary);
   line-height: 1;
 }
 
@@ -200,7 +200,7 @@
 .summary-stat-val {
   font-size: 1.4rem;
   font-weight: 900;
-  color: #fff;
+  color: var(--text-primary);
   line-height: 1;
   margin-bottom: 0.2rem;
 }
@@ -282,7 +282,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #3dffff;
+  color: var(--accent-cyan);
   margin-bottom: 0.85rem;
   display: flex;
   align-items: center;
@@ -325,8 +325,8 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  background: linear-gradient(135deg, #0d0d0d, #141414);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 0.75rem 0.9rem;
   transition: border-color 0.2s, transform 0.2s;
@@ -357,7 +357,7 @@
 .meal-log-name {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #e0e0e0;
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
   white-space: nowrap;
   overflow: hidden;
@@ -451,8 +451,8 @@
 
 /* ── Alternative Meals Card ──────────────────────────────── */
 .alt-meals-card {
-  background: linear-gradient(135deg, #0d0d0d, #141414);
-  border: 1px solid rgba(255, 170, 0, 0.2);
+  background: var(--bg-card);
+  border: 1px solid var(--accent-purple-border);
   border-radius: 18px;
   overflow: hidden;
 }
@@ -658,12 +658,12 @@
 }
 
 .meal-modal {
-  background: #0f0f0f;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   width: 100%;
   max-width: 520px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
+  box-shadow: var(--shadow-md);
   animation: slideUp 0.22s ease;
 }
 
@@ -755,10 +755,10 @@
 
 .meal-form-input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
-  color: #e0e0e0;
+  color: var(--text-primary);
   font-size: 0.82rem;
   padding: 0.55rem 0.85rem;
   outline: none;

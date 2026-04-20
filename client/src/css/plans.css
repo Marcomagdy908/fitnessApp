@@ -1,7 +1,7 @@
 /* ── Plans Page ──────────────────────────────────── */
 .plans-page {
   padding: 2rem;
-  background: #000000;
+  background: var(--bg-primary);
   min-height: 100vh;
 }
 
@@ -16,7 +16,7 @@
 }
 
 .plans-title {
-  color: #f0f0f0;
+  color: var(--text-primary);
   font-size: 1.6rem;
   font-weight: 800;
   margin-bottom: 0.3rem;
@@ -24,7 +24,7 @@
 }
 
 .plans-title svg {
-  color: #3dffff;
+  color: var(--accent-cyan);
 }
 
 .plans-subtitle {
@@ -42,10 +42,10 @@
 }
 
 .plan-tab-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 999px;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.07em;
@@ -69,8 +69,8 @@
 
 /* ── Plan Hero ───────────────────────────────────── */
 .plan-hero {
-  background: linear-gradient(135deg, #0d0d12 0%, #10101a 100%);
-  border: 1px solid rgba(123, 97, 255, 0.25);
+  background: var(--bg-card);
+  border: 1px solid var(--accent-purple-border);
   border-radius: 20px;
   padding: 2rem;
   margin-bottom: 1.5rem;
@@ -140,7 +140,7 @@
 .plan-hero-title {
   font-size: 2rem;
   font-weight: 900;
-  color: #fff;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   line-height: 1.1;
   margin-bottom: 0.6rem;
@@ -164,11 +164,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 999px;
   font-size: 0.7rem;
-  color: #aaa;
+  color: var(--text-secondary);
   padding: 0.28rem 0.75rem;
   font-weight: 600;
 }
@@ -188,8 +188,8 @@
 }
 
 .hero-stat-box {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 14px;
   padding: 0.85rem 1.1rem;
   text-align: center;
@@ -203,7 +203,7 @@
 .hero-stat-val {
   font-size: 1.6rem;
   font-weight: 900;
-  color: #fff;
+  color: var(--text-primary);
   line-height: 1;
 }
 
@@ -231,8 +231,8 @@
 
 /* ── Day Card ────────────────────────────────────── */
 .day-card {
-  background: linear-gradient(135deg, #0d0d0d 0%, #141414 100%);
-  border: 1px solid rgba(61, 255, 255, 0.1);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   overflow: hidden;
   transition:
@@ -293,7 +293,7 @@
 .day-type {
   font-size: 0.92rem;
   font-weight: 800;
-  color: #f0f0f0;
+  color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 
@@ -340,9 +340,9 @@
 }
 
 .badge-rest {
-  background: rgba(255, 255, 255, 0.04);
-  color: #444;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-surface);
+  color: var(--text-dim);
+  border: 1px solid var(--border-color);
 }
 
 /* ── Exercise List ───────────────────────────────── */
@@ -381,7 +381,7 @@
   flex: 1;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #d0d0d0;
+  color: var(--text-primary);
 }
 
 .ex-meta {
@@ -409,8 +409,8 @@
 
 .day-stat {
   flex: 1;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0.4rem 0.5rem;
   text-align: center;
@@ -419,7 +419,7 @@
 .day-stat-val {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #e0e0e0;
+  color: var(--text-primary);
 }
 
 .day-stat-label {
@@ -448,7 +448,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #3dffff;
+  color: var(--accent-cyan);
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
@@ -471,8 +471,8 @@
 }
 
 .tip-card {
-  background: linear-gradient(135deg, #0d0d0d 0%, #141414 100%);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 14px;
   padding: 1rem 1.1rem;
   display: flex;
@@ -502,7 +502,7 @@
 .tip-text-wrap .tip-title {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #e0e0e0;
+  color: var(--text-primary);
   margin-bottom: 0.2rem;
 }
 

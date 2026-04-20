@@ -102,7 +102,8 @@ function ExerciseTracker() {
   const [showForm, setShowForm] = useState(false);
   const [customName, setCustomName] = useState("");
   const [customCat, setCustomCat] = useState("Chest");
-  const [dismissedInjuries, setDismissedInjuries] = useState<string[]>([]);
+  const [showSummary, setShowSummary] = useState(false);
+  const [sessionStartTime] = useState(new Date());
 
   const activeInjuries = PROFILE_INJURIES.filter((i) => !dismissedInjuries.includes(i));
 
@@ -155,6 +156,14 @@ function ExerciseTracker() {
   const totalVol  = exercises.reduce((a, e) =>
     a + e.sets.filter((s) => s.done && !isNaN(Number(s.weight))).reduce((b, s) => b + Number(s.weight) * Number(s.reps || 0), 0), 0
   );
+  
+  const finishWorkout = () => {
+    if (doneSets === 0) {
+      alert("Please complete at least one set before finishing!");
+      return;
+    }
+    setShowSummary(true);
+  };
 
   /* ── Injury relevant to current exercises ── */
   const exerciseNames = exercises.map((e) => e.name);
@@ -325,7 +334,7 @@ function ExerciseTracker() {
                   <button className="ex-remove-btn" onClick={(e) => { e.stopPropagation(); removeExercise(ex.id); }}>
                     <FontAwesomeIcon icon={faTrash} />
                   </button>
-                  <FontAwesomeIcon icon={ex.expanded ? faChevronUp : faChevronDown} style={{ color: "#333", fontSize: "0.7rem" }} />
+                  <FontAwesomeIcon icon={ex.expanded ? faChevronUp : faChevronDown} style={{ color: "var(--text-dim)", fontSize: "0.7rem" }} />
                 </div>
               </div>
 
@@ -390,10 +399,59 @@ function ExerciseTracker() {
 
       {/* ── Finish Button ── */}
       {exercises.length > 0 && (
-        <button className="ex-finish-btn" onClick={() => alert("Workout saved! 🎉 (hook up to API)")}>
+        <button className="ex-finish-btn" onClick={finishWorkout}>
           <FontAwesomeIcon icon={faFire} style={{ marginRight: 8 }} />
           Finish Workout
         </button>
+      )}
+
+      {/* ── Workout Summary Modal (New) ── */}
+      {showSummary && (
+        <div className="ex-modal-backdrop" onClick={() => setShowSummary(false)}>
+          <div className="ex-modal summary-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="summary-header">
+              <FontAwesomeIcon icon={faTrophy} className="summary-trophy" />
+              <h2>Workout Complete!</h2>
+              <p>Great session! Here is what you achieved today.</p>
+            </div>
+            
+            <div className="summary-stats-grid">
+              <div className="summary-stat-item">
+                <span className="label">Volume</span>
+                <span className="value">{totalVol.toLocaleString()} kg</span>
+              </div>
+              <div className="summary-stat-item">
+                <span className="label">Sets</span>
+                <span className="value">{doneSets}</span>
+              </div>
+              <div className="summary-stat-item">
+                <span className="label">Duration</span>
+                <span className="value">{Math.round((new Date().getTime() - sessionStartTime.getTime()) / 60000)} min</span>
+              </div>
+              <div className="summary-stat-item">
+                <span className="label">Exercises</span>
+                <span className="value">{exercises.length}</span>
+              </div>
+            </div>
+
+            <div className="summary-exercise-review">
+              {exercises.map(ex => (
+                <div key={ex.id} className="summary-ex-line">
+                  <span className="ex-name">{ex.name}</span>
+                  <span className="ex-dots"></span>
+                  <span className="ex-count">{ex.sets.filter(s => s.done).length} sets</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="summary-actions">
+              <button className="summary-share-btn">Share Progress</button>
+              <button className="summary-close-btn" onClick={() => (window.location.href = "/dashboard")}>
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* ── Quick Add Drawer ── */}

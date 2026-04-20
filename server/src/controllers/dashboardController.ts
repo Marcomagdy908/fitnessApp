@@ -165,6 +165,20 @@ export const getDashboard = async (
       }
     }
 
+    /* ── Weekly Activity (for heatmap) ───────────────────────── */
+    const [activityRows] = await db.query<any[]>(
+      `SELECT DAYOFWEEK(date) as dayIdx
+       FROM WorkoutSession
+       WHERE userId = ? AND date >= DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)`,
+      [uid]
+    );
+    // MySQL: 1=Sun, 2=Mon... 7=Sat
+    // Convert to 0-indexed: 0=Mon, 1=Tue... 6=Sun
+    const weeklyActivity = Array.from(new Set(activityRows.map(r => {
+      const mysqlIdx = Number(r.dayIdx);
+      return mysqlIdx === 1 ? 6 : mysqlIdx - 2;
+    })));
+
     res.json({
       success: true,
       data: {
@@ -176,6 +190,7 @@ export const getDashboard = async (
         todayWeight: todayWeight?.weight ?? null,
         todayCaloriesLogged: Number(todayCalories?.total ?? 0),
         streak,
+        weeklyActivity,
       },
     });
   } catch (err) {

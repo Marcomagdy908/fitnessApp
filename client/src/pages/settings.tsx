@@ -23,6 +23,7 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/settings.css";
+import { useTheme } from "../context/ThemeContext";
 
 const MOCK_GOALS = {
   weeklyWorkouts: 4,
@@ -144,9 +145,10 @@ function ToggleRow({
     </div>
   );
 }
-
-/* ─── Main Component ─────────────────────────────────────────── */
 function Settings() {
+  const { theme, setTheme } = useTheme();
+  const darkMode = theme === "dark";
+
   const [activeSection, setActiveSection] = useState("profile");
   const navigate = useNavigate();
 
@@ -181,7 +183,6 @@ function Settings() {
   }, []);
 
   /* Preferences state */
-  const [darkMode, setDarkMode] = useState(true);
   const [unit, setUnit] = useState<"metric" | "imperial">("metric");
   const [language, setLanguage] = useState("English");
   const [soundEffects, setSoundEffects] = useState(true);
@@ -406,61 +407,48 @@ function Settings() {
               </div>
 
               {/* Injuries card */}
-              <div className="settings-card" style={{ borderColor: injuries.length > 0 ? "rgba(255,170,0,0.25)" : undefined }}>
-                <div className="settings-card-title" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <FontAwesomeIcon icon={faTriangleExclamation} style={{ color: "#ffaa00" }} />
-                  Injuries &amp; Health Conditions
+              <div className={`settings-card ${injuries.length > 0 ? "has-injuries" : ""}`}>
+                <div className="settings-card-title injuries-title">
+                  <FontAwesomeIcon icon={faTriangleExclamation} />
+                  Injuries & Health Conditions
                 </div>
-                <p style={{ fontSize: "0.72rem", color: "#555", marginBottom: "1rem", lineHeight: 1.5 }}>
-                  Add any current injuries or conditions. The Meals Tracker will suggest anti-inflammatory alternative meals tailored to each injury.
+                <p className="settings-description">
+                  Add any current injuries or conditions. The Tracker will highlight potential risks during workouts.
                 </p>
 
                 {/* Active injuries */}
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "0.85rem" }}>
+                <div className="active-injuries-grid">
                   {injuries.length === 0 && (
-                    <span style={{ fontSize: "0.72rem", color: "#333" }}>No injuries set.</span>
+                    <span className="no-injuries-msg">No injuries set.</span>
                   )}
                   {injuries.map((inj) => (
-                    <span
-                      key={inj}
-                      style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem", background: "rgba(255,170,0,0.1)", border: "1px solid rgba(255,170,0,0.3)", color: "#ffaa00", borderRadius: "999px", fontSize: "0.65rem", fontWeight: 700, padding: "0.2rem 0.65rem" }}
-                    >
+                    <span key={inj} className="injury-chip">
                       {inj}
-                      <button
-                        onClick={() => removeInjury(inj)}
-                        style={{ background: "none", border: "none", color: "#ff6b6b", cursor: "pointer", fontSize: "0.6rem", padding: 0, lineHeight: 1 }}
-                      >✕</button>
+                      <button className="remove-injury-btn" onClick={() => removeInjury(inj)}>✕</button>
                     </span>
                   ))}
                 </div>
 
                 {/* Quick-add chips */}
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem", marginBottom: "0.75rem" }}>
+                <div className="quick-injury-grid">
                   {INJURY_OPTIONS.filter((o) => !injuries.includes(o)).map((opt) => (
-                    <button
-                      key={opt}
-                      onClick={() => addInjury(opt)}
-                      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#555", borderRadius: "999px", fontSize: "0.62rem", fontWeight: 700, padding: "0.2rem 0.65rem", cursor: "pointer", transition: "all 0.18s" }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,170,0,0.3)"; (e.currentTarget as HTMLElement).style.color = "#ffaa00"; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLElement).style.color = "#555"; }}
-                    >
-                      <FontAwesomeIcon icon={faPlus} style={{ marginRight: 4, fontSize: "0.5rem" }} />
+                    <button key={opt} className="quick-injury-btn" onClick={() => addInjury(opt)}>
+                      <FontAwesomeIcon icon={faPlus} />
                       {opt}
                     </button>
                   ))}
                 </div>
 
                 {/* Free-text input */}
-                <div style={{ display: "flex", gap: "0.5rem" }}>
+                <div className="injury-input-group">
                   <input
                     className="settings-input"
                     placeholder="Add custom injury…"
                     value={injuryInput}
                     onChange={(e) => setInjuryInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && addInjury(injuryInput)}
-                    style={{ flex: 1, paddingLeft: "1rem" }}
                   />
-                  <button className="settings-btn-primary" onClick={() => addInjury(injuryInput)} style={{ padding: "0 1rem" }}>
+                  <button className="settings-btn-primary" onClick={() => addInjury(injuryInput)}>
                     Add
                   </button>
                 </div>
@@ -477,14 +465,14 @@ function Settings() {
                 <div className="settings-theme-row">
                   <button
                     className={`settings-theme-btn ${darkMode ? "active" : ""}`}
-                    onClick={() => setDarkMode(true)}
+                    onClick={() => setTheme("dark")}
                   >
                     <FontAwesomeIcon icon={faMoon} />
                     Dark
                   </button>
                   <button
                     className={`settings-theme-btn ${!darkMode ? "active" : ""}`}
-                    onClick={() => setDarkMode(false)}
+                    onClick={() => setTheme("light")}
                   >
                     <FontAwesomeIcon icon={faSun} />
                     Light

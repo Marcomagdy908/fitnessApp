@@ -1,7 +1,7 @@
 /* ── Trainers Page ───────────────────────────────────────── */
 .trainers-page {
   padding: 2rem;
-  background: #000000;
+  background: var(--bg-primary);
   min-height: 100vh;
 }
 
@@ -17,7 +17,7 @@
 }
 
 .trainers-title {
-  color: #f0f0f0;
+  color: var(--text-primary);
   font-size: 1.6rem;
   font-weight: 800;
   margin-bottom: 0.3rem;
@@ -25,7 +25,7 @@
 }
 
 .trainers-title svg {
-  color: #3dffff;
+  color: var(--accent-cyan);
 }
 
 .trainers-subtitle {
@@ -40,12 +40,12 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: linear-gradient(135deg, #080f0f, #0a1515);
-  border: 1px solid rgba(61, 255, 255, 0.35);
+  background: var(--bg-card);
+  border: 1px solid var(--accent-cyan-border);
   border-radius: 16px;
   padding: 1rem 1.25rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 0 28px rgba(61, 255, 255, 0.08);
+  box-shadow: 0 0 28px var(--accent-cyan-dim);
   animation: fadeSlideIn 0.3s ease;
 }
 
@@ -83,7 +83,7 @@
 .selected-banner-name {
   font-size: 1rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--text-primary);
   margin-bottom: 0.1rem;
 }
 
@@ -135,10 +135,10 @@
 
 .trainers-search {
   width: 100%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
-  color: #e0e0e0;
+  color: var(--text-primary);
   font-size: 0.8rem;
   padding: 0.6rem 1rem 0.6rem 2.2rem;
   outline: none;
@@ -161,10 +161,10 @@
 }
 
 .filter-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 999px;
-  color: #555;
+  color: var(--text-secondary);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -180,9 +180,9 @@
 }
 
 .filter-btn.active {
-  background: rgba(61, 255, 255, 0.1);
-  border-color: rgba(61, 255, 255, 0.35);
-  color: #3dffff;
+  background: var(--accent-cyan-dim);
+  border-color: var(--accent-cyan-border);
+  color: var(--accent-cyan);
 }
 
 /* ── Grid ────────────────────────────────────────────────── */
@@ -202,8 +202,8 @@
 
 /* ── Trainer Card ────────────────────────────────────────── */
 .trainer-card {
-  background: linear-gradient(135deg, #0d0d0d 0%, #141414 100%);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 1.25rem;
   position: relative;
@@ -293,7 +293,7 @@
 .trainer-name {
   font-size: 1rem;
   font-weight: 800;
-  color: #f0f0f0;
+  color: var(--text-primary);
   margin-bottom: 0.1rem;
   letter-spacing: -0.01em;
 }
@@ -333,7 +333,7 @@
 .trainer-rating-val {
   font-size: 0.78rem;
   font-weight: 800;
-  color: #e0e0e0;
+  color: var(--text-primary);
 }
 
 .trainer-reviews {
@@ -344,7 +344,7 @@
 .trainer-exp {
   margin-left: auto;
   font-size: 0.62rem;
-  color: #3dffff;
+  color: var(--accent-cyan);
   font-weight: 700;
   letter-spacing: 0.04em;
 }
@@ -357,8 +357,8 @@
 
 .trainer-stat {
   flex: 1;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 0.5rem;
   text-align: center;
@@ -367,7 +367,7 @@
 .trainer-stat-val {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #e0e0e0;
+  color: var(--text-primary);
   line-height: 1;
   margin-bottom: 0.15rem;
 }
@@ -399,8 +399,8 @@
 
 /* ── Expanded Section ────────────────────────────────────── */
 .trainer-expanded {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1rem;
   animation: expandIn 0.22s ease;

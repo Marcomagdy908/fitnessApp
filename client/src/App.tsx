@@ -30,9 +30,12 @@ function MainLayout() {
   );
 }
 
+import { ThemeProvider } from "./context/ThemeContext";
+
 function App() {
   return (
-    <BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
       <Routes>
         {/* Auth routes without sidebar/navbar */}
         <Route path="/login" element={<Login />} />
@@ -57,6 +60,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

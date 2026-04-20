@@ -1,7 +1,6 @@
-/* ── Exercise Tracker Page ───────────────────────────────── */
 .ex-page {
   padding: 2rem;
-  background: #000000;
+  background: var(--bg-primary);
   min-height: 100vh;
 }
 
@@ -22,7 +21,7 @@
 .ex-title {
   font-size: 1.6rem;
   font-weight: 800;
-  color: #f0f0f0;
+  color: var(--text-primary);
   margin-bottom: 0.2rem;
   letter-spacing: -0.01em;
   display: flex;
@@ -34,7 +33,7 @@
 
 .ex-subtitle {
   font-size: 0.75rem;
-  color: #444;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -80,7 +79,7 @@
 .ex-injury-from-profile {
   margin-left: auto;
   font-size: 0.6rem;
-  color: #333;
+  color: var(--text-dim);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: none;
@@ -96,16 +95,16 @@
 }
 
 .ex-injury-card {
-  background: linear-gradient(135deg, #111009, #181400);
-  border: 1px solid rgba(255, 170, 0, 0.18);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 1rem 1.1rem;
 }
 
 .ex-injury-card--alert {
-  border-color: rgba(255, 107, 107, 0.35);
-  background: linear-gradient(135deg, #110909, #180800);
-  box-shadow: 0 0 18px rgba(255, 107, 107, 0.08);
+  border-color: var(--danger-dim);
+  background: var(--bg-surface);
+  box-shadow: 0 0 18px var(--danger-dim);
 }
 
 .ex-injury-card-top {
@@ -118,7 +117,7 @@
 .ex-injury-card-name {
   font-size: 0.78rem;
   font-weight: 800;
-  color: #e0e0e0;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -140,29 +139,30 @@
 .ex-injury-dismiss {
   background: none;
   border: none;
-  color: #2a2a2a;
+  color: var(--text-dim);
   font-size: 0.7rem;
   cursor: pointer;
   padding: 0.2rem;
   transition: color 0.2s;
 }
-.ex-injury-dismiss:hover { color: #555; }
+.ex-injury-dismiss:hover { color: var(--text-secondary); }
 
 .ex-injury-alert-msg {
-  background: rgba(255, 107, 107, 0.08);
-  border: 1px solid rgba(255, 107, 107, 0.2);
+  background: var(--danger-dim);
+  border: 1px solid var(--danger);
   border-radius: 8px;
   padding: 0.45rem 0.65rem;
   font-size: 0.68rem;
-  color: #cc4444;
+  color: var(--danger);
   margin-bottom: 0.6rem;
   line-height: 1.4;
+  opacity: 0.8;
 }
 
 .ex-injury-avoid-label {
   font-size: 0.58rem;
   font-weight: 700;
-  color: #444;
+  color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 0.4rem;
@@ -176,9 +176,9 @@
 }
 
 .ex-avoid-chip {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: #333;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
   border-radius: 999px;
   font-size: 0.6rem;
   font-weight: 600;
@@ -186,15 +186,15 @@
 }
 
 .ex-avoid-chip.active {
-  background: rgba(255, 107, 107, 0.1);
-  border-color: rgba(255, 107, 107, 0.3);
-  color: #ff6b6b;
+  background: var(--danger-dim);
+  border-color: var(--danger);
+  color: var(--danger);
   font-weight: 700;
 }
 
 .ex-injury-tip {
   font-size: 0.67rem;
-  color: #555;
+  color: var(--text-secondary);
   line-height: 1.5;
   display: flex;
   align-items: flex-start;
@@ -211,21 +211,21 @@
 }
 
 .ex-stat {
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 14px;
   padding: 0.85rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.2rem;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
-.ex-stat:hover { background: rgba(255,255,255,0.04); }
+.ex-stat:hover { background: var(--bg-surface); transform: translateY(-2px); }
 
 .ex-stat-icon { font-size: 0.9rem; margin-bottom: 0.1rem; }
-.ex-stat-val  { font-size: 1.2rem; font-weight: 900; color: #fff; line-height: 1; }
-.ex-stat-label{ font-size: 0.55rem; color: #444; text-transform: uppercase; letter-spacing: 0.08em; }
+.ex-stat-val  { font-size: 1.2rem; font-weight: 900; color: var(--text-primary); line-height: 1; }
+.ex-stat-label{ font-size: 0.55rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
 
 /* ── Progress Bar ────────────────────────────────────────── */
 .ex-progress-wrap {
@@ -234,7 +234,7 @@
 
 .ex-progress-label {
   font-size: 0.68rem;
-  color: #555;
+  color: var(--text-secondary);
   font-weight: 600;
   margin-bottom: 0.35rem;
   display: flex;
@@ -243,7 +243,7 @@
 
 .ex-progress-track {
   height: 5px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-surface);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -264,28 +264,28 @@
 }
 
 .ex-empty {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.07);
+  background: var(--bg-card);
+  border: 1px dashed var(--border-color);
   border-radius: 14px;
   padding: 3rem;
   text-align: center;
-  color: #333;
+  color: var(--text-dim);
   font-size: 0.8rem;
 }
-.ex-empty-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.ex-empty-icon { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5; }
 
 /* ── Exercise Card ───────────────────────────────────────── */
 .ex-card {
-  background: linear-gradient(135deg, #0d0d0d, #141414);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   overflow: hidden;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .ex-card--done {
-  border-color: rgba(80, 230, 120, 0.25);
-  background: linear-gradient(135deg, #090f09, #0a120a);
+  border-color: var(--success);
+  background: var(--success-dim);
 }
 
 .ex-card--flagged {
@@ -317,7 +317,7 @@
 .ex-card-name {
   font-size: 0.9rem;
   font-weight: 800;
-  color: #e0e0e0;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -338,7 +338,7 @@
 
 .ex-card-meta {
   font-size: 0.65rem;
-  color: #444;
+  color: var(--text-dim);
   display: flex;
   gap: 0.35rem;
   align-items: center;
@@ -353,19 +353,19 @@
 .ex-remove-btn {
   background: none;
   border: none;
-  color: #2a2a2a;
+  color: var(--text-dim);
   font-size: 0.72rem;
   cursor: pointer;
   padding: 0.3rem;
   border-radius: 6px;
-  transition: color 0.2s, background 0.2s;
+  transition: all 0.2s;
 }
-.ex-remove-btn:hover { color: #ff6b6b; background: rgba(255,107,107,0.08); }
+.ex-remove-btn:hover { color: var(--danger); background: var(--danger-dim); }
 
 /* ── Card Body ───────────────────────────────────────────── */
 .ex-card-body {
   padding: 0 1rem 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--border-color);
   padding-top: 0.75rem;
   animation: slideDown 0.2s ease;
 }
@@ -385,7 +385,7 @@
 .ex-set-col-label {
   font-size: 0.55rem;
   font-weight: 700;
-  color: #333;
+  color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   text-align: center;
@@ -407,15 +407,15 @@
 .ex-set-num {
   font-size: 0.72rem;
   font-weight: 700;
-  color: #444;
+  color: var(--text-dim);
   text-align: center;
 }
 
 .ex-set-input {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  color: #e0e0e0;
+  color: var(--text-primary);
   font-size: 0.8rem;
   font-weight: 700;
   padding: 0.4rem 0.65rem;
@@ -424,16 +424,16 @@
   transition: border-color 0.2s;
   box-sizing: border-box;
 }
-.ex-set-input:focus { border-color: rgba(61, 255, 255, 0.3); }
-.ex-set-input::placeholder { color: #222; }
+.ex-set-input:focus { border-color: var(--accent-cyan); }
+.ex-set-input::placeholder { color: var(--text-dim); opacity: 0.3; }
 
 .ex-set-check {
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #555;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-dim);
   font-size: 0.7rem;
   cursor: pointer;
   display: flex;
@@ -443,15 +443,15 @@
   margin: 0 auto;
 }
 .ex-set-check.checked {
-  background: rgba(80, 230, 120, 0.15);
-  border-color: rgba(80, 230, 120, 0.4);
-  color: #50e678;
+  background: var(--success-dim);
+  border-color: var(--success);
+  color: var(--success);
 }
 
 .ex-set-del {
   background: none;
   border: none;
-  color: #1a1a1a;
+  color: var(--text-dim);
   font-size: 0.65rem;
   cursor: pointer;
   padding: 0.25rem;
@@ -460,14 +460,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0.4;
 }
-.ex-set-del:hover { color: #ff6b6b; }
+.ex-set-del:hover { color: var(--danger); opacity: 1; }
 
 .ex-add-set-btn {
-  background: rgba(61, 255, 255, 0.06);
-  border: 1px dashed rgba(61, 255, 255, 0.2);
+  background: var(--bg-surface);
+  border: 1px dashed var(--accent-cyan);
   border-radius: 8px;
-  color: #3dffff;
+  color: var(--accent-cyan);
   font-size: 0.68rem;
   font-weight: 700;
   padding: 0.45rem;
@@ -475,17 +476,17 @@
   width: 100%;
   margin-top: 0.25rem;
   margin-bottom: 0.65rem;
-  transition: background 0.2s;
+  transition: all 0.2s;
   letter-spacing: 0.04em;
 }
-.ex-add-set-btn:hover { background: rgba(61, 255, 255, 0.1); }
+.ex-add-set-btn:hover { background: var(--accent-cyan-dim); }
 
 .ex-notes-input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  color: #555;
+  color: var(--text-secondary);
   font-size: 0.72rem;
   padding: 0.5rem 0.75rem;
   outline: none;
@@ -493,8 +494,8 @@
   transition: border-color 0.2s;
   font-style: italic;
 }
-.ex-notes-input::placeholder { color: #222; }
-.ex-notes-input:focus { border-color: rgba(255, 255, 255, 0.1); }
+.ex-notes-input::placeholder { color: var(--text-dim); opacity: 0.4; }
+.ex-notes-input:focus { border-color: var(--accent-cyan-border); }
 
 /* ── Finish Button ───────────────────────────────────────── */
 .ex-finish-btn {
@@ -537,8 +538,8 @@
 @keyframes fadeInBd { from { opacity: 0; } to { opacity: 1; } }
 
 .ex-modal {
-  background: #0f0f0f;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 680px;
@@ -559,20 +560,20 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.1rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
 }
 
 .ex-modal-title {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #f0f0f0;
+  color: var(--text-primary);
 }
 
 .ex-modal-close {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #555;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-dim);
   border-radius: 8px;
   width: 28px;
   height: 28px;
@@ -580,10 +581,10 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.2s;
   font-size: 0.8rem;
 }
-.ex-modal-close:hover { color: #ff6b6b; }
+.ex-modal-close:hover { color: var(--danger); background: var(--danger-dim); }
 
 .ex-modal-body {
   padding: 1rem 1.5rem 1.5rem;
@@ -621,10 +622,10 @@
 }
 
 .ex-preset-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 999px;
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.7rem;
   font-weight: 600;
   padding: 0.3rem 0.8rem;
@@ -634,8 +635,8 @@
   align-items: center;
 }
 .ex-preset-btn:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  color: #d0d0d0;
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
 }
 .ex-preset-btn.in-workout {
   background: rgba(80, 230, 120, 0.08);
@@ -678,15 +679,15 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #555;
+  color: var(--text-dim);
   margin-bottom: 0.4rem;
 }
 
 .ex-form-input {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
-  color: #e0e0e0;
+  color: var(--text-primary);
   font-size: 0.85rem;
   padding: 0.6rem 0.9rem;
   outline: none;
@@ -694,8 +695,8 @@
   width: 100%;
   box-sizing: border-box;
 }
-.ex-form-input:focus { border-color: rgba(61, 255, 255, 0.3); }
-.ex-form-input::placeholder { color: #2a2a2a; }
+.ex-form-input:focus { border-color: var(--accent-cyan); }
+.ex-form-input::placeholder { color: var(--text-dim); opacity: 0.3; }
 
 .ex-cat-grid {
   display: grid;
@@ -705,10 +706,10 @@
 }
 
 .ex-cat-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
-  color: #555;
+  color: var(--text-secondary);
   font-size: 0.67rem;
   font-weight: 700;
   padding: 0.5rem;
@@ -716,7 +717,7 @@
   transition: all 0.18s;
   text-align: center;
 }
-.ex-cat-btn:hover { border-color: rgba(255,255,255,0.14); color: #888; }
+.ex-cat-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
 
 .ex-form-actions {
   display: flex;
@@ -725,17 +726,17 @@
 
 .ex-form-cancel {
   flex: 1;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  color: #555;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
   border-radius: 10px;
   font-size: 0.72rem;
   font-weight: 700;
   padding: 0.65rem;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
 }
-.ex-form-cancel:hover { border-color: rgba(255,107,107,0.3); color: #ff6b6b; }
+.ex-form-cancel:hover { border-color: var(--danger); color: var(--danger); }
 
 .ex-form-submit {
   flex: 2;
@@ -751,5 +752,129 @@
   cursor: pointer;
   transition: filter 0.2s, transform 0.15s;
 }
-.ex-form-submit:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
 .ex-form-submit:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ── Summary Modal ────────────────────────────────────────── */
+.summary-modal {
+  align-self: center;
+  border-radius: 24px;
+  max-width: 440px;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  background: var(--bg-secondary);
+}
+
+.summary-header h2 {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin: 1rem 0 0.25rem;
+}
+
+.summary-header p {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 2rem;
+}
+
+.summary-trophy {
+  font-size: 3rem;
+  color: #ffc832;
+  filter: drop-shadow(0 0 15px rgba(255, 200, 50, 0.4));
+}
+
+.summary-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.summary-stat-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.summary-stat-item .label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  font-weight: 700;
+}
+
+.summary-stat-item .value {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--accent-cyan);
+}
+
+.summary-exercise-review {
+  margin-bottom: 2rem;
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.summary-ex-line {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.summary-ex-line .ex-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summary-ex-line .ex-dots {
+  flex: 1;
+  border-bottom: 1px dotted var(--border-color);
+  margin: 0 0.5rem;
+  height: 10px;
+}
+
+.summary-ex-line .ex-count {
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.summary-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.summary-share-btn {
+  background: var(--accent-cyan);
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  padding: 0.85rem;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.summary-share-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.summary-close-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 12px;
+  padding: 0.85rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.summary-close-btn:hover { background: var(--bg-surface); }

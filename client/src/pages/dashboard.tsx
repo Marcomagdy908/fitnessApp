@@ -30,6 +30,7 @@ interface DashboardData {
   todayWeight: number | null;
   todayCaloriesLogged: number;
   streak: number;
+  weeklyActivity: number[];
 }
 
 /* ─── Default / loading state ──────────────────────────────── */
@@ -46,6 +47,7 @@ const INITIAL: DashboardData = {
   todayWeight: null,
   todayCaloriesLogged: 0,
   streak: 0,
+  weeklyActivity: [],
 };
 
 /* ─── Current Exercise (still static — would come from active plan) */
@@ -160,7 +162,7 @@ export default function Dashboard() {
 
   /* week heatmap — which days had a session this week */
   const today = new Date().getDay(); // 0=Sun,1=Mon…
-  const doneIndices = [0, 1, 3, 4, 5]; // static fallback; could be derived from API
+  const doneIndices = dash.weeklyActivity;
 
   return (
     <div className="dashboard-wrapper">

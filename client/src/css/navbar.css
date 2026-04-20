@@ -1,11 +1,11 @@
 .navbar-container {
   width: calc(100% - 220px) !important;
   height: 8vh !important;
-  background-color: #000000 !important;
+  background-color: var(--bg-primary) !important;
   position: fixed !important;
   top: 0 !important;
   right: 0 !important;
-  box-shadow: 0.2px 0 0.8px 0px #b3b6b6 !important;
+  box-shadow: var(--shadow-sm) !important;
   padding: 0 2rem 0 3.5rem;
   z-index: 1000;
 }
@@ -20,23 +20,23 @@
 .search-icon {
   position: absolute;
   left: 15px;
-  color: #bdbdbdff;
+  color: var(--text-dim);
   font-size: 1rem;
 }
 
 .search-input {
   width: 100%;
   padding: 8px 15px 8px 45px;
-  background-color: #1a1a1a;
-  border: 1px solid #333;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
-  color: white;
+  color: var(--text-primary);
   outline: none;
   transition: border-color 0.3s;
 }
 
 .search-input:focus {
-  border-color: #3dffff;
+  border-color: var(--accent-cyan-border);
 }
 
 .search-input::placeholder {

@@ -43,8 +43,8 @@
 
 /* ── Card base ─────────────────────────────────────── */
 .dash-card {
-  background: linear-gradient(135deg, #0d0d0d 0%, #141414 100%);
-  border: 1px solid rgba(61, 255, 255, 0.12);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 1.25rem 1.4rem;
   transition:
@@ -68,8 +68,8 @@
 }
 
 .dash-card:hover {
-  border-color: rgba(61, 255, 255, 0.35);
-  box-shadow: 0 0 24px rgba(61, 255, 255, 0.08);
+  border-color: var(--accent-cyan-border);
+  box-shadow: 0 0 24px var(--accent-cyan-dim);
   transform: translateY(-2px);
 }
 
@@ -79,7 +79,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #3dffff;
+  color: var(--accent-cyan);
   margin-bottom: 0.9rem;
   display: flex;
   align-items: center;
@@ -89,7 +89,7 @@
 .dash-card-title .title-icon {
   width: 20px;
   height: 20px;
-  background: rgba(61, 255, 255, 0.15);
+  background: var(--accent-cyan-dim);
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -99,8 +99,8 @@
 
 /* ── Training Plan Card ────────────────────────────── */
 .plan-card {
-  border-color: rgba(123, 97, 255, 0.3);
-  background: linear-gradient(135deg, #0d0d12 0%, #12101a 100%);
+  border-color: var(--accent-purple-border);
+  background: var(--bg-card);
 }
 
 .plan-card::before {
@@ -128,7 +128,7 @@
 .plan-name-lg {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--text-primary);
   letter-spacing: -0.01em;
   line-height: 1.2;
   margin-bottom: 0.75rem;
@@ -151,7 +151,7 @@
 .plan-week-num {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #a98dff;
+  color: var(--accent-purple);
   line-height: 1;
 }
 
@@ -199,12 +199,12 @@
 .progress-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #3dffff, #00bfff);
+  background: linear-gradient(90deg, var(--accent-cyan), #00bfff);
   animation: fill-bar 1.2s ease both;
 }
 
 .progress-fill.gradient-purple {
-  background: linear-gradient(90deg, #a98dff, #7b61ff);
+  background: linear-gradient(90deg, var(--accent-purple), #7b61ff);
 }
 
 @keyframes fill-bar {
@@ -223,15 +223,15 @@
 .stat-box {
   flex: 1;
   min-width: 70px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 0.65rem 0.8rem;
   transition: background 0.2s;
 }
 
 .stat-box:hover {
-  background: rgba(61, 255, 255, 0.06);
+  background: var(--accent-cyan-dim);
 }
 
 .stat-label {
@@ -245,7 +245,7 @@
 .stat-value {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #f0f0f0;
+  color: var(--text-primary);
   line-height: 1.1;
 }
 
@@ -257,8 +257,8 @@
 
 /* ── Exercise Hero Card ────────────────────────────── */
 .exercise-hero-card {
-  border-color: rgba(61, 255, 255, 0.22);
-  background: linear-gradient(135deg, #0b1112 0%, #0d1516 100%);
+  border-color: var(--accent-cyan-border);
+  background: var(--bg-card);
 }
 
 .ex-hero-body {
@@ -275,7 +275,7 @@
 .ex-name {
   font-size: 1.45rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--text-primary);
   letter-spacing: -0.01em;
   line-height: 1.2;
   margin-bottom: 0.35rem;
@@ -283,9 +283,9 @@
 
 .ex-muscle-tag {
   display: inline-block;
-  background: rgba(61, 255, 255, 0.1);
-  color: #3dffff;
-  border: 1px solid rgba(61, 255, 255, 0.25);
+  background: var(--accent-cyan-dim);
+  color: var(--accent-cyan);
+  border: 1px solid var(--accent-cyan-border);
   border-radius: 999px;
   font-size: 0.62rem;
   font-weight: 700;
@@ -319,7 +319,7 @@
 .ei-value {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #e0e0e0;
+  color: var(--text-primary);
 }
 
 /* ── SVG Timer ─────────────────────────────────────── */
@@ -362,7 +362,7 @@
 
 .timer-arc {
   fill: none;
-  stroke: #3dffff;
+  stroke: var(--accent-cyan);
   stroke-width: 6;
   stroke-linecap: round;
   transition:
@@ -420,8 +420,8 @@
 
 .timer-btn-ghost {
   background: transparent;
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #555;
+  border-color: var(--border-color);
+  color: var(--text-dim);
 }
 
 .timer-btn-ghost:hover {
@@ -456,16 +456,16 @@
 }
 
 .history-row:hover {
-  background: rgba(61, 255, 255, 0.06);
-  border-color: rgba(61, 255, 255, 0.2);
+  background: var(--accent-cyan-dim);
+  border-color: var(--accent-cyan-border);
 }
 
 .history-num {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(61, 255, 255, 0.12);
-  color: #3dffff;
+  background: var(--accent-cyan-dim);
+  color: var(--accent-cyan);
   font-size: 0.6rem;
   font-weight: 700;
   display: flex;
@@ -487,7 +487,7 @@
 .history-kcal {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #3dffff;
+  color: var(--accent-cyan);
 }
 
 /* ── Avatar ────────────────────────────────────────── */
@@ -522,7 +522,7 @@
 }
 .avatar-info .user-email {
   font-size: 0.68rem;
-  color: #555;
+  color: var(--text-dim);
 }
 
 /* ── Radial legend ─────────────────────────────────── */
@@ -585,9 +585,9 @@
 }
 
 .heat-done .heat-dot {
-  background: rgba(61, 255, 255, 0.15);
-  color: #3dffff;
-  border: 1px solid rgba(61, 255, 255, 0.3);
+  background: var(--accent-cyan-dim);
+  color: var(--accent-cyan);
+  border: 1px solid var(--accent-cyan-border);
 }
 
 .heat-rest .heat-dot {
@@ -620,7 +620,7 @@
 .cstat-val {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #f0f0f0;
+  color: var(--text-primary);
 }
 
 .cstat-label {
