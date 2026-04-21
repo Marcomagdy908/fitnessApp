@@ -26,7 +26,7 @@ function Navbar() {
             <input type="text" placeholder="Search" className="search-input" />
           </div>
         </Col>
-        <Col className="d-flex align-items-center justify-content-end" style={{paddingRight: "20px",color:"white",fontSize:"20px"}}>
+        <Col className="d-flex align-items-center justify-content-end" style={{paddingRight: "20px",fontSize:"20px"}}>
         <FontAwesomeIcon icon={faBell} className="notification-icon" />
         <img src={avatar} alt="" className="user-icon ms-4 rounded-circle" style={{width: "40px", height: "40px"}} />
         </Col>

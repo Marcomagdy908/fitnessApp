@@ -28,6 +28,9 @@
   --success: #3dd264;
   --success-dim: rgba(61, 210, 100, 0.14);
 
+  --warning: #ffb900;
+  --warning-dim: rgba(255, 185, 0, 0.14);
+
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
 
@@ -74,6 +77,9 @@
   
   --success: #16a34a;
   --success-dim: rgba(22, 163, 74, 0.08);
+
+  --warning: #ca8a04;
+  --warning-dim: rgba(202, 138, 4, 0.08);
 
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);

@@ -82,9 +82,9 @@ const plans: MembershipPlan[] = [
     description:
       "The complete gym experience — unlimited classes, pool, sauna, and everything you need to transform your body.",
     icon: faDumbbell,
-    accentColor: "#3dffff",
-    glowColor: "rgba(61,255,255,0.15)",
-    borderColor: "rgba(61,255,255,0.45)",
+    accentColor: "var(--accent-cyan)",
+    glowColor: "var(--accent-cyan-dim)",
+    borderColor: "var(--accent-cyan-border)",
     bgGradient: "linear-gradient(135deg, #080f0f 0%, #0a1515 100%)",
     popular: true,
     cta: "Join Pro — First Week Free",
@@ -307,7 +307,7 @@ function Subscription() {
               </div>
               <div className="sub-plan-name" style={{ color: plan.accentColor }}>{plan.name}</div>
               <div className="sub-price-row">
-                <div className="sub-price" style={{ color: plan.popular ? "#fff" : "#ccc" }}>
+                <div className="sub-price" style={{ color: plan.popular ? "var(--text-primary)" : "var(--text-secondary)" }}>
                   {getPrice(plan)}
                 </div>
                 <div className="sub-period">{plan.period}</div>

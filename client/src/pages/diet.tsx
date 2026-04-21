@@ -124,7 +124,7 @@ const dietPlans: DietPlan[] = [
   {
     id: "cut",
     label: "Fat Loss",
-    labelColor: "#3dffff",
+    labelColor: "var(--accent-cyan)",
     name: "Cutting Plan",
     goal: "Fat Loss & Definition",
     goalIcon: faArrowTrendDown,
@@ -134,7 +134,7 @@ const dietPlans: DietPlan[] = [
     protein: 200,
     carbs: 170,
     fat: 55,
-    accentColor: "#3dffff",
+    accentColor: "var(--accent-cyan)",
     gradientFrom: "rgba(61,255,255,0.10)",
     gradientTo: "rgba(61,255,255,0.02)",
     meals: [
@@ -348,7 +348,7 @@ function Diet() {
       {/* ── Hero Banner ── */}
       <div
         className="diet-hero"
-        style={{ background: `linear-gradient(135deg, #0d0d12 0%, #10101a 100%)`, borderColor: `${plan.accentColor}33` }}
+        style={{ background: `linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-primary) 100%)`, borderColor: `${plan.accentColor}33` }}
       >
         <div
           className="diet-hero-glow"

@@ -25,6 +25,34 @@
   background-color: var(--accent-cyan-dim) !important;
 }
 
+.isActive svg,
+.isActive .nav-label {
+  color: var(--accent-cyan) !important;
+}
+
+.logo-container svg,
+.logo-container .logo {
+  color: var(--accent-cyan) !important;
+}
+
+.navigation-container {
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.navigation-container svg {
+  color: var(--text-secondary);
+}
+
+.navigation-container:hover {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.navigation-container:hover svg {
+  color: var(--text-primary);
+}
+
 .logo-container {
   padding: 1rem;
 }
@@ -160,14 +188,26 @@
     border-radius: 12px;
     flex: 1;
     transition: background 0.2s;
+    color: var(--text-secondary);
+  }
+
+  .bottom-nav-item svg {
+    color: var(--text-secondary);
+    font-size: 1.25rem;
   }
 
   .bottom-nav-item:hover {
     background: var(--accent-cyan-dim);
+    color: var(--text-primary);
   }
 
   .bottom-nav-item.isActive {
     background: var(--accent-cyan-dim) !important;
+    color: var(--accent-cyan) !important;
+  }
+
+  .bottom-nav-item.isActive svg {
+    color: var(--accent-cyan) !important;
   }
 
   .bottom-nav-label {

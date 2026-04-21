@@ -104,6 +104,7 @@ function ExerciseTracker() {
   const [customCat, setCustomCat] = useState("Chest");
   const [showSummary, setShowSummary] = useState(false);
   const [sessionStartTime] = useState(new Date());
+  const [dismissedInjuries, setDismissedInjuries] = useState<string[]>([]);
 
   const activeInjuries = PROFILE_INJURIES.filter((i) => !dismissedInjuries.includes(i));
 

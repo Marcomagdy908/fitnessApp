@@ -56,15 +56,16 @@
 }
 
 .plan-tab-btn:hover {
-  background: rgba(61, 255, 255, 0.06);
-  border-color: rgba(61, 255, 255, 0.2);
-  color: #3dffff;
+  background: var(--accent-cyan-dim);
+  border-color: var(--accent-cyan-border);
+  color: var(--accent-cyan);
+  transform: translateY(-2px);
 }
 
 .plan-tab-btn.active {
-  background: rgba(61, 255, 255, 0.12);
-  border-color: rgba(61, 255, 255, 0.4);
-  color: #3dffff;
+  background: var(--accent-cyan-dim);
+  border-color: var(--accent-cyan-border);
+  color: var(--accent-cyan);
 }
 
 /* ── Plan Hero ───────────────────────────────────── */
@@ -174,7 +175,7 @@
 }
 
 .plan-chip svg {
-  color: #3dffff;
+  color: var(--accent-cyan);
   font-size: 0.65rem;
 }
 
@@ -197,7 +198,7 @@
 }
 
 .hero-stat-box:hover {
-  background: rgba(61, 255, 255, 0.05);
+  background: var(--accent-cyan-dim);
 }
 
 .hero-stat-val {
@@ -316,13 +317,13 @@
 }
 
 .badge-pull {
-  background: rgba(61, 255, 255, 0.12);
-  color: #3dffff;
-  border: 1px solid rgba(61, 255, 255, 0.25);
+  background: var(--accent-cyan-dim);
+  color: var(--accent-cyan);
+  border: 1px solid var(--accent-cyan-border);
 }
 
 .badge-legs {
-  background: rgba(123, 97, 255, 0.12);
+  background: var(--accent-purple-dim);
   color: #a98dff;
   border: 1px solid rgba(123, 97, 255, 0.25);
 }

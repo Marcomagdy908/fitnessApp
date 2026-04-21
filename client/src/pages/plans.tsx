@@ -520,7 +520,7 @@ const badgeClass: Record<string, string> = {
 
 const bulletColor: Record<string, string> = {
   push: "#ff6b6b",
-  pull: "#3dffff",
+  pull: "var(--accent-cyan)",
   legs: "#a98dff",
   full: "#ffc832",
   core: "#50e678",

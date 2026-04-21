@@ -1,5 +1,5 @@
 .navbar-container {
-  width: calc(100% - 220px) !important;
+  width: calc(100% - 209px) !important;
   height: 8vh !important;
   background-color: var(--bg-primary) !important;
   position: fixed !important;

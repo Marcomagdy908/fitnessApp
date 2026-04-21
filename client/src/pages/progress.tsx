@@ -29,6 +29,7 @@ import {
   RadialBar,
 } from "recharts";
 import "../css/progress.css";
+import { useTheme } from "../context/ThemeContext";
 
 /* ─── Mock data ─────────────────────────────────── */
 const weeklyData = [
@@ -56,15 +57,6 @@ const muscleDonut = [
   { name: "Arms", value: 5 },
 ];
 
-const muscleRadial = [
-  { name: "Legs", value: 90, fill: "#3dffff" },
-  { name: "Core", value: 75, fill: "#00bfff" },
-  { name: "Chest", value: 60, fill: "#7b61ff" },
-  { name: "Back", value: 45, fill: "#ff6b6b" },
-];
-
-const COLORS = ["#3dffff", "#a98dff", "#00bfff", "#ff6b6b", "#ffd166"];
-
 const records = [
   { exercise: "Squats", best: "4 × 15", date: "Feb 24" },
   { exercise: "Push-Ups", best: "3 × 12", date: "Feb 22" },
@@ -72,14 +64,6 @@ const records = [
   { exercise: "Plank", best: "3 × 45s", date: "Feb 20" },
   { exercise: "Crunches", best: "3 × 20", date: "Feb 22" },
 ];
-
-const ttStyle = {
-  background: "#0d0d0d",
-  border: "1px solid rgba(61,255,255,0.2)",
-  borderRadius: 10,
-  fontSize: "0.72rem",
-  color: "#ccc",
-};
 
 /* ─── Reusable card shell ────────────────────────── */
 function PCard({
@@ -108,6 +92,39 @@ function PCard({
 
 /* ─── Component ─────────────────────────────────── */
 function Progress() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
+  // Dynamic Theme Colors
+  const chartConfig = {
+    gridStroke: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+    text: isDark ? "#888" : "#666",
+    tooltipBg: isDark ? "#0d0d0d" : "#ffffff",
+    tooltipBorder: isDark ? "rgba(61,255,255,0.2)" : "rgba(8,145,178,0.2)",
+    tooltipText: isDark ? "#ccc" : "#333",
+    radialTrack: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)",
+  };
+
+  const COLORS = isDark
+    ? ["#3dffff", "#a98dff", "#00bfff", "#ff6b6b", "#ffd166"]
+    : ["#0891b2", "#7c3aed", "#0284c7", "#dc2626", "#d97706"];
+
+  const muscleRadial = [
+    { name: "Legs", value: 90, fill: COLORS[0] },
+    { name: "Core", value: 75, fill: COLORS[2] },
+    { name: "Chest", value: 60, fill: COLORS[1] },
+    { name: "Back", value: 45, fill: COLORS[3] },
+  ];
+
+  const ttStyle = {
+    background: chartConfig.tooltipBg,
+    border: `1px solid ${chartConfig.tooltipBorder}`,
+    borderRadius: 10,
+    fontSize: "0.72rem",
+    color: chartConfig.tooltipText,
+    boxShadow: isDark ? "none" : "0 4px 12px rgba(0,0,0,0.1)",
+  };
+
   return (
     <div className="progress-page">
       {/* Page heading */}
@@ -115,7 +132,7 @@ function Progress() {
         <FontAwesomeIcon
           icon={faChartLine}
           className="me-2"
-          style={{ color: "#3dffff" }}
+          style={{ color: "var(--accent-cyan)" }}
         />
         Progress
       </h1>
@@ -133,7 +150,7 @@ function Progress() {
             icon: faCalendarCheck,
             label: "Sessions / Month",
             value: "18",
-            color: "#3dffff",
+            color: "var(--accent-cyan)",
           },
           {
             icon: faLayerGroup,
@@ -190,24 +207,24 @@ function Progress() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid
-                  stroke="rgba(255,255,255,0.05)"
+                  stroke={chartConfig.gridStroke}
                   vertical={false}
                 />
                 <XAxis
                   dataKey="day"
-                  tick={{ fill: "#555", fontSize: 11 }}
+                  tick={{ fill: chartConfig.text, fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fill: "#555", fontSize: 11 }}
+                  tick={{ fill: chartConfig.text, fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <Tooltip
                   contentStyle={ttStyle}
                   formatter={(v) => [`${v} exercises`, ""]}
-                  cursor={{ fill: "rgba(61,255,255,0.05)" }}
+                  cursor={{ fill: chartConfig.gridStroke }}
                 />
                 <Bar
                   dataKey="sessions"
@@ -275,22 +292,22 @@ function Progress() {
               >
                 <defs>
                   <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#a98dff" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#a98dff" stopOpacity={0} />
+                    <stop offset="5%" stopColor={COLORS[1]} stopOpacity={0.4} />
+                    <stop offset="95%" stopColor={COLORS[1]} stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid
-                  stroke="rgba(255,255,255,0.05)"
+                  stroke={chartConfig.gridStroke}
                   vertical={false}
                 />
                 <XAxis
                   dataKey="week"
-                  tick={{ fill: "#555", fontSize: 11 }}
+                  tick={{ fill: chartConfig.text, fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fill: "#555", fontSize: 11 }}
+                  tick={{ fill: chartConfig.text, fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
@@ -301,10 +318,10 @@ function Progress() {
                 <Area
                   type="monotone"
                   dataKey="volume"
-                  stroke="#a98dff"
+                  stroke={COLORS[1]}
                   strokeWidth={2.5}
                   fill="url(#areaGrad)"
-                  dot={{ fill: "#a98dff", r: 4, strokeWidth: 0 }}
+                  dot={{ fill: COLORS[1], r: 4, strokeWidth: 0 }}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -325,7 +342,7 @@ function Progress() {
               >
                 <RadialBar
                   dataKey="value"
-                  background={{ fill: "rgba(255,255,255,0.04)" } as object}
+                  background={{ fill: chartConfig.radialTrack } as object}
                 />
                 <Tooltip
                   contentStyle={ttStyle}

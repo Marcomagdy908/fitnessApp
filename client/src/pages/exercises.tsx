@@ -75,7 +75,7 @@ function Exercises() {
     <div className="exercises-page">
       {/* ── Header ── */}
       <h1 className="exercises-title">
-        <FontAwesomeIcon icon={faDumbbell} className="me-2" />
+        <FontAwesomeIcon icon={faDumbbell} className="me-2 fa-dumbbell" />
         Exercises
         <span className="exercises-count">
           {loading ? "…" : `${filtered.length} exercises`}
@@ -173,7 +173,10 @@ function Exercises() {
                   </Card.Text>
 
                   {/* Meta row */}
-                  <div className="exercise-meta mt-auto pt-3 border-top border-secondary d-flex gap-2 flex-wrap">
+                  <div 
+                    className="exercise-meta mt-auto pt-3 d-flex gap-2 flex-wrap"
+                    style={{ borderTop: "1px solid var(--border-color)" }}
+                  >
                     <span className="meta-pill">
                       <FontAwesomeIcon icon={faLayerGroup} className="me-1" />
                       {exercise.defaultSets} sets

@@ -118,7 +118,7 @@
 
 .prog-stat-label {
   font-size: 0.63rem;
-  color: #555;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   margin-top: 0.2rem;
@@ -137,7 +137,7 @@
   align-items: center;
   gap: 0.4rem;
   font-size: 0.7rem;
-  color: #888;
+  color: var(--text-secondary);
 }
 
 .prog-legend-dot {
@@ -196,7 +196,7 @@
 }
 .prog-records-date {
   font-size: 0.7rem;
-  color: #555;
+  color: var(--text-dim);
 }
 
 /* ── Heatmap ──────────────────────────────────── */
@@ -219,7 +219,7 @@
 
 .prog-heat-label {
   font-size: 0.48rem;
-  color: #555;
+  color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -242,18 +242,18 @@
 }
 
 .prog-heat-rest .prog-heat-dot {
-  background: rgba(255, 255, 255, 0.04);
-  color: #333;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--bg-surface);
+  color: var(--text-dim);
+  border: 1px solid var(--border-color);
 }
 
 .prog-heat-today {
-  background: rgba(61, 255, 255, 0.04);
-  border-color: rgba(61, 255, 255, 0.25) !important;
+  background: var(--accent-cyan-dim);
+  border-color: var(--accent-cyan-border) !important;
 }
 
 .prog-heat-today .prog-heat-label {
-  color: #3dffff;
+  color: var(--accent-cyan);
 }
 
 .prog-cstats {
@@ -273,7 +273,7 @@
 }
 .prog-cstat-label {
   font-size: 0.55rem;
-  color: #555;
+  color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   margin-top: 0.1rem;
@@ -282,7 +282,7 @@
 /* ── Goals ────────────────────────────────────── */
 .prog-goal-label {
   font-size: 0.72rem;
-  color: #888;
+  color: var(--text-secondary);
 }
 .prog-goal-val {
   font-size: 0.72rem;
@@ -291,9 +291,10 @@
 
 .prog-track {
   height: 5px;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--bg-surface);
   border-radius: 999px;
   overflow: hidden;
+  border: 1px solid var(--border-light);
 }
 
 .prog-fill {

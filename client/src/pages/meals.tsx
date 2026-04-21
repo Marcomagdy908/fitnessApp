@@ -36,7 +36,7 @@ const DAILY_TARGET = { calories: 2400, protein: 180, carbs: 270, fat: 70 };
 /* ─── Category config ────────────────────────────────────────── */
 const categoryConfig = {
   breakfast: { label: "Breakfast", color: "#ffc832", emoji: "🌅" },
-  lunch:     { label: "Lunch",     color: "#3dffff", emoji: "☀️" },
+  lunch:     { label: "Lunch",     color: "var(--accent-cyan)", emoji: "☀️" },
   dinner:    { label: "Dinner",    color: "#a98dff", emoji: "🌙" },
   snack:     { label: "Snack",     color: "#50e678", emoji: "🍎" },
 };
@@ -50,14 +50,14 @@ function MacroProgress({ label, value, target, color, icon }: { label: string; v
       <div className="mp-label-row">
         <span className="mp-icon" style={{ color }}><FontAwesomeIcon icon={icon} /></span>
         <span className="mp-label">{label}</span>
-        <span className="mp-value" style={{ color: over ? "#ff6b6b" : "#bbb" }}>
+        <span className="mp-value" style={{ color: over ? "var(--danger)" : "var(--text-secondary)" }}>
           {value}<span className="mp-target">/{target}{label === "Calories" ? " kcal" : "g"}</span>
         </span>
       </div>
       <div className="mp-track">
-        <div className="mp-fill" style={{ width: `${pct}%`, background: over ? "#ff5050" : color }} />
+        <div className="mp-fill" style={{ width: `${pct}%`, background: over ? "var(--danger)" : color }} />
       </div>
-      <div className="mp-pct" style={{ color: over ? "#ff6b6b" : "#444" }}>{pct}%{over ? " — over target" : ""}</div>
+      <div className="mp-pct" style={{ color: over ? "var(--danger)" : "var(--text-dim)" }}>{pct}%{over ? " — over target" : ""}</div>
     </div>
   );
 }
@@ -241,10 +241,10 @@ function MealsTracker() {
                   <div className="cal-ring-label">kcal eaten</div>
                 </div>
                 <svg viewBox="0 0 120 120" className="cal-ring-svg">
-                  <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="10" />
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="var(--bg-surface)" strokeWidth="10" />
                   <circle
                     cx="60" cy="60" r="50" fill="none"
-                    stroke={totals.calories > DAILY_TARGET.calories ? "#ff5050" : "#3dffff"}
+                    stroke={totals.calories > DAILY_TARGET.calories ? "var(--danger)" : "var(--accent-cyan)"}
                     strokeWidth="10"
                     strokeDasharray={`${Math.min(314, (totals.calories / DAILY_TARGET.calories) * 314)} 314`}
                     strokeLinecap="round"
@@ -303,7 +303,7 @@ function MealsTracker() {
                       <span className="meal-log-cat" style={{ color: cfg.color, borderColor: `${cfg.color}30`, background: `${cfg.color}10` }}>
                         {cfg.label}
                       </span>
-                      <FontAwesomeIcon icon={faClock} style={{ color: "#333", fontSize: "0.6rem" }} />
+                      <FontAwesomeIcon icon={faClock} style={{ color: "var(--text-dim)", fontSize: "0.6rem" }} />
                       <span className="meal-log-time">{meal.time}</span>
                     </div>
                   </div>
@@ -383,7 +383,7 @@ function MealsTracker() {
                 </div>
               ) : (
                 <div className="alt-no-data">
-                  <FontAwesomeIcon icon={faLightbulb} style={{ color: "#333", marginBottom: "0.5rem", fontSize: "1.2rem" }} />
+                  <FontAwesomeIcon icon={faLightbulb} style={{ color: "var(--text-dim)", marginBottom: "0.5rem", fontSize: "1.2rem" }} />
                   <div>No alternative meals defined for this injury yet.</div>
                 </div>
               )}
@@ -414,7 +414,7 @@ function MealsTracker() {
           <div className="meal-modal" onClick={(e) => e.stopPropagation()}>
             <div className="meal-modal-header">
               <div className="meal-modal-title">
-                <FontAwesomeIcon icon={faPlus} style={{ color: "#3dffff", marginRight: 8 }} />
+                <FontAwesomeIcon icon={faPlus} style={{ color: "var(--accent-cyan)", marginRight: 8 }} />
                 Log a Meal
               </div>
               <button className="meal-modal-close" onClick={() => setShowForm(false)}>

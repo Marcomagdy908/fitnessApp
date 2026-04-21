@@ -51,8 +51,8 @@ function SidebarNavigation() {
       style={{ top: "0", cursor: "pointer" }}
       onClick={() => handleNavigate("/")}
     >
-      <FontAwesomeIcon icon={faBoltLightning} size="2xl" style={{ color: "#3DFFFF" }} />
-      <h2 className="logo" style={{ color: "#3DFFFF" }}>ApexTrack</h2>
+      <FontAwesomeIcon icon={faBoltLightning} size="2xl" />
+      <h2 className="logo">ApexTrack</h2>
     </Container>
   );
 
@@ -69,9 +69,8 @@ function SidebarNavigation() {
         <FontAwesomeIcon
           icon={item.icon}
           size="2xl"
-          style={{ color: active ? "#3DFFFF" : "#bdbdbdff" }}
         />
-        <h6 className="logo nav-label" style={{ color: active ? "#3DFFFF" : "#bdbdbdff" }}>
+        <h6 className="logo nav-label">
           {item.name}
         </h6>
       </Container>
@@ -90,9 +89,8 @@ function SidebarNavigation() {
       >
         <FontAwesomeIcon
           icon={item.icon}
-          style={{ color: active ? "#3DFFFF" : "#bdbdbdff", fontSize: "1.25rem" }}
         />
-        <span className="bottom-nav-label" style={{ color: active ? "#3DFFFF" : "#bdbdbdff" }}>
+        <span className="bottom-nav-label">
           {item.name}
         </span>
       </button>

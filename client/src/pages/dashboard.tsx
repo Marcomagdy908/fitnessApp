@@ -297,8 +297,8 @@ export default function Dashboard() {
               <BarChart data={dash.weeklyCalories} barSize={28} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
                 <defs>
                   <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#3dffff" stopOpacity={0.9} />
-                    <stop offset="100%" stopColor="#00bfff" stopOpacity={0.35} />
+                    <stop offset="0%" stopColor="var(--accent-cyan)" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="var(--accent-cyan-dim)" stopOpacity={0.35} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />

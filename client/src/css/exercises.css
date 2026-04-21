@@ -9,6 +9,9 @@
     padding: 1rem 0.75rem;
   }
 }
+.exercises-title .fa-dumbbell {
+  color: var(--accent-cyan);
+}
 
 .exercises-title {
   color: var(--text-primary);
@@ -51,7 +54,7 @@
   left: 0.9rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #555;
+  color: var(--text-dim);
   font-size: 0.78rem;
   pointer-events: none;
 }
@@ -71,7 +74,7 @@
 }
 
 .exercises-search::placeholder {
-  color: #444;
+  color: var(--text-dim);
 }
 
 .exercises-search:focus {
@@ -96,7 +99,7 @@
 }
 
 .filter-label-icon {
-  color: #444;
+  color: var(--text-dim);
   font-size: 0.72rem;
   margin-right: 0.2rem;
 }
@@ -115,10 +118,20 @@
   transition: all 0.18s;
 }
 
-.filter-btn:hover {
-  background: rgba(61, 255, 255, 0.06);
-  border-color: rgba(61, 255, 255, 0.2);
-  color: #3dffff;
+.filter-btn:hover:not(.active) {
+  background: var(--accent-cyan-dim);
+  border-color: var(--accent-cyan-border);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.filter-btn-beginner:hover:not(.active) { border-color: var(--success); color: var(--success); }
+.filter-btn-intermediate:hover:not(.active) { border-color: var(--warning); color: var(--warning); }
+.filter-btn-advanced:hover:not(.active) { border-color: var(--danger); color: var(--danger); }
+
+.filter-btn.active:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
 }
 
 .filter-btn.active {
@@ -129,31 +142,27 @@
 
 /* difficulty tint overrides */
 .filter-btn-beginner.active {
-  background: rgba(61, 210, 100, 0.12);
+  background: var(--success-dim);
   border-color: rgba(61, 210, 100, 0.4);
-  color: #3dd264;
+  color: var(--success);
 }
 .filter-btn-intermediate.active {
-  background: rgba(255, 185, 0, 0.12);
+  background: var(--warning-dim);
   border-color: rgba(255, 185, 0, 0.4);
-  color: #ffb900;
+  color: var(--warning);
 }
 .filter-btn-advanced.active {
-  background: rgba(255, 80, 80, 0.12);
+  background: var(--danger-dim);
   border-color: rgba(255, 80, 80, 0.4);
-  color: #ff5050;
+  color: var(--danger);
 }
 
 /* ── Empty state ────────────────────────────────── */
 .exercises-empty {
   text-align: center;
-  color: #444;
+  color: var(--text-dim);
   font-size: 0.88rem;
   margin-top: 4rem;
-}
-
-.exercises-title svg {
-  color: #3dffff;
 }
 
 /* ── Card ───────────────────────────────────────── */
@@ -225,14 +234,14 @@
 /* ── Target label ───────────────────────────────── */
 .exercise-target {
   font-size: 0.75rem;
-  color: #888 !important;
+  color: var(--text-secondary) !important;
   margin-bottom: 0.5rem;
 }
 
 /* ── Instructions ───────────────────────────────── */
 .exercise-instructions {
   font-size: 0.78rem;
-  color: #555 !important;
+  color: var(--text-dim) !important;
   line-height: 1.55;
 }
 

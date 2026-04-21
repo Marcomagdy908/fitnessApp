@@ -199,7 +199,7 @@
 }
 
 .sub-stat-icon {
-  color: #3dffff;
+  color: var(--accent-cyan);
   font-size: 1.1rem;
   margin-bottom: 0.4rem;
 }
@@ -264,7 +264,7 @@
 
 .sub-popular-badge {
   position: absolute;
-  top: 1rem;
+  top: 2.2rem;
   right: 1rem;
   border: 1px solid;
   border-radius: 999px;
@@ -397,13 +397,13 @@
 
 .active-tag {
   position: absolute;
-  top: 0;
+  top: 1.6%;
   left: 50%;
   transform: translate(-50%, -50%);
   background: var(--accent-cyan);
   color: #000;
-  padding: 0.25rem 1rem;
-  border-radius: 999px;
+  padding: 0.35rem 1rem;
+  border-radius: 12px;
   font-size: 0.65rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -447,14 +447,14 @@
 }
 
 .facility-card:hover {
-  border-color: rgba(61, 255, 255, 0.2);
+  border-color: var(--accent-cyan-dim);
   transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 .facility-icon {
   font-size: 1.5rem;
-  color: #3dffff;
+  color: var(--accent-cyan);
   margin-bottom: 0.6rem;
 }
 
@@ -537,9 +537,9 @@
 }
 
 .class-book-btn {
-  background: rgba(61, 255, 255, 0.1);
-  border: 1px solid rgba(61, 255, 255, 0.25);
-  color: #3dffff;
+  background: var(--accent-cyan-dim);
+  border: 1px solid var(--accent-cyan-border);
+  color: var(--accent-cyan);
   border-radius: 8px;
   font-size: 0.65rem;
   font-weight: 800;
