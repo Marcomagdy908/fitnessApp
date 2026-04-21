@@ -31,6 +31,9 @@
   --warning: #ffb900;
   --warning-dim: rgba(255, 185, 0, 0.14);
 
+  --accent-gold: #ffc832;
+  --accent-gold-dim: rgba(255, 200, 50, 0.15);
+
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
 
@@ -80,6 +83,9 @@
 
   --warning: #ca8a04;
   --warning-dim: rgba(202, 138, 4, 0.08);
+
+  --accent-gold: #b45309;
+  --accent-gold-dim: rgba(180, 83, 9, 0.1);
 
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);

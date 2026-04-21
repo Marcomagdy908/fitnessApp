@@ -34,11 +34,11 @@ const CATEGORIES = ["all","chest","back","legs","shoulders","arms","core","cardi
 const DIFFICULTIES = ["all", "beginner", "intermediate", "advanced"];
 
 const categoryVariant: Record<string, string> = {
-  chest: "info", back: "dark", legs: "primary",
-  shoulders: "warning", arms: "danger", core: "secondary", cardio: "success",
+  chest: "badge-chest", back: "badge-back", legs: "badge-legs",
+  shoulders: "badge-shoulders", arms: "badge-arms", core: "badge-core", cardio: "badge-cardio",
 };
 const difficultyVariant: Record<string, string> = {
-  beginner: "success", intermediate: "warning", advanced: "danger",
+  beginner: "badge-beginner", intermediate: "badge-intermediate", advanced: "badge-advanced",
 };
 
 /* ─── Component ──────────────────────────────────────────────── */
@@ -75,7 +75,7 @@ function Exercises() {
     <div className="exercises-page">
       {/* ── Header ── */}
       <h1 className="exercises-title">
-        <FontAwesomeIcon icon={faDumbbell} className="me-2 fa-dumbbell" />
+        <FontAwesomeIcon icon={faDumbbell} className="me-2" style={{ color: "var(--accent-cyan)" }} />
         Exercises
         <span className="exercises-count">
           {loading ? "…" : `${filtered.length} exercises`}
@@ -147,23 +147,21 @@ function Exercises() {
 
                   {/* Badges */}
                   <div className="mb-2 d-flex gap-2 flex-wrap">
-                    <Badge
-                      bg={categoryVariant[exercise.category] ?? "primary"}
-                      className="exercise-badge"
+                    <span
+                      className={`exercise-badge ${categoryVariant[exercise.category] ?? "badge-default"}`}
                     >
                       {exercise.category}
-                    </Badge>
-                    <Badge
-                      bg={difficultyVariant[exercise.difficulty] ?? "secondary"}
-                      className="exercise-badge"
+                    </span>
+                    <span
+                      className={`exercise-badge ${difficultyVariant[exercise.difficulty] ?? "badge-default"}`}
                     >
                       {exercise.difficulty}
-                    </Badge>
+                    </span>
                   </div>
 
                   {/* Target muscles */}
                   <Card.Text className="exercise-target">
-                    <FontAwesomeIcon icon={faBullseye} className="me-1 text-danger" />
+                    <FontAwesomeIcon icon={faBullseye} className="me-1" style={{ color: "var(--danger)" }} />
                     {exercise.muscleGroups}
                   </Card.Text>
 
@@ -195,7 +193,7 @@ function Exercises() {
                       )}
                     </span>
                     <span className="meta-pill">
-                      <FontAwesomeIcon icon={faDumbbell} className="me-1" />
+                      <FontAwesomeIcon icon={faDumbbell} className="me-1" style={{ color: "var(--accent-cyan)" }} />
                       {exercise.equipment}
                     </span>
                   </div>

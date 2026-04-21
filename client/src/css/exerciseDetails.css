@@ -112,16 +112,16 @@
 
 .ed-star {
   font-size: 0.78rem;
-  color: #333;
+  color: var(--text-dim);
 }
 
 .ed-star.active {
-  color: #ffb900;
+  color: var(--warning);
 }
 
 .ed-rating-label {
   font-size: 0.75rem;
-  color: #888;
+  color: var(--text-secondary);
   margin-left: 0.4rem;
 }
 
@@ -177,7 +177,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #555;
+  color: var(--text-dim);
 }
 
 /* ── 3-column grid ───────────────────────────────────── */
@@ -272,7 +272,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #555;
+  color: var(--text-dim);
   margin-bottom: 0.4rem;
 }
 
@@ -291,15 +291,15 @@
 }
 
 .ed-muscle-tag.primary {
-  background: rgba(61, 255, 255, 0.1);
-  border: 1px solid rgba(61, 255, 255, 0.25);
-  color: #3dffff;
+  background: var(--accent-cyan-dim);
+  border: 1px solid var(--accent-cyan-border);
+  color: var(--accent-cyan);
 }
 
 .ed-muscle-tag.secondary {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #888;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
 }
 
 /* ── Tips / Mistakes list ────────────────────────────── */
@@ -322,26 +322,26 @@
 }
 
 .ed-list-item.tips .ed-list-icon {
-  color: #3dffff;
+  color: var(--accent-cyan);
   font-size: 0.8rem;
   flex-shrink: 0;
   margin-top: 0.1rem;
 }
 
 .ed-mistakes-title {
-  color: #ffb900 !important;
+  color: var(--warning) !important;
 }
 
 .ed-mistakes-icon {
   font-size: 1rem;
-  color: #ffb900;
+  color: var(--warning);
 }
 
 .ed-mistake-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #ff5050;
+  background: var(--danger);
   flex-shrink: 0;
   margin-top: 0.45rem;
 }
@@ -383,7 +383,7 @@
 
 .ed-chart-label {
   font-size: 0.58rem;
-  color: #444;
+  color: var(--text-dim);
   white-space: nowrap;
   text-align: center;
 }
@@ -405,7 +405,7 @@
 }
 
 .ed-history-row.header {
-  color: #555;
+  color: var(--text-dim);
   font-weight: 700;
   font-size: 0.65rem;
   letter-spacing: 0.05em;
@@ -415,8 +415,8 @@
 }
 
 .ed-history-row:not(.header) {
-  background: rgba(255, 255, 255, 0.02);
-  color: #ccc;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
 }
 
 .ed-history-row:not(.header):hover {
@@ -442,9 +442,9 @@
   font-weight: 600;
   padding: 0.3rem 0.8rem;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #aaa;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
   cursor: default;
   transition: all 0.15s;
 }
