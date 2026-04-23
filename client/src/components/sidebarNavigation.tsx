@@ -18,6 +18,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/index.css";
 import "../css/sidebarNavigation.css";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { faUserShield } from "@fortawesome/free-solid-svg-icons";
 
 function SidebarNavigation() {
   const navigate = useNavigate();
@@ -34,6 +36,13 @@ function SidebarNavigation() {
     { name: "Membership", icon: faCrown, path: "/subscription" },
     { name: "Settings", icon: faCog, path: "/settings" },
   ];
+
+  const { user } = useAuth();
+  
+  const fullNavigationList = [...navigationList];
+  if (user?.role === "ADMIN") {
+    fullNavigationList.push({ name: "Admin", icon: faUserShield, path: "/admin" });
+  }
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -52,7 +61,7 @@ function SidebarNavigation() {
     </Container>
   );
 
-  const NavigationList = navigationList.map((item) => {
+  const NavigationList = fullNavigationList.map((item) => {
     const active = location.pathname === item.path;
     return (
       <Container
@@ -74,7 +83,7 @@ function SidebarNavigation() {
   });
 
   /* ── Bottom nav (mobile ≤768px) ── */
-  const BottomNav = navigationList.map((item) => {
+  const BottomNav = fullNavigationList.map((item) => {
     const active = location.pathname === item.path;
     return (
       <button

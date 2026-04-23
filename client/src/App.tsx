@@ -13,6 +13,8 @@ import Subscription from "./pages/subscription";
 import Login from "./pages/login";
 import SignUp from "./pages/signup";
 import MyBookings from "./pages/myBookings";
+import AdminDashboard from "./pages/adminDashboard";
+import { AuthProvider } from "./context/AuthContext";
 
 function MainLayout() {
   return (
@@ -33,8 +35,9 @@ import { SubscriptionProvider } from "./context/SubscriptionContext";
 
 function App() {
   return (
-    <ThemeProvider>
-      <SubscriptionProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <SubscriptionProvider>
         <BrowserRouter>
           <Routes>
             {/* Auth routes without sidebar/navbar */}
@@ -53,13 +56,21 @@ function App() {
                 <Route path="/progress" element={<Progress />} />
                 <Route path="/plans" element={<Plans />} />
                 <Route path="/settings" element={<Settings />} />
-                <Route path="/subscription" element={<Subscription />} />
+                  <Route path="/subscription" element={<Subscription />} />
+                </Route>
+
+                {/* Admin routes */}
+                <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
+                  <Route element={<MainLayout />}>
+                    <Route path="/admin" element={<AdminDashboard />} />
+                  </Route>
+                </Route>
               </Route>
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </SubscriptionProvider>
-    </ThemeProvider>
+            </Routes>
+          </BrowserRouter>
+        </SubscriptionProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 

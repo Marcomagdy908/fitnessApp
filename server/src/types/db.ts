@@ -8,6 +8,7 @@ export interface UserRow extends RowDataPacket {
   username: string | null;
   avatar: string | null;
   role: string;
+  subscriptionPlan: string;
   createdAt: Date;
   updatedAt: Date;
 }

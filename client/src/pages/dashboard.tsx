@@ -10,6 +10,7 @@ import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
 } from "recharts";
+import { useAuth } from "../context/AuthContext";
 
 /* ─── Types ────────────────────────────────────────────────── */
 interface DashboardData {
@@ -145,14 +146,10 @@ const ttStyle = {
 /* ─── Dashboard ──────────────────────────────────────────── */
 export default function Dashboard() {
   const [dash, setDash] = useState<DashboardData>(INITIAL);
-  const [user, setUser] = useState({ name: "", email: ""});
-  const [avatar, setAvatar] = useState("https://cdn-icons-png.flaticon.com/512/149/149071.png");
+  const { user } = useAuth();
+  const avatar = user?.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
   useEffect(() => {
-    fetch("/api/auth/me")
-      .then((r) => r.json())
-      .then((d) => { if (d.user) setUser(d.user); if(d.user.avatar) setAvatar(d.user.avatar); });
-
     fetch("/api/dashboard")
       .then((r) => r.json())
       .then((d) => { if (d.success) setDash(d.data); });
@@ -341,8 +338,8 @@ export default function Dashboard() {
                 <img src={avatar} alt="avatar" />
               </div>
               <div className="avatar-info">
-                <div className="user-name">{user.name}</div>
-                <div className="user-email">{user.email}</div>
+                <div className="user-name">{user?.name}</div>
+                <div className="user-email">{user?.email}</div>
               </div>
             </div>
             <div className="stat-row">

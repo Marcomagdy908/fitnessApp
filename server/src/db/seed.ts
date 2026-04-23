@@ -15,6 +15,12 @@ async function main() {
   const userId = userResult.insertId;
   console.log('✅ Seeded test user (john.doe@email.com / password123)');
 
+  const [adminResult] = await db.query<ResultSetHeader>(
+    'INSERT INTO User (name, email, password, role) VALUES (?, ?, ?, ?)',
+    ['Admin User', 'admin@apextrack.com', hashedPassword, 'ADMIN']
+  );
+  console.log('✅ Seeded admin user (admin@apextrack.com / admin123)');
+
   /* ─── Subscription ──────────────────────────────────────── */
   await db.query('DELETE FROM Subscription');
   await db.query(

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "../css/auth.css";
 
 type Strength = { label: string; color: string; width: string };
@@ -26,6 +27,7 @@ export default function SignUp() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const strength = getStrength(password);
 
@@ -59,9 +61,10 @@ export default function SignUp() {
       if (!response.ok) {
         throw new Error(data.message || "Registration failed");
       }
-
       setSuccess(true);
+      login(data.user);
       navigate("/"); // Automatically redirect to logged-in dashboard
+
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred");
     }

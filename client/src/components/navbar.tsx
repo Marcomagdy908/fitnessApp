@@ -2,16 +2,11 @@ import { Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faBell } from "@fortawesome/free-solid-svg-icons";
 import "../css/navbar.css";
-import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+
 function Navbar() {
-  const [avatar, setAvatar] = useState("https://cdn-icons-png.flaticon.com/512/149/149071.png");
-  useEffect(() => {
-    fetch("/api/auth/me")
-      .then((res) => res.json())
-      .then((data) => {
-        if(data.user && data.user.avatar) setAvatar(data.user.avatar);
-      });
-  }, []);
+  const { user } = useAuth();
+  const avatar = user?.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
   return (
     <>
       <Row className="navbar-container">
