@@ -2,13 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import "../css/dashboard.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faDumbbell, faBullseye, faFire, faChartLine, faBolt,
+  faDumbbell, faBullseye, faFire, faChartLine,
   faClipboardList, faArrowTrendDown, faCalendarWeek,
-  faHandFist, faStopwatch,
+  faStopwatch, faCrown, faCalendarCheck, faUserTie, faCalendarAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, RadialBarChart, RadialBar,
+  Tooltip, ResponsiveContainer,
 } from "recharts";
 
 /* ─── Types ────────────────────────────────────────────────── */
@@ -31,6 +31,17 @@ interface DashboardData {
   todayCaloriesLogged: number;
   streak: number;
   weeklyActivity: number[];
+  subscription: {
+    plan: string;
+    status: string;
+    expiresAt?: string;
+  };
+  nextBooking: {
+    name?: string;
+    trainerName?: string;
+    scheduledAt: string;
+    type: 'class' | 'trainer';
+  } | null;
 }
 
 /* ─── Default / loading state ──────────────────────────────── */
@@ -48,16 +59,8 @@ const INITIAL: DashboardData = {
   todayCaloriesLogged: 0,
   streak: 0,
   weeklyActivity: [],
-};
-
-/* ─── Current Exercise (still static — would come from active plan) */
-const currentExercise = {
-  name: "Barbell Back Squat",
-  sets: 4,
-  reps: "6–8",
-  rest: 120,
-  weight: "100 kg",
-  muscle: "Quads / Glutes",
+  subscription: { plan: 'free', status: 'active' },
+  nextBooking: null
 };
 
 /* ─── Timer hook ──────────────────────────────────────────── */
@@ -155,13 +158,12 @@ export default function Dashboard() {
       .then((d) => { if (d.success) setDash(d.data); });
   }, []);
 
-  const timer = useTimer(currentExercise.rest);
+  const timer = useTimer(120); // Static for now
   const plan = dash.trainingPlan ?? DEFAULT_PLAN;
   const planProgress = plan.totalSessions > 0 ? (plan.completedSessions / plan.totalSessions) * 100 : 0;
   const weekProgress = plan.totalWeeks > 0 ? ((plan.week - 1) / plan.totalWeeks) * 100 : 0;
 
-  /* week heatmap — which days had a session this week */
-  const today = new Date().getDay(); // 0=Sun,1=Mon…
+  const today = new Date().getDay();
   const doneIndices = dash.weeklyActivity;
 
   return (
@@ -169,6 +171,25 @@ export default function Dashboard() {
       <div className="dash-grid">
         {/* ══ COLUMN 1 ══════════════════════════ */}
         <div className="dash-col">
+          {/* Gym Membership (New) */}
+          <div className="dash-card membership-card">
+            <div className="dash-card-title">
+              <span className="title-icon"><FontAwesomeIcon icon={faCrown} /></span>
+              Membership
+            </div>
+            <div className={`membership-status ${dash.subscription.plan}`}>
+              {dash.subscription.plan.toUpperCase()} PLAN
+            </div>
+            <div className="membership-info">
+              {dash.subscription.plan === 'free' ? (
+                <p>Enjoy basic tracking. Upgrade for gym access and classes!</p>
+              ) : (
+                <p>Status: <span className="status-active">{dash.subscription.status}</span></p>
+              )}
+              <a href="/subscription" className="membership-link">Manage Membership →</a>
+            </div>
+          </div>
+
           {/* Training Plan */}
           <div className="dash-card plan-card">
             <div className="dash-card-title">
@@ -189,13 +210,6 @@ export default function Dashboard() {
             </div>
             <div className="progress-track">
               <div className="progress-fill gradient-purple" style={{ width: `${weekProgress}%` }} />
-            </div>
-            <div className="plan-prog-label" style={{ marginTop: "0.75rem" }}>
-              <span>Sessions</span>
-              <span>{plan.completedSessions}/{plan.totalSessions}</span>
-            </div>
-            <div className="progress-track">
-              <div className="progress-fill" style={{ width: `${planProgress}%` }} />
             </div>
             <div className="plan-milestone">
               <span className="milestone-dot" />
@@ -226,65 +240,41 @@ export default function Dashboard() {
               ))}
             </div>
           </div>
-
-          {/* Muscle Coverage */}
-          <div className="dash-card">
-            <div className="dash-card-title">
-              <span className="title-icon"><FontAwesomeIcon icon={faHandFist} /></span>
-              Muscle Coverage
-            </div>
-            {dash.muscleRadial.length > 0 ? (
-              <>
-                <ResponsiveContainer width="100%" height={150}>
-                  <RadialBarChart cx="50%" cy="50%" innerRadius="25%" outerRadius="90%" data={dash.muscleRadial} startAngle={180} endAngle={-180}>
-                    <RadialBar dataKey="value" background={{ fill: "rgba(255,255,255,0.04)" } as object} />
-                    <Tooltip contentStyle={ttStyle} formatter={(v) => [`${v}%`, ""]} />
-                  </RadialBarChart>
-                </ResponsiveContainer>
-                <div className="radial-legend">
-                  {dash.muscleRadial.map((m) => (
-                    <div className="radial-legend-item" key={m.name}>
-                      <span className="radial-dot" style={{ background: m.fill }} />
-                      <span>{m.name}</span>
-                      <span style={{ color: m.fill, marginLeft: "auto" }}>{m.value}%</span>
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <div style={{ color: "#555", fontSize: "0.8rem", padding: "1rem 0" }}>No workout sessions yet this month.</div>
-            )}
-          </div>
         </div>
 
         {/* ══ COLUMN 2 — WIDE ═══════════════════ */}
         <div className="dash-col">
-          {/* Current Exercise + Timer */}
-          <div className="dash-card exercise-hero-card">
+          {/* Upcoming Session */}
+          <div className="dash-card upcoming-card">
             <div className="dash-card-title">
-              <span className="title-icon"><FontAwesomeIcon icon={faBolt} /></span>
-              Current Exercise
+              <span className="title-icon"><FontAwesomeIcon icon={faCalendarCheck} /></span>
+              Upcoming Session
             </div>
-            <div className="ex-hero-body">
-              <div className="ex-hero-left">
-                <div className="ex-name">{currentExercise.name}</div>
-                <div className="ex-muscle-tag">{currentExercise.muscle}</div>
-                <div className="ex-meta-grid">
-                  {[
-                    { label: "Sets", value: currentExercise.sets },
-                    { label: "Reps", value: currentExercise.reps },
-                    { label: "Weight", value: currentExercise.weight },
-                    { label: "Rest", value: `${currentExercise.rest}s` },
-                  ].map((m) => (
-                    <div className="ex-meta-box" key={m.label}>
-                      <div className="ei-label">{m.label}</div>
-                      <div className="ei-value">{m.value}</div>
-                    </div>
-                  ))}
+            {dash.nextBooking ? (
+              <div className="upcoming-body">
+                <div className="upcoming-info">
+                  <div className="upcoming-type">
+                    <FontAwesomeIcon icon={dash.nextBooking.type === 'class' ? faCalendarAlt : faUserTie} />
+                    {dash.nextBooking.type === 'class' ? 'Group Class' : 'Trainer Session'}
+                  </div>
+                  <div className="upcoming-name">{dash.nextBooking.name || dash.nextBooking.trainerName}</div>
+                  <div className="upcoming-time">
+                    {new Date(dash.nextBooking.scheduledAt).toLocaleString([], { weekday: 'long', hour: '2-digit', minute: '2-digit' })}
+                  </div>
                 </div>
+                <a href="/my-bookings" className="upcoming-btn">View All</a>
               </div>
-              <TimerRing timer={timer} />
-            </div>
+            ) : (
+              <div className="upcoming-empty">
+                <p>No sessions booked yet.</p>
+                <a href="/gym-classes" className="book-link">Book a class →</a>
+              </div>
+            )}
+          </div>
+
+          {/* Rest Timer Widget (Re-added) */}
+          <div className="dash-card">
+            <TimerRing timer={timer} />
           </div>
 
           {/* Weekly Calories Bar Chart */}
@@ -413,20 +403,6 @@ export default function Dashboard() {
                   </div>
                 );
               })}
-            </div>
-            <div className="consistency-stats">
-              <div className="cstat">
-                <div className="cstat-val">{doneIndices.length}/7</div>
-                <div className="cstat-label">Days Hit</div>
-              </div>
-              <div className="cstat">
-                <div className="cstat-val">{Math.round((doneIndices.length / 7) * 100)}%</div>
-                <div className="cstat-label">Adherence</div>
-              </div>
-              <div className="cstat">
-                <div className="cstat-val">🔥{dash.streak}</div>
-                <div className="cstat-label">Streak</div>
-              </div>
             </div>
           </div>
         </div>

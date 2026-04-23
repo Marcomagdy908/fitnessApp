@@ -12,30 +12,43 @@ const PLANS = [
     features: ["Basic exercises", "Progress tracking"],
   },
   {
+    id: "basic",
+    name: "Basic",
+    price: 29.99,
+    features: [
+      "Gym floor access (6AM – 10PM)",
+      "Free weights & machines",
+      "Cardio zone",
+      "Changing rooms & lockers",
+    ],
+  },
+  {
     id: "pro",
     name: "Pro",
-    price: 9.99,
+    price: 59.99,
     features: [
-      "All exercises",
-      "Meal tracking",
-      "Custom plans",
-      "Trainer access",
+      "Gym floor access (24/7)",
+      "Unlimited group fitness classes",
+      "Swimming pool & jacuzzi",
+      "Sauna & steam room",
     ],
   },
   {
     id: "elite",
-    name: "Elite",
-    price: 19.99,
+    name: "VIP Elite",
+    price: 99.99,
     features: [
       "Everything in Pro",
-      "Personal trainer sessions",
-      "Advanced analytics",
+      "4× personal trainer sessions / mo",
+      "Monthly nutrition consultation",
+      "Guest passes (4/month)",
     ],
   },
 ];
 
 const subscribeSchema = z.object({
-  plan: z.enum(["free", "pro", "elite"]),
+  plan: z.enum(["free", "basic", "pro", "elite"]),
+  billingCycle: z.enum(["monthly", "annual"]).default("monthly"),
 });
 
 export const getSubscriptionPlans = (
@@ -67,12 +80,25 @@ export const subscribe = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { plan } = subscribeSchema.parse(req.body);
+    const { plan, billingCycle } = subscribeSchema.parse(req.body);
+    
+    // Set expiresAt based on billing cycle
+    const expiresAt = new Date();
+    if (billingCycle === "annual") {
+      expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+    } else {
+      expiresAt.setMonth(expiresAt.getMonth() + 1);
+    }
+
     await db.query(
-      `INSERT INTO Subscription (userId, plan, status) 
-       VALUES (?, ?, 'active') 
-       ON DUPLICATE KEY UPDATE plan = VALUES(plan), status = VALUES(status)`,
-      [req.user!.id, plan]
+      `INSERT INTO Subscription (userId, plan, status, billingCycle, autoRenew, startsAt, expiresAt) 
+       VALUES (?, ?, 'active', ?, true, NOW(), ?) 
+       ON DUPLICATE KEY UPDATE 
+        plan = VALUES(plan), 
+        status = VALUES(status), 
+        billingCycle = VALUES(billingCycle),
+        expiresAt = VALUES(expiresAt)`,
+      [req.user!.id, plan, billingCycle, expiresAt]
     );
 
     const [rows] = await db.query<SubscriptionRow[] & { length: number }>(
@@ -81,6 +107,22 @@ export const subscribe = async (
     );
     
     res.json({ success: true, data: rows[0] });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const cancelSubscription = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    await db.query(
+      "UPDATE Subscription SET autoRenew = false WHERE userId = ?",
+      [req.user!.id]
+    );
+    res.json({ success: true, message: "Subscription cancelled successfully. It will remain active until the end of the billing period." });
   } catch (err) {
     next(err);
   }

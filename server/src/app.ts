@@ -14,6 +14,8 @@ import mealsRoutes from "./routes/meals";
 import trainersRoutes from "./routes/trainers";
 import subscriptionsRoutes from "./routes/subscriptions";
 import dashboardRoutes from "./routes/dashboard";
+import trainerBookingsRoutes from "./routes/trainerBookings";
+import gymClassesRoutes from "./routes/gymClasses";
 
 const app = express();
 
@@ -51,6 +53,8 @@ app.use("/api/meals", mealsRoutes);
 app.use("/api/trainers", trainersRoutes);
 app.use("/api/subscriptions", subscriptionsRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/trainer-bookings", trainerBookingsRoutes);
+app.use("/api/gym-classes", gymClassesRoutes);
 
 // ── Error Handling ─────────────────────────────────────────────────────────────
 

@@ -1,20 +1,15 @@
 import { Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faBell, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faBell } from "@fortawesome/free-solid-svg-icons";
 import "../css/navbar.css";
 import { useEffect, useState } from "react";
 function Navbar() {
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-  });
   const [avatar, setAvatar] = useState("https://cdn-icons-png.flaticon.com/512/149/149071.png");
   useEffect(() => {
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((data) => {
-        setUser(data.user);
-        if(data.user.avatar) setAvatar(data.user.avatar);
+        if(data.user && data.user.avatar) setAvatar(data.user.avatar);
       });
   }, []);
   return (

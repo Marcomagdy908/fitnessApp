@@ -116,11 +116,21 @@ export interface MealLogRow extends RowDataPacket {
 export interface TrainerRow extends RowDataPacket {
   id: number;
   name: string;
+  title: string;
   specialty: string;
+  specialtyIcon: string;
+  specialtyColor: string;
+  avatar: string;
   bio: string;
+  certifications: string; // JSON string
+  tags: string; // JSON string
   imageUrl: string | null;
   rating: number;
+  reviews: number;
   experience: number;
+  pricePerSession: number;
+  sessionsCompleted: number;
+  available: boolean | number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -130,8 +140,61 @@ export interface SubscriptionRow extends RowDataPacket {
   userId: number;
   plan: string;
   status: string;
+  billingCycle: string;
+  autoRenew: boolean | number;
   startsAt: Date;
   expiresAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface GymClassRow extends RowDataPacket {
+  id: number;
+  name: string;
+  trainerId: number | null;
+  scheduledAt: Date;
+  durationMins: number;
+  maxSpots: number;
+  spotsBooked: number;
+  color: string;
+  description: string | null;
+  requiredPlan: string;
+  createdAt: Date;
+  updatedAt: Date;
+  // Joined fields
+  trainerName?: string;
+  trainerAvatar?: string;
+  isBooked?: boolean | number;
+}
+
+export interface GymClassBookingRow extends RowDataPacket {
+  id: number;
+  userId: number;
+  classId: number;
+  status: string;
+  bookedAt: Date;
+  // Joined fields
+  className?: string;
+  scheduledAt?: Date;
+  durationMins?: number;
+  color?: string;
+  trainerName?: string;
+}
+
+export interface TrainerBookingRow extends RowDataPacket {
+  id: number;
+  userId: number;
+  trainerId: number;
+  scheduledAt: Date;
+  durationMins: number;
+  status: string;
+  notes: string | null;
+  totalPrice: number;
+  createdAt: Date;
+  updatedAt: Date;
+  // Joined fields
+  trainerName?: string;
+  trainerAvatar?: string;
+  trainerSpecialty?: string;
+  trainerSpecialtyColor?: string;
 }

@@ -11,9 +11,7 @@ import {
   faTimes,
   faUtensils,
   faCrown,
-  faUserTie,
-  faBowlFood,
-  faPersonRunning,
+  faCalendarCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -29,12 +27,10 @@ function SidebarNavigation() {
   const navigationList = [
     { name: "Dashboard", icon: faHome, path: "/" },
     { name: "Exercises", icon: faDumbbell, path: "/exercises" },
+    { name: "Diet", icon: faUtensils, path: "/diet" },
+    { name: "Bookings", icon: faCalendarCheck, path: "/bookings" },
     { name: "Progress", icon: faChartLine, path: "/progress" },
     { name: "Plans", icon: faClipboardList, path: "/plans" },
-    { name: "Diet", icon: faUtensils, path: "/diet" },
-    { name: "Meals", icon: faBowlFood, path: "/meals" },
-    { name: "Exercise", icon: faPersonRunning, path: "/exercise" },
-    { name: "Trainers", icon: faUserTie, path: "/trainers" },
     { name: "Membership", icon: faCrown, path: "/subscription" },
     { name: "Settings", icon: faCog, path: "/settings" },
   ];

@@ -16,6 +16,8 @@ import {
   faPhoneVolume,
   faDroplet,
 } from "@fortawesome/free-solid-svg-icons";
+import { useSubscription } from "../context/SubscriptionContext";
+import axios from "axios";
 import "../css/subscription.css";
 
 /* ─── Types ─────────────────────────────────────────────────── */
@@ -102,7 +104,7 @@ const plans: MembershipPlan[] = [
     ],
   },
   {
-    id: "vip",
+    id: "elite",
     name: "VIP Elite",
     price: "$99.99",
     annualPrice: "$79.99",
@@ -131,13 +133,12 @@ const plans: MembershipPlan[] = [
   },
 ];
 
-/* ─── Class Schedule Preview ─────────────────────────────────── */
-const classes = [
-  { time: "7:00 AM", name: "HIIT Blast", trainer: "Coach Alex", spots: 3, color: "#ff6b6b" },
-  { time: "9:00 AM", name: "Yoga Flow", trainer: "Sofia M.", spots: 8, color: "#a98dff" },
-  { time: "12:00 PM", name: "Spin Cycle", trainer: "Coach Dan", spots: 1, color: "#3dffff" },
-  { time: "6:00 PM", name: "Strength & Power", trainer: "Coach Radu", spots: 5, color: "#ffc832" },
-  { time: "7:30 PM", name: "Pilates Core", trainer: "Elena V.", spots: 6, color: "#50e678" },
+/* ─── Stats ──────────────────────────────────────────────────── */
+const stats = [
+  { icon: faUsers, value: "3,500+", label: "Active Members" },
+  { icon: faUserTie, value: "15", label: "Certified Trainers" },
+  { icon: faStar, value: "4.9★", label: "Member Rating" },
+  { icon: faCalendarCheck, value: "40+", label: "Weekly Classes" },
 ];
 
 /* ─── Facilities ─────────────────────────────────────────────── */
@@ -150,87 +151,80 @@ const facilities = [
   { icon: faCalendarCheck, label: "Group Classes", desc: "40+ classes per week" },
 ];
 
-/* ─── Stats ──────────────────────────────────────────────────── */
-const stats = [
-  { icon: faUsers, value: "3,500+", label: "Active Members" },
-  { icon: faUserTie, value: "15", label: "Certified Trainers" },
-  { icon: faStar, value: "4.9★", label: "Member Rating" },
-  { icon: faCalendarCheck, value: "40+", label: "Weekly Classes" },
-];
-
-/* ─── Testimonials ───────────────────────────────────────────── */
-const testimonials = [
-  {
-    name: "Alex P.",
-    role: "Pro Member · 8 months",
-    avatar: "💪",
-    text: "The pool and sauna after a heavy leg session is unreal. Pro membership is 100% worth every penny.",
-    stars: 5,
-  },
-  {
-    name: "Maria S.",
-    role: "VIP Elite · 1 year",
-    avatar: "🏆",
-    text: "My personal trainer redesigned my entire programme. Down 14 kg in 6 months and never felt stronger.",
-    stars: 5,
-  },
-  {
-    name: "David K.",
-    role: "Pro Member · 5 months",
-    avatar: "🔥",
-    text: "Spin classes at noon, sauna at 1pm. This gym has completely changed my daily routine.",
-    stars: 5,
-  },
-];
-
-/* ─── Mock User Data ─────────────────────────────────────────── */
-const activeMembership = {
-  planId: "pro",
-  status: "Active",
-  nextBilling: "May 20, 2026",
-  billingCycle: "monthly",
-  memberSince: "Dec 2025",
-};
-
 /* ─── Component ──────────────────────────────────────────────── */
 function Subscription() {
+  const { subscription, refreshSubscription } = useSubscription();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
-  const [showHistory, setShowHistory] = useState(false);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   const getPrice = (plan: MembershipPlan) =>
     billingCycle === "annual" ? plan.annualPrice : plan.price;
 
+  const handleSubscribe = async (planId: string) => {
+    setLoadingPlan(planId);
+    try {
+      await axios.post("/api/subscriptions", {
+        plan: planId,
+        billingCycle
+      }, { withCredentials: true });
+      await refreshSubscription();
+    } catch (err) {
+      console.error("Subscription failed:", err);
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!window.confirm("Are you sure you want to cancel your subscription? You will lose premium access at the end of your billing period.")) return;
+    
+    try {
+      await axios.patch("/api/subscriptions/cancel", {}, { withCredentials: true });
+      await refreshSubscription();
+    } catch (err) {
+      console.error("Cancellation failed:", err);
+    }
+  };
+
   return (
     <div className="sub-page">
-      {/* ── Active Membership Status (New) ── */}
-      <div className="active-mem-container">
-        <div className="active-mem-card">
-          <div className="active-mem-header">
-            <div className="active-mem-badge">
-              <FontAwesomeIcon icon={faCrown} />
-              Current Status: {activeMembership.status}
+      {/* ── Active Membership Status ── */}
+      {subscription && subscription.plan !== 'free' && (
+        <div className="active-mem-container">
+          <div className="active-mem-card">
+            <div className="active-mem-header">
+              <div className="active-mem-badge">
+                <FontAwesomeIcon icon={faCrown} />
+                Current Status: {subscription.status.toUpperCase()}
+              </div>
+              <div className="active-mem-plan">
+                {subscription.plan.toUpperCase()} PLAN
+              </div>
             </div>
-            <div className="active-mem-plan">
-              {activeMembership.planId.toUpperCase()} PLAN
+            <div className="active-mem-body">
+              <div className="active-mem-info">
+                <span className="label">Next Billing:</span>
+                <span className="value">
+                  {subscription.expiresAt ? new Date(subscription.expiresAt).toLocaleDateString() : 'N/A'}
+                </span>
+              </div>
+              <div className="active-mem-info">
+                <span className="label">Billing Cycle:</span>
+                <span className="value">{subscription.billingCycle}</span>
+              </div>
+              <div className="active-mem-info">
+                <span className="label">Auto Renew:</span>
+                <span className="value">{subscription.autoRenew ? 'Enabled' : 'Disabled'}</span>
+              </div>
+              {subscription.autoRenew ? (
+                <button className="active-mem-manage-btn cancel" onClick={handleCancel}>Cancel Subscription</button>
+              ) : (
+                <p className="cancel-note">Your subscription will end on {new Date(subscription.expiresAt!).toLocaleDateString()}</p>
+              )}
             </div>
-          </div>
-          <div className="active-mem-body">
-            <div className="active-mem-info">
-              <span className="label">Next Billing:</span>
-              <span className="value">{activeMembership.nextBilling}</span>
-            </div>
-            <div className="active-mem-info">
-              <span className="label">Billing Cycle:</span>
-              <span className="value">{activeMembership.billingCycle}</span>
-            </div>
-            <div className="active-mem-info">
-              <span className="label">Member Since:</span>
-              <span className="value">{activeMembership.memberSince}</span>
-            </div>
-            <button className="active-mem-manage-btn">Manage Subscription</button>
           </div>
         </div>
-      </div>
+      )}
 
       {/* ── Header ── */}
       <div className="sub-header">
@@ -278,12 +272,12 @@ function Subscription() {
         {plans.map((plan) => (
           <div
             key={plan.id}
-            className={`sub-card${plan.popular ? " sub-card--popular" : ""}${activeMembership.planId === plan.id ? " sub-card--active" : ""}`}
+            className={`sub-card${plan.popular ? " sub-card--popular" : ""}${subscription?.plan === plan.id ? " sub-card--active" : ""}`}
             style={{
-              borderColor: activeMembership.planId === plan.id ? "var(--accent-cyan)" : plan.borderColor,
+              borderColor: subscription?.plan === plan.id ? "var(--accent-cyan)" : plan.borderColor,
             }}
           >
-            {activeMembership.planId === plan.id && (
+            {subscription?.plan === plan.id && (
               <div className="active-tag">Current Plan</div>
             )}
             {plan.popular && (
@@ -329,10 +323,11 @@ function Subscription() {
               </div>
 
               <button
-                className={`sub-cta-btn${activeMembership.planId === plan.id ? " sub-cta-btn--active" : ""}`}
-                disabled={activeMembership.planId === plan.id}
+                className={`sub-cta-btn${subscription?.plan === plan.id ? " sub-cta-btn--active" : ""}`}
+                disabled={subscription?.plan === plan.id || loadingPlan === plan.id}
+                onClick={() => handleSubscribe(plan.id)}
               >
-                {activeMembership.planId === plan.id ? "Manage Account" : plan.cta}
+                {loadingPlan === plan.id ? "Processing..." : subscription?.plan === plan.id ? "Current Plan" : plan.cta}
               </button>
             </div>
           </div>
@@ -343,7 +338,6 @@ function Subscription() {
       <div className="sub-section-heading" style={{ marginTop: "2.5rem", color: "#3dffff" }}>
         <FontAwesomeIcon icon={faDumbbell} />
         Our Facilities
-        <style>{`.sub-section-heading::after { background: rgba(61,255,255,0.12); }`}</style>
       </div>
       <div className="facilities-grid">
         {facilities.map((f, i) => (
@@ -355,61 +349,6 @@ function Subscription() {
             <div className="facility-desc">{f.desc}</div>
           </div>
         ))}
-      </div>
-
-      {/* ── Today's Classes ── */}
-      <div className="sub-section-heading" style={{ marginTop: "2rem", color: "#a98dff" }}>
-        <FontAwesomeIcon icon={faCalendarCheck} />
-        Today's Group Classes
-      </div>
-      <div className="classes-list">
-        {classes.map((c, i) => (
-          <div key={i} className="class-row">
-            <div className="class-time">{c.time}</div>
-            <div className="class-dot" style={{ background: c.color }} />
-            <div className="class-info">
-              <div className="class-name">{c.name}</div>
-              <div className="class-trainer">
-                <FontAwesomeIcon icon={faUserTie} style={{ marginRight: 4, opacity: 0.5 }} />
-                {c.trainer}
-              </div>
-            </div>
-            <div className="class-spots" style={{ color: c.spots <= 2 ? "#ff6b6b" : "#555" }}>
-              {c.spots} spot{c.spots !== 1 ? "s" : ""} left
-            </div>
-            <button className="class-book-btn">Book</button>
-          </div>
-        ))}
-      </div>
-
-      {/* ── Billing History (New) ── */}
-      <div className="billing-history-wrap">
-        <button className="history-toggle-btn" onClick={() => setShowHistory(!showHistory)}>
-          <FontAwesomeIcon icon={faCalendarCheck} style={{ marginRight: 8 }} />
-          {showHistory ? "Hide Billing History" : "View Billing History"}
-        </button>
-        {showHistory && (
-          <div className="billing-history-table">
-            <div className="history-row header">
-              <span>Date</span>
-              <span>Invoice</span>
-              <span>Amount</span>
-              <span>Status</span>
-            </div>
-            {[
-              { date: "Apr 20, 2026", id: "#INV-9821", amount: "$59.99", status: "Paid" },
-              { date: "Mar 20, 2026", id: "#INV-8422", amount: "$59.99", status: "Paid" },
-              { date: "Feb 20, 2026", id: "#INV-7210", amount: "$59.99", status: "Paid" },
-            ].map((row, i) => (
-              <div key={i} className="history-row">
-                <span>{row.date}</span>
-                <span className="inv-id">{row.id}</span>
-                <span>{row.amount}</span>
-                <span className="status-success">{row.status}</span>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* ── Contact Strip ── */}

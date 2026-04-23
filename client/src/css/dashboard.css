@@ -643,3 +643,123 @@
     transform: scale(0.7);
   }
 }
+
+/* ── Membership Widget ─────────────────────────────────── */
+.membership-card {
+  border-color: var(--accent-cyan-border);
+}
+
+.membership-status {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.membership-status.free { background: #333; color: #888; }
+.membership-status.basic { background: rgba(136, 136, 136, 0.2); color: #888; border: 1px solid rgba(136, 136, 136, 0.3); }
+.membership-status.pro { background: var(--accent-cyan-dim); color: var(--accent-cyan); border: 1px solid var(--accent-cyan-border); }
+.membership-status.elite { background: rgba(255, 200, 50, 0.15); color: #ffc832; border: 1px solid rgba(255, 200, 50, 0.35); }
+
+.membership-info p {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.status-active {
+  color: #50e678;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.membership-link {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--accent-cyan);
+  text-decoration: none;
+  font-weight: 700;
+  transition: opacity 0.2s;
+}
+
+.membership-link:hover {
+  opacity: 0.8;
+}
+
+/* ── Upcoming Session Widget ─────────────────────────────── */
+.upcoming-card {
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(61, 255, 255, 0.03) 100%);
+}
+
+.upcoming-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.upcoming-type {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.65rem;
+  color: #555;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.upcoming-type svg {
+  color: var(--accent-cyan);
+}
+
+.upcoming-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+}
+
+.upcoming-time {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.upcoming-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.5rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.upcoming-btn:hover {
+  border-color: var(--accent-cyan-border);
+  color: var(--accent-cyan);
+}
+
+.upcoming-empty {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.upcoming-empty p {
+  color: #444;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.book-link {
+  color: var(--accent-cyan);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+

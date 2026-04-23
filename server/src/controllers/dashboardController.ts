@@ -179,6 +179,38 @@ export const getDashboard = async (
       return mysqlIdx === 1 ? 6 : mysqlIdx - 2;
     })));
 
+    /* ── Subscription & Bookings (New) ───────────────────────── */
+    const [subs] = await db.query<any[]>(
+      "SELECT * FROM Subscription WHERE userId = ? LIMIT 1",
+      [uid]
+    );
+    const subscription = subs[0] ?? { plan: 'free', status: 'active' };
+
+    const [upcomingClass] = await db.query<any[]>(
+      `SELECT gc.name, gc.scheduledAt, 'class' as type
+       FROM GymClassBooking gcb
+       JOIN GymClass gc ON gcb.classId = gc.id
+       WHERE gcb.userId = ? AND gc.scheduledAt >= NOW()
+       ORDER BY gc.scheduledAt ASC LIMIT 1`,
+      [uid]
+    );
+
+    const [upcomingTrainer] = await db.query<any[]>(
+      `SELECT t.name as trainerName, tb.scheduledAt, 'trainer' as type
+       FROM TrainerBooking tb
+       JOIN Trainer t ON tb.trainerId = t.id
+       WHERE tb.userId = ? AND tb.scheduledAt >= NOW() AND tb.status = 'pending'
+       ORDER BY tb.scheduledAt ASC LIMIT 1`,
+      [uid]
+    );
+
+    let nextBooking = null;
+    if (upcomingClass[0] && upcomingTrainer[0]) {
+      nextBooking = upcomingClass[0].scheduledAt < upcomingTrainer[0].scheduledAt ? upcomingClass[0] : upcomingTrainer[0];
+    } else {
+      nextBooking = upcomingClass[0] || upcomingTrainer[0] || null;
+    }
+
     res.json({
       success: true,
       data: {
@@ -191,6 +223,8 @@ export const getDashboard = async (
         todayCaloriesLogged: Number(todayCalories?.total ?? 0),
         streak,
         weeklyActivity,
+        subscription,
+        nextBooking
       },
     });
   } catch (err) {
