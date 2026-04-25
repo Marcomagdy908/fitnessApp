@@ -24,7 +24,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [formData, setFormData] = useState({ name: "", email: "", role: "", subscriptionPlan: "" });
+  const [formData, setFormData] = useState<{ name: string; email: string; role: "USER" | "ADMIN"; subscriptionPlan: string }>({ name: "", email: "", role: "USER", subscriptionPlan: "" });
 
   const stats = [
     { label: "Total Users", value: users.length.toString(), icon: faUsers, color:"var(--accent-cyan)" },
@@ -42,7 +42,7 @@ export default function AdminDashboard() {
       const res = await fetch("/api/users", { credentials: "include" });
       const data = await res.json();
       if (data.success) {
-        setUsers(data.users.map((u: any) => ({ ...u, status: "Active" })));
+        setUsers(data.users.map((u: User) => ({ ...u, status: "Active" })));
       }
     } catch (err) {
       console.error("Failed to fetch users", err);
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (data.success) {
-        setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...formData as any } : u));
+        setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...formData } : u));
         setShowEditModal(false);
       }
     } catch (err) {
@@ -267,7 +267,7 @@ export default function AdminDashboard() {
               <Form.Label>System Role</Form.Label>
               <Form.Select 
                 value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value as "USER" | "ADMIN" })}
               >
                 <option value="USER">User (Standard)</option>
                 <option value="ADMIN">Admin (Elevated)</option>

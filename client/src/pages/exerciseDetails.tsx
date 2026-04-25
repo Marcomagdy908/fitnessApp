@@ -289,12 +289,7 @@ const MOCK_EXERCISES: Record<string, ExerciseDetail> = {
 };
 
 /* ─── Helpers ────────────────────────────────────────────────── */
-function nameToId(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "");
-}
+
 
 function getFallbackExercise(id: string): ExerciseDetail {
   // Generic fallback so every exercise card opens a details page
@@ -641,4 +636,3 @@ function ExerciseDetails() {
 }
 
 export default ExerciseDetails;
-export { nameToId };

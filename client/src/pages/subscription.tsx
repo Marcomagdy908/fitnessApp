@@ -16,6 +16,7 @@ import {
   faPhoneVolume,
   faDroplet,
 } from "@fortawesome/free-solid-svg-icons";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { useSubscription } from "../context/SubscriptionContext";
 import axios from "axios";
 import "../css/subscription.css";
@@ -34,7 +35,7 @@ interface MembershipPlan {
   period: string;
   badge?: string;
   description: string;
-  icon: any;
+  icon: IconDefinition;
   accentColor: string;
   glowColor: string;
   borderColor: string;

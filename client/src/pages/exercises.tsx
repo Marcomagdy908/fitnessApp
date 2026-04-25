@@ -23,7 +23,7 @@ import {
   faTrophy,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/exercises.css";
-import { nameToId } from "./exerciseDetails";
+import { nameToId } from "../utils/exerciseUtils";
 
 /* ─── Types ──────────────────────────────────────────────────── */
 interface Exercise {
@@ -136,7 +136,7 @@ function Exercises() {
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [customName, setCustomName] = useState("");
-  const [customCat, setCustomCat] = useState("Chest");
+  const [customCat] = useState("Chest");
   const [showSummary, setShowSummary] = useState(false);
   const [sessionStartTime] = useState(new Date());
   const [dismissedInjuries, setDismissedInjuries] = useState<string[]>([]);
@@ -165,7 +165,9 @@ function Exercises() {
   /* ── Tracker mutations ── */
   const addTrackedExercise = (name: string, category: string) => {
     const newEx: ExEntry = {
+      // eslint-disable-next-line react-hooks/purity
       id: Date.now(), name, category, notes: "", expanded: true,
+      // eslint-disable-next-line react-hooks/purity
       sets: [makeSet(Date.now(), "", "8", false)],
     };
     setTrackedExercises((prev) => [...prev, newEx]);
@@ -179,9 +181,6 @@ function Exercises() {
 
   const toggleExpand = (id: number) =>
     setTrackedExercises((prev) => prev.map((e) => e.id === id ? { ...e, expanded: !e.expanded } : e));
-
-  const updateNote = (id: number, notes: string) =>
-    setTrackedExercises((prev) => prev.map((e) => e.id === id ? { ...e, notes } : e));
 
   const addSet = (exId: number) =>
     setTrackedExercises((prev) => prev.map((e) => {
@@ -222,9 +221,6 @@ function Exercises() {
   };
 
   const exerciseNames = trackedExercises.map((e) => e.name);
-  const flaggedInjuries = activeInjuries.filter((inj) =>
-    injuryRestrictions[inj]?.avoid.some((a) => exerciseNames.some((n) => n.toLowerCase().includes(a.toLowerCase())))
-  );
 
   return (
     <div className="exercises-page">
@@ -545,6 +541,7 @@ function Exercises() {
             <div className="summary-stats-grid">
               <div className="summary-stat-item"><span className="label">Volume</span><span className="value">{totalVol}kg</span></div>
               <div className="summary-stat-item"><span className="label">Sets</span><span className="value">{doneSets}</span></div>
+              <div className="summary-stat-item"><span className="label">Duration</span><span className="value">{Math.floor((new Date().getTime() - sessionStartTime.getTime()) / 60000)}m</span></div>
             </div>
             <button className="summary-close-btn" onClick={() => (window.location.href = "/dashboard")}>Done</button>
           </div>

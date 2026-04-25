@@ -61,7 +61,7 @@ interface DietPlan {
   labelColor: string;
   name: string;
   goal: string;
-  goalIcon: any;
+  goalIcon: import("@fortawesome/fontawesome-svg-core").IconDefinition;
   description: string;
   calories: number;
   protein: number;
@@ -341,7 +341,7 @@ const categoryConfig = {
 };
 
 /* ─── Macro progress bar ─────────────────────────────────────── */
-function MacroProgress({ label, value, target, color, icon }: { label: string; value: number; target: number; color: string; icon: any }) {
+function MacroProgress({ label, value, target, color, icon }: { label: string; value: number; target: number; color: string; icon: import("@fortawesome/fontawesome-svg-core").IconDefinition }) {
   const pct = Math.min(100, Math.round((value / target) * 100));
   const over = value > target;
   return (
@@ -396,7 +396,7 @@ function Diet() {
         .then((data) => {
           if (data.success) {
             setLoggedMeals(
-              data.data.map((m: any) => ({
+              data.data.map((m: { id: number; date: string; name: string; calories: number; protein: number; carbs: number; fat: number; mealType: string }) => ({
                 id: m.id,
                 time: new Date(m.date).toTimeString().slice(0, 5),
                 name: m.name,
@@ -931,7 +931,7 @@ function Diet() {
                         type="number"
                         min={0}
                         placeholder="0"
-                        value={(form as any)[key]}
+                        value={form[key as keyof typeof form]}
                         onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
                       />
                       <span className="meal-form-unit">{unit}</span>

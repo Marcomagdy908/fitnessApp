@@ -12,6 +12,7 @@ import {
   faArrowTrendUp,
   faHandFist,
 } from "@fortawesome/free-solid-svg-icons";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
   BarChart,
   Bar,
@@ -72,7 +73,7 @@ function PCard({
   children,
 }: {
   title: string;
-  icon: any;
+  icon: IconDefinition;
   children: React.ReactNode;
 }) {
   return (

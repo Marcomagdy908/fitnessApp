@@ -36,8 +36,8 @@ export default function Login() {
 
       login(data.user);
       navigate("/"); // Redirect to dashboard
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An unexpected error occurred");
     }
   };
 

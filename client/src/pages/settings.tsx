@@ -22,6 +22,7 @@ import {
   faTriangleExclamation,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import "../css/settings.css";
 import { useTheme } from "../context/ThemeContext";
 
@@ -67,7 +68,7 @@ function Section({
   children,
 }: {
   title: string;
-  icon: any;
+  icon: IconDefinition;
   children: React.ReactNode;
 }) {
   return (
@@ -95,7 +96,7 @@ function InputRow({
   label: string;
   value: string | number;
   type?: string;
-  icon?: any;
+  icon?: IconDefinition;
   onChange?: (v: string) => void;
   unit?: string;
   min?: number;

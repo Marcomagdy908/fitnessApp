@@ -65,8 +65,8 @@ export default function SignUp() {
       login(data.user);
       navigate("/"); // Automatically redirect to logged-in dashboard
 
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An unexpected error occurred");
     }
   };
 
