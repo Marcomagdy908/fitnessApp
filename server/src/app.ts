@@ -3,6 +3,7 @@ import cors from "cors";
 import { env } from "./config/env";
 import { errorHandler, notFound } from "./middleware/errorHandler";
 import cookieParser from "cookie-parser";
+import path from "path";
 
 // Routes
 import authRoutes from "./routes/auth";
@@ -55,6 +56,19 @@ app.use("/api/subscriptions", subscriptionsRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/trainer-bookings", trainerBookingsRoutes);
 app.use("/api/gym-classes", gymClassesRoutes);
+
+// ── Serve Frontend ─────────────────────────────────────────────────────────────
+
+if (env.NODE_ENV === "production") {
+  const distPath = path.join(__dirname, "../../client/dist");
+  app.use(express.static(distPath));
+
+  app.get("*", (req, res) => {
+    if (!req.path.startsWith("/api")) {
+      res.sendFile(path.join(distPath, "index.html"));
+    }
+  });
+}
 
 // ── Error Handling ─────────────────────────────────────────────────────────────
 
