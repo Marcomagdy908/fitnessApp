@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { fetchApi } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import "../css/auth.css";
 
@@ -20,7 +21,7 @@ export default function Login() {
     }
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetchApi("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

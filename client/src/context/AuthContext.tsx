@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { fetchApi } from "../utils/api";
 
 interface User {
   id: number;
@@ -25,7 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshUser = async () => {
     try {
-      const response = await fetch("/api/auth/me");
+      const response = await fetchApi("/api/auth/me");
       const data = await response.json();
       if (data.success && data.user) {
         setUser(data.user);
@@ -50,7 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
+      await fetchApi("/api/auth/logout", { method: "POST" });
       setUser(null);
       window.location.href = "/login";
     } catch (error) {

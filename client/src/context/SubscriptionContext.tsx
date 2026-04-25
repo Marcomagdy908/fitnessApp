@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import { api } from "../utils/api";
 
 interface Subscription {
   id: number;
@@ -28,7 +28,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
   const refreshSubscription = async () => {
     try {
-      const response = await axios.get("/api/subscriptions/me", { withCredentials: true });
+      const response = await api.get("/api/subscriptions/me");
       if (response.data.success) {
         setSubscription(response.data.data);
       }

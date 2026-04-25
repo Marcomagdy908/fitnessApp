@@ -8,6 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/dashboard.css";
 import "../css/admin.css";
+import { fetchApi } from "../utils/api";
 
 type User = {
   id: number;
@@ -39,7 +40,7 @@ export default function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("/api/users", { credentials: "include" });
+      const res = await fetchApi("/api/users");
       const data = await res.json();
       if (data.success) {
         setUsers(data.users.map((u: User) => ({ ...u, status: "Active" })));
@@ -60,7 +61,7 @@ export default function AdminDashboard() {
   const handleSave = async () => {
     if (!editingUser) return;
     try {
-      const res = await fetch(`/api/users/${editingUser.id}`, {
+      const res = await fetchApi(`/api/users/${editingUser.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { fetchApi } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import "../css/auth.css";
 
@@ -48,7 +49,7 @@ export default function SignUp() {
     }
 
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetchApi("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
