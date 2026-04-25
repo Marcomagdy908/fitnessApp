@@ -5,9 +5,10 @@ import app from "./app";
 const PORT = parseInt(env.PORT, 10);
 
 async function main() {
-  app.listen(PORT, () => {
+  // Add "0.0.0.0" right here so Fly.io can reach it
+  app.listen(PORT, "0.0.0.0", () => {
     console.log(
-      `🚀 Server running on http://localhost:${PORT} [${env.NODE_ENV}]`,
+      `🚀 Server running on port ${PORT} [${env.NODE_ENV}]`,
     );
   });
 
