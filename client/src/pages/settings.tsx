@@ -25,6 +25,7 @@ import {
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import "../css/settings.css";
 import { useTheme } from "../context/ThemeContext";
+import { fetchApi } from "../utils/api";
 
 const MOCK_GOALS = {
   weeklyWorkouts: 4,
@@ -164,7 +165,7 @@ function Settings() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("/api/auth/me");
+        const res = await fetchApi("/api/auth/me");
         const data = await res.json();
         if (data.success && data.user) {
           setName(data.user.name || "");
@@ -229,7 +230,7 @@ function Settings() {
   const [saved, setSaved] = useState(false);
   const handleSave = async () => {
     try {
-      const res = await fetch("/api/users/profile", {
+      const res = await fetchApi("/api/users/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -260,7 +261,7 @@ function Settings() {
 
   const handleLogout = async() => {
     try {
-      const res = await fetch("/api/auth/logout", {
+      const res = await fetchApi("/api/auth/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

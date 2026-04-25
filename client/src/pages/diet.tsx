@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { api } from "../utils/api";
+import { fetchApi } from "../utils/api";
 import {
   faUtensils,
   faFire,
@@ -391,12 +393,11 @@ function Diet() {
   useEffect(() => {
     if (primaryTab === "tracker") {
       const today = new Date().toISOString().slice(0, 10);
-      fetch(`/api/meals?date=${today}`)
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.success) {
+      api.get(`/api/meals?date=${today}`)
+        .then((res) => {
+          if (res.data.success) {
             setLoggedMeals(
-              data.data.map((m: { id: number; date: string; name: string; calories: number; protein: number; carbs: number; fat: number; mealType: string }) => ({
+              res.data.data.map((m: { id: number; date: string; name: string; calories: number; protein: number; carbs: number; fat: number; mealType: string }) => ({
                 id: m.id,
                 time: new Date(m.date).toTimeString().slice(0, 5),
                 name: m.name,
@@ -415,12 +416,11 @@ function Diet() {
   /* Fetch alternative meals */
   useEffect(() => {
     if (primaryTab === "tracker") {
-      fetch("/api/meals/alternatives")
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.success && data.data.length > 0) {
-            setAltMeals(data.data);
-            setActiveInjury(data.data[0].injury);
+      api.get("/api/meals/alternatives")
+        .then((res) => {
+          if (res.data.success && res.data.data.length > 0) {
+            setAltMeals(res.data.data);
+            setActiveInjury(res.data.data[0].injury);
           }
         });
     }
@@ -441,14 +441,9 @@ function Diet() {
       carbs: Number(form.carbs) || 0,
       fat: Number(form.fat) || 0,
     };
-    const res = await fetch("/api/meals", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
-    if (data.success) {
-      const m = data.data;
+    const res = await api.post("/api/meals", body);
+    if (res.data.success) {
+      const m = res.data.data;
       setLoggedMeals((prev) => [...prev, {
         id: m.id,
         time: form.time || new Date().toTimeString().slice(0, 5),
@@ -465,7 +460,7 @@ function Diet() {
   };
 
   const removeMeal = async (id: number) => {
-    await fetch(`/api/meals/${id}`, { method: "DELETE" });
+    await api.delete(`/api/meals/${id}`);
     setLoggedMeals((prev) => prev.filter((m) => m.id !== id));
   };
 
@@ -478,7 +473,7 @@ function Diet() {
       carbs: m.carbs,
       fat: m.fat,
     };
-    const res = await fetch("/api/meals", {
+    const res = await fetchApi("/api/meals", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

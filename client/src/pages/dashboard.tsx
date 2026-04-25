@@ -4,8 +4,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDumbbell, faBullseye, faFire, faChartLine,
   faClipboardList, faArrowTrendDown, faCalendarWeek,
-  faStopwatch, faCrown, faCalendarCheck, faUserTie, faCalendarAlt,
+  faStopwatch, faCrown, faCalendarCheck, faUserTie, faCalendarAlt
 } from "@fortawesome/free-solid-svg-icons";
+import { fetchApi } from "../utils/api";
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
@@ -150,7 +151,7 @@ export default function Dashboard() {
   const avatar = user?.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
   useEffect(() => {
-    fetch("/api/dashboard")
+    fetchApi("/api/dashboard")
       .then((r) => r.json())
       .then((d) => { if (d.success) setDash(d.data); });
   }, []);

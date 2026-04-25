@@ -18,7 +18,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { useSubscription } from "../context/SubscriptionContext";
-import axios from "axios";
+import { api } from "../utils/api";
 import "../css/subscription.css";
 
 /* ─── Types ─────────────────────────────────────────────────── */
@@ -164,10 +164,10 @@ function Subscription() {
   const handleSubscribe = async (planId: string) => {
     setLoadingPlan(planId);
     try {
-      await axios.post("/api/subscriptions", {
+      await api.post("/api/subscriptions", {
         plan: planId,
         billingCycle
-      }, { withCredentials: true });
+      });
       await refreshSubscription();
     } catch (err) {
       console.error("Subscription failed:", err);
@@ -180,7 +180,7 @@ function Subscription() {
     if (!window.confirm("Are you sure you want to cancel your subscription? You will lose premium access at the end of your billing period.")) return;
     
     try {
-      await axios.patch("/api/subscriptions/cancel", {}, { withCredentials: true });
+      await api.patch("/api/subscriptions/cancel", {});
       await refreshSubscription();
     } catch (err) {
       console.error("Cancellation failed:", err);

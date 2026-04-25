@@ -23,6 +23,7 @@ import {
   faTrophy,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/exercises.css";
+import { fetchApi } from "../utils/api";
 import { nameToId } from "../utils/exerciseUtils";
 
 /* ─── Types ──────────────────────────────────────────────────── */
@@ -143,7 +144,7 @@ function Exercises() {
 
   useEffect(() => {
     const params = new URLSearchParams({ limit: "100" });
-    fetch(`/api/exercises?${params}`)
+    fetchApi(`/api/exercises?${params}`)
       .then((r) => r.json())
       .then((data) => {
         if (data.success) setExercises(data.data);
