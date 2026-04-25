@@ -7,8 +7,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://fitnessapp-l4kmuq.fly.dev',
         changeOrigin: true,
+        secure: true
       }
     }
   }
