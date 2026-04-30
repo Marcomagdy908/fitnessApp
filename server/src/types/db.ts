@@ -1,5 +1,37 @@
 import { RowDataPacket } from 'mysql2';
 
+export interface DietPlanRow extends RowDataPacket {
+  id: number;
+  planId: string;
+  label: string;
+  labelColor: string;
+  name: string;
+  goal: string;
+  goalIcon: string;
+  description: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  accentColor: string;
+  gradientFrom: string;
+  gradientTo: string;
+  createdAt: Date;
+}
+
+export interface DietPlanMealRow extends RowDataPacket {
+  id: number;
+  dietPlanId: number;
+  time: string;
+  name: string;
+  foods: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  createdAt: Date;
+}
+
 export interface UserRow extends RowDataPacket {
   id: number;
   email: string;

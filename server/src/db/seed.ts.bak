@@ -315,104 +315,11 @@ async function main() {
       );
     }
   }
-  await seedDiet();
+  console.log('✅ Seeded workout sessions');
+
   console.log('\n🎉 All done! Login: john.doe@email.com / password123');
 }
 
 main()
   .then(() => process.exit(0))
   .catch((e) => { console.error(e); process.exit(1); });
-
-async function seedDiet() {
-  console.log('🌱 Seeding diet plans…');
-  await db.query("DELETE FROM DietPlanMeal");
-  await db.query("DELETE FROM DietPlan");
-
-  const plans = [
-    {
-      planId: "bulk",
-      label: "Mass Gain",
-      labelColor: "#ff6b6b",
-      name: "Hypertrophy Bulking Plan",
-      goal: "Muscle & Mass",
-      goalIcon: "faArrowTrendUp",
-      description: "Designed for hardgainers and those looking to maximize muscle hypertrophy. This plan provides a significant caloric surplus with a focus on complex carbohydrates and high-quality protein sources.",
-      calories: 3200,
-      protein: 220,
-      carbs: 380,
-      fat: 80,
-      accentColor: "#ff6b6b",
-      gradientFrom: "rgba(255, 107, 107, 0.15)",
-      gradientTo: "rgba(255, 107, 107, 0.05)",
-      meals: [
-        { time: "7:00 AM", name: "Breakfast: Power Oats", foods: ["100g Rolled Oats", "2 scoops Whey Protein", "1tbsp Peanut Butter", "1 Large Banana"], calories: 750, protein: 48, carbs: 85, fat: 22 },
-        { time: "10:30 AM", name: "Mid-Morning: Greek Yogurt & Nuts", foods: ["250g Greek Yogurt (0%)", "30g Almonds", "Blueberries"], calories: 420, protein: 32, carbs: 24, fat: 20 },
-        { time: "1:30 PM", name: "Lunch: Chicken & Sweet Potato", foods: ["200g Grilled Chicken Breast", "300g Roasted Sweet Potato", "Asparagus"], calories: 680, protein: 62, carbs: 75, fat: 12 },
-        { time: "4:30 PM", name: "Pre-Workout: Rice Cakes & Honey", foods: ["4 Rice Cakes", "2tbsp Honey", "1 scoop Whey Protein"], calories: 450, protein: 28, carbs: 80, fat: 2 },
-        { time: "8:30 PM", name: "Dinner: Lean Beef & Pasta", foods: ["180g Lean Ground Beef", "100g Whole Wheat Pasta", "Tomato Sauce", "Side Salad"], calories: 900, protein: 50, carbs: 116, fat: 24 }
-      ]
-    },
-    {
-      planId: "cut",
-      label: "Fat Loss",
-      labelColor: "#3dffff",
-      name: "Shredded Definition Plan",
-      goal: "Weight Loss",
-      goalIcon: "faArrowTrendDown",
-      description: "A calorie-restricted plan optimized for fat loss while preserving lean muscle mass. High protein intake keeps you satiated, while lower fats and controlled carbs drive the deficit.",
-      calories: 2100,
-      protein: 190,
-      carbs: 160,
-      fat: 65,
-      accentColor: "#3dffff",
-      gradientFrom: "rgba(61, 255, 255, 0.15)",
-      gradientTo: "rgba(61, 255, 255, 0.05)",
-      meals: [
-        { time: "8:00 AM", name: "Breakfast: Egg White Scramble", foods: ["2 Whole Eggs", "4 Egg Whites", "Spinach", "Mushrooms", "1 slice Sourdough"], calories: 450, protein: 38, carbs: 25, fat: 18 },
-        { time: "1:00 PM", name: "Lunch: Salmon & Greens", foods: ["150g Grilled Salmon", "Large Mixed Leaf Salad", "Lemon Dressing", "50g Brown Rice"], calories: 520, protein: 35, carbs: 20, fat: 28 },
-        { time: "4:00 PM", name: "Snack: Protein Shake", foods: ["1.5 scoops Whey Protein", "Water", "10g Cashews"], calories: 250, protein: 35, carbs: 5, fat: 8 },
-        { time: "7:30 PM", name: "Dinner: White Fish & Broccoli", foods: ["250g Cod Fillet", "200g Steamed Broccoli", "150g Boiled Potatoes"], calories: 880, protein: 82, carbs: 110, fat: 11 }
-      ]
-    },
-    {
-      planId: "maintain",
-      label: "Performance",
-      labelColor: "#50e678",
-      name: "Athletic Maintenance",
-      goal: "Body Recomp",
-      goalIcon: "faScaleBalanced",
-      description: "Perfect for maintaining your current weight while focusing on improving athletic performance and body composition. Balanced macros provide steady energy throughout the day.",
-      calories: 2600,
-      protein: 180,
-      carbs: 280,
-      fat: 85,
-      accentColor: "#50e678",
-      gradientFrom: "rgba(80, 230, 120, 0.15)",
-      gradientTo: "rgba(80, 230, 120, 0.05)",
-      meals: [
-        { time: "7:30 AM", name: "Breakfast: Avocado Toast & Eggs", foods: ["2 Slices Toast", "Half Avocado", "2 Poached Eggs"], calories: 550, protein: 24, carbs: 45, fat: 32 },
-        { time: "12:30 PM", name: "Lunch: Turkey Quinoa Bowl", foods: ["180g Ground Turkey", "150g Cooked Quinoa", "Peppers", "Zucchini"], calories: 620, protein: 42, carbs: 65, fat: 18 },
-        { time: "4:00 PM", name: "Snack: Apple & Cottage Cheese", foods: ["200g Cottage Cheese", "1 Large Apple", "Cinnamon"], calories: 350, protein: 28, carbs: 40, fat: 8 },
-        { time: "8:00 PM", name: "Dinner: Steak & Rice", foods: ["200g Sirloin Steak", "200g Jasmine Rice", "Grilled Asparagus"], calories: 1080, protein: 86, carbs: 130, fat: 27 }
-      ]
-    }
-  ];
-
-  for (const p of plans) {
-    const [res] = await db.query<ResultSetHeader>(
-      `INSERT INTO DietPlan (planId, label, labelColor, name, goal, goalIcon, description, calories, protein, carbs, fat, accentColor, gradientFrom, gradientTo)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [p.planId, p.label, p.labelColor, p.name, p.goal, p.goalIcon, p.description, p.calories, p.protein, p.carbs, p.fat, p.accentColor, p.gradientFrom, p.gradientTo]
-    );
-
-    for (const m of p.meals) {
-      await db.query(
-        `INSERT INTO DietPlanMeal (dietPlanId, time, name, foods, calories, protein, carbs, fat)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [res.insertId, m.time, m.name, JSON.stringify(m.foods), m.calories, m.protein, m.carbs, m.fat]
-      );
-    }
-  }
-
-  console.log('✅ Seeded diet plans');
-}

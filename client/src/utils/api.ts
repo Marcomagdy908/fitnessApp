@@ -13,7 +13,7 @@ export const getApiUrl = (path: string) => {
  */
 export const fetchApi = async (path: string, options: RequestInit = {}) => {
   const url = getApiUrl(path);
-  
+    
   // Set default credentials to include cookies for auth
   if (options.credentials === undefined) {
     options.credentials = "include";

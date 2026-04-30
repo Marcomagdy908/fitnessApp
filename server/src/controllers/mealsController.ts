@@ -2,7 +2,7 @@ import { Response, NextFunction } from "express";
 import { z } from "zod";
 import { db } from "../services/db";
 import { AuthRequest } from '../middleware/auth';
-import { MealLogRow, AlternativeMealRow } from '../types/db';
+import { MealLogRow, AlternativeMealRow, DietPlanRow, DietPlanMealRow } from '../types/db';
 import { ResultSetHeader } from 'mysql2';
 
 const mealSchema = z.object({
@@ -108,6 +108,26 @@ export const getAlternativeMeals = async (
     query += ' ORDER BY injury ASC, id ASC';
     const [meals] = await db.query<AlternativeMealRow[] & { length: number }>(query, params);
     res.json({ success: true, data: meals });
+  } catch (err) {
+    next(err);
+  }
+};
+export const getDietPlans = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const [plans] = await db.query<DietPlanRow[]>("SELECT * FROM DietPlan");
+    const plansWithMeals = await Promise.all(
+      plans.map(async (plan) => {
+        const [meals] = await db.query<DietPlanMealRow[]>(
+          "SELECT * FROM DietPlanMeal WHERE dietPlanId = ? ORDER BY id ASC",
+          [plan.id]
+        );
+        return {
+          ...plan,
+          meals: meals.map((m) => ({ ...m, foods: JSON.parse(m.foods) })),
+        };
+      })
+    );
+    res.json({ success: true, data: plansWithMeals });
   } catch (err) {
     next(err);
   }

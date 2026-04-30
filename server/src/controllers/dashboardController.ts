@@ -69,7 +69,7 @@ export const getDashboard = async (
 
     /* ── Weight Progress (last 6 weeks from ProgressEntry) ──── */
     const [weightRows] = await db.query<any[]>(
-      `SELECT DATE(date) as d, AVG(weight) as kg
+      `SELECT MIN(DATE(date)) as d, AVG(weight) as kg
        FROM ProgressEntry
        WHERE userId = ? AND date >= DATE_SUB(CURDATE(), INTERVAL 42 DAY)
        GROUP BY WEEK(date)

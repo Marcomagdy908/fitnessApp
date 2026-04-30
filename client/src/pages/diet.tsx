@@ -58,12 +58,13 @@ interface AltMeal {
 }
 
 interface DietPlan {
-  id: string;
+  id: number;
+  planId: string;
   label: string;
   labelColor: string;
   name: string;
   goal: string;
-  goalIcon: import("@fortawesome/fontawesome-svg-core").IconDefinition;
+  goalIcon: string;
   description: string;
   calories: number;
   protein: number;
@@ -75,233 +76,6 @@ interface DietPlan {
   gradientTo: string;
 }
 
-/* ─── Diet Plan Data ─────────────────────────────────────────── */
-const dietPlans: DietPlan[] = [
-  /* ── Bulking ─────────────────────────────────────────────── */
-  {
-    id: "bulk",
-    label: "Mass Gain",
-    labelColor: "#ff6b6b",
-    name: "Bulking Plan",
-    goal: "Muscle & Mass",
-    goalIcon: faArrowTrendUp,
-    description:
-      "A calorie-surplus plan engineered for maximum muscle growth. High protein to protect and build lean mass, generous carbohydrates to fuel heavy training sessions, and enough healthy fats for hormonal balance. Target: +300–500 kcal above TDEE.",
-    calories: 3200,
-    protein: 220,
-    carbs: 380,
-    fat: 80,
-    accentColor: "#ff6b6b",
-    gradientFrom: "rgba(255,107,107,0.10)",
-    gradientTo: "rgba(255,107,107,0.02)",
-    meals: [
-      {
-        time: "7:00 AM",
-        name: "Breakfast",
-        foods: ["5 whole eggs + 3 egg whites scrambled", "2 cups oatmeal with banana", "250 ml whole milk"],
-        calories: 750,
-        protein: 48,
-        carbs: 85,
-        fat: 22,
-      },
-      {
-        time: "10:00 AM",
-        name: "Mid-Morning Snack",
-        foods: ["Greek yogurt (300 g)", "2 tbsp honey", "30 g mixed nuts"],
-        calories: 420,
-        protein: 28,
-        carbs: 40,
-        fat: 16,
-      },
-      {
-        time: "1:00 PM",
-        name: "Lunch",
-        foods: ["200 g chicken breast", "300 g white rice", "Broccoli & olive oil"],
-        calories: 680,
-        protein: 55,
-        carbs: 90,
-        fat: 12,
-      },
-      {
-        time: "4:00 PM",
-        name: "Pre-Workout",
-        foods: ["2 bananas", "Whey protein shake (40 g)", "Rice cakes (3)"],
-        calories: 480,
-        protein: 35,
-        carbs: 75,
-        fat: 4,
-      },
-      {
-        time: "7:00 PM",
-        name: "Post-Workout Dinner",
-        foods: ["200 g lean beef mince", "300 g pasta", "Tomato & mixed veg sauce"],
-        calories: 680,
-        protein: 48,
-        carbs: 75,
-        fat: 18,
-      },
-      {
-        time: "9:30 PM",
-        name: "Night Snack",
-        foods: ["Casein protein shake (40 g)", "1 tbsp peanut butter", "250 ml low-fat milk"],
-        calories: 380,
-        protein: 38,
-        carbs: 22,
-        fat: 14,
-      },
-    ],
-  },
-
-  /* ── Cutting ─────────────────────────────────────────────── */
-  {
-    id: "cut",
-    label: "Fat Loss",
-    labelColor: "var(--accent-cyan)",
-    name: "Cutting Plan",
-    goal: "Fat Loss & Definition",
-    goalIcon: faArrowTrendDown,
-    description:
-      "A moderate calorie-deficit plan designed to preserve hard-earned muscle while shedding body fat. High protein to maintain lean mass, controlled carbs timed around training, and healthy fats for satiety. Target: −400–600 kcal below TDEE.",
-    calories: 2000,
-    protein: 200,
-    carbs: 170,
-    fat: 55,
-    accentColor: "var(--accent-cyan)",
-    gradientFrom: "rgba(61,255,255,0.10)",
-    gradientTo: "rgba(61,255,255,0.02)",
-    meals: [
-      {
-        time: "7:00 AM",
-        name: "Breakfast",
-        foods: ["4 egg whites + 1 whole egg omelette", "1 cup oatmeal with berries", "Black coffee"],
-        calories: 380,
-        protein: 42,
-        carbs: 38,
-        fat: 8,
-      },
-      {
-        time: "10:00 AM",
-        name: "Mid-Morning Snack",
-        foods: ["Cottage cheese (250 g)", "Cucumber & celery sticks", "Green tea"],
-        calories: 220,
-        protein: 30,
-        carbs: 12,
-        fat: 5,
-      },
-      {
-        time: "1:00 PM",
-        name: "Lunch",
-        foods: ["200 g grilled chicken breast", "Large mixed salad (spinach, peppers, tomato)", "1 tbsp olive oil & lemon"],
-        calories: 380,
-        protein: 50,
-        carbs: 18,
-        fat: 14,
-      },
-      {
-        time: "4:00 PM",
-        name: "Pre-Workout",
-        foods: ["Whey protein shake (35 g)", "1 apple", "Espresso"],
-        calories: 250,
-        protein: 30,
-        carbs: 28,
-        fat: 3,
-      },
-      {
-        time: "7:00 PM",
-        name: "Post-Workout Dinner",
-        foods: ["180 g salmon fillet", "300 g roasted sweet potato", "Asparagus & lemon"],
-        calories: 520,
-        protein: 44,
-        carbs: 50,
-        fat: 16,
-      },
-      {
-        time: "9:00 PM",
-        name: "Night Snack",
-        foods: ["Casein protein shake (30 g)", "1 tbsp almond butter"],
-        calories: 250,
-        protein: 28,
-        carbs: 10,
-        fat: 12,
-      },
-    ],
-  },
-
-  /* ── Maintenance ─────────────────────────────────────────── */
-  {
-    id: "maintain",
-    label: "Lifestyle",
-    labelColor: "#a98dff",
-    name: "Maintenance Plan",
-    goal: "Health & Performance",
-    goalIcon: faScaleBalanced,
-    description:
-      "Eating at TDEE (Total Daily Energy Expenditure) to maintain weight and body composition while supporting performance and overall health. Balanced macros, nutrient-dense whole foods, and flexible meal timing.",
-    calories: 2600,
-    protein: 180,
-    carbs: 290,
-    fat: 70,
-    accentColor: "#a98dff",
-    gradientFrom: "rgba(169,141,255,0.10)",
-    gradientTo: "rgba(169,141,255,0.02)",
-    meals: [
-      {
-        time: "7:30 AM",
-        name: "Breakfast",
-        foods: ["Greek yogurt parfait (300 g)", "Granola (40 g)", "Mixed berries", "Coffee with milk"],
-        calories: 500,
-        protein: 32,
-        carbs: 68,
-        fat: 12,
-      },
-      {
-        time: "10:30 AM",
-        name: "Snack",
-        foods: ["Handful of almonds (30 g)", "1 banana", "Green tea"],
-        calories: 280,
-        protein: 8,
-        carbs: 32,
-        fat: 14,
-      },
-      {
-        time: "1:00 PM",
-        name: "Lunch",
-        foods: ["Turkey & avocado wrap", "Side salad", "250 ml water"],
-        calories: 580,
-        protein: 42,
-        carbs: 58,
-        fat: 18,
-      },
-      {
-        time: "3:30 PM",
-        name: "Pre-Workout",
-        foods: ["2 rice cakes with peanut butter", "Whey protein shake (25 g)"],
-        calories: 340,
-        protein: 28,
-        carbs: 38,
-        fat: 8,
-      },
-      {
-        time: "7:00 PM",
-        name: "Dinner",
-        foods: ["150 g chicken breast", "200 g quinoa", "Roasted Mediterranean veg"],
-        calories: 580,
-        protein: 48,
-        carbs: 68,
-        fat: 12,
-      },
-      {
-        time: "9:00 PM",
-        name: "Evening Snack",
-        foods: ["Cottage cheese (150 g)", "1 tbsp honey", "Chamomile tea"],
-        calories: 200,
-        protein: 22,
-        carbs: 20,
-        fat: 4,
-      },
-    ],
-  },
-];
 
 /* ─── Nutrition Tips ─────────────────────────────────────────── */
 const nutritionTips = [
@@ -375,9 +149,27 @@ function MacroBar({ value, max, color }: { value: number; max: number; color: st
 
 /* ─── Component ──────────────────────────────────────────────── */
 function Diet() {
+  const [dietPlans, setDietPlans] = useState<DietPlan[]>([]);
   const [primaryTab, setPrimaryTab] = useState<"programs" | "tracker">("programs");
+  /* Fetch diet plans */
+  useEffect(() => {
+    api.get("/api/meals/plans").then((res) => {
+      if (res.data.success) {
+        setDietPlans(res.data.data);
+        if (res.data.data.length > 0) {
+          setActivePlanId(res.data.data[0].planId);
+        }
+      }
+    });
+  }, []);
   const [activePlanId, setActivePlanId] = useState<string>("bulk");
-  const plan = dietPlans.find((p) => p.id === activePlanId)!;
+
+  /* Icon Mapping */
+  const iconMap: Record<string, any> = {
+    faArrowTrendUp: faArrowTrendUp,
+    faArrowTrendDown: faArrowTrendDown,
+    faScaleBalanced: faScaleBalanced,
+  };
 
   /* Tracker State */
   const [loggedMeals, setLoggedMeals] = useState<LoggedMeal[]>([]);
@@ -425,6 +217,10 @@ function Diet() {
         });
     }
   }, [primaryTab]);
+
+  if (dietPlans.length === 0) return <div className="diet-page" style={{ color: "var(--text-secondary)", padding: "2rem" }}>Loading Nutrition Programs...</div>;
+
+  const plan = dietPlans.find((p) => p.planId === activePlanId) || dietPlans[0];
 
   const totals = loggedMeals.reduce(
     (acc, m) => ({ calories: acc.calories + m.calories, protein: acc.protein + m.protein, carbs: acc.carbs + m.carbs, fat: acc.fat + m.fat }),
@@ -529,16 +325,16 @@ function Diet() {
         <div className="programs-view">
           {/* ── Tabs ── */}
           <div className="diet-tabs">
-            {dietPlans.map((p) => (
+            {dietPlans.map((p: any) => (
               <button
-                key={p.id}
-                className={`diet-tab-btn${activePlanId === p.id ? " active" : ""}`}
+                key={p.planId}
+                className={`diet-tab-btn${activePlanId === p.planId ? " active" : ""}`}
                 style={
-                  activePlanId === p.id
+                  activePlanId === p.planId
                     ? { borderColor: p.accentColor, color: p.accentColor, background: `${p.gradientFrom}` }
                     : {}
                 }
-                onClick={() => setActivePlanId(p.id)}
+                onClick={() => setActivePlanId(p.planId)}
               >
                 {p.name}
               </button>
@@ -567,7 +363,7 @@ function Diet() {
                     {plan.calories.toLocaleString()} kcal / day
                   </span>
                   <span className="diet-chip">
-                    <FontAwesomeIcon icon={plan.goalIcon} />
+                    <FontAwesomeIcon icon={iconMap[plan.goalIcon] || faFire} />
                     {plan.goal}
                   </span>
                 </div>

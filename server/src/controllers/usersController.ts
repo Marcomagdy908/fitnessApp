@@ -16,7 +16,6 @@ const adminUpdateUserSchema = z.object({
   role: z.enum(["USER", "ADMIN"]).optional(),
   avatar: z.string().url().optional(),
   subscriptionPlan: z.string().optional(),
-  
 });
 
 export const getProfile = async (
@@ -27,7 +26,7 @@ export const getProfile = async (
   try {
     const [rows] = await db.query<UserRow[] & { length: number }>(
       "SELECT id, name, username, email, role, avatar, createdAt FROM User WHERE id = ?",
-      [req.user!.id]
+      [req.user!.id],
     );
     res.json({ success: true, user: rows[0] });
   } catch (err) {
@@ -42,7 +41,7 @@ export const updateProfile = async (
 ): Promise<void> => {
   try {
     const body = updateProfileSchema.parse(req.body);
-    
+
     // Build dynamic UPDATE query
     const fields: string[] = [];
     const values: any[] = [];
@@ -62,14 +61,14 @@ export const updateProfile = async (
     if (fields.length > 0) {
       values.push(req.user!.id);
       await db.query(
-        `UPDATE User SET ${fields.join(', ')} WHERE id = ?`,
-        values
+        `UPDATE User SET ${fields.join(", ")} WHERE id = ?`,
+        values,
       );
     }
 
     const [rows] = await db.query<UserRow[] & { length: number }>(
       "SELECT id, name, username, email, role, avatar, updatedAt FROM User WHERE id = ?",
-      [req.user!.id]
+      [req.user!.id],
     );
     res.json({ success: true, user: rows[0] });
   } catch (err) {
@@ -84,7 +83,7 @@ export const getAllUsers = async (
 ): Promise<void> => {
   try {
     const [rows] = await db.query<UserRow[] & { length: number }>(
-      "SELECT id, name, username, email, role, avatar, subscriptionPlan, createdAt FROM User ORDER BY createdAt DESC"
+      "SELECT id, name, username, email, role, avatar, subscriptionPlan, createdAt FROM User ORDER BY createdAt DESC",
     );
     res.json({ success: true, users: rows });
   } catch (err) {
@@ -103,7 +102,7 @@ export const adminUpdateUser = async (
 
     const fields: string[] = [];
     const values: any[] = [];
-    
+
     if (body.name !== undefined) {
       fields.push("name = ?");
       values.push(body.name);
@@ -128,14 +127,14 @@ export const adminUpdateUser = async (
     if (fields.length > 0) {
       values.push(id);
       await db.query(
-        `UPDATE User SET ${fields.join(', ')} WHERE id = ?`,
-        values
+        `UPDATE User SET ${fields.join(", ")} WHERE id = ?`,
+        values,
       );
     }
 
     const [rows] = await db.query<UserRow[] & { length: number }>(
       "SELECT id, name, username, email, role, avatar, subscriptionPlan, updatedAt FROM User WHERE id = ?",
-      [id]
+      [id],
     );
     res.json({ success: true, user: rows[0] });
   } catch (err) {
