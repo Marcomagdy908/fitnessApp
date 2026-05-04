@@ -16,6 +16,7 @@ import subscriptionsRoutes from "./routes/subscriptions";
 import dashboardRoutes from "./routes/dashboard";
 import trainerBookingsRoutes from "./routes/trainerBookings";
 import gymClassesRoutes from "./routes/gymClasses";
+import benefitsRoutes from "./routes/benefits";
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use("/api/subscriptions", subscriptionsRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/trainer-bookings", trainerBookingsRoutes);
 app.use("/api/gym-classes", gymClassesRoutes);
+app.use("/api/benefits", benefitsRoutes);
 
 // ── Error Handling ─────────────────────────────────────────────────────────────
 

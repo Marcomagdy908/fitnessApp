@@ -12,10 +12,15 @@ import Diet from "./pages/diet";
 import Subscription from "./pages/subscription";
 import Login from "./pages/login";
 import SignUp from "./pages/signup";
+import Landing from "./pages/landing";
 import MyBookings from "./pages/myBookings";
 import AdminDashboard from "./pages/adminDashboard";
-import { AuthProvider } from "./context/AuthContext";
 import TrainerProfile from "./pages/trainerProfile";
+
+import { useAuth, AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
+import { SubscriptionProvider } from "./context/SubscriptionContext";
+import { Navigate } from "react-router-dom";
 
 function MainLayout() {
   return (
@@ -31,8 +36,21 @@ function MainLayout() {
   );
 }
 
-import { ThemeProvider } from "./context/ThemeContext";
-import { SubscriptionProvider } from "./context/SubscriptionContext";
+function RootRoute() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100 bg-dark text-cyan">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  return user ? <Navigate to="/dashboard" replace /> : <Landing />;
+}
 
 function App() {
   return (
@@ -42,13 +60,20 @@ function App() {
           <BrowserRouter>
             <Routes>
               {/* Auth routes without sidebar/navbar */}
+
+              {/* Root logic: landing if guest, dashboard if logged in */}
+              <Route path="/" element={<RootRoute />} />
+
+              {/* Public routes */}
+              <Route path="/landing" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
 
               {/* Main app routes with sidebar/navbar */}
               <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
-                  <Route path="/" element={<Dashboard />} />
+                  {/* <Route path="/" element={<Dashboard />} /> */}
+
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/diet" element={<Diet />} />
                   <Route path="/exercises" element={<Exercises />} />

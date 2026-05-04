@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBoltLightning,
   faChartLine,
   faClipboardList,
   faCog,
@@ -20,6 +19,7 @@ import "../css/sidebarNavigation.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { faUserShield } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 function SidebarNavigation() {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ function SidebarNavigation() {
   ];
 
   const { user } = useAuth();
-  
+
   const fullNavigationList = [...navigationList];
   if (user?.role === "ADMIN") {
     fullNavigationList.push({ name: "Admin", icon: faUserShield, path: "/admin" });
@@ -56,8 +56,10 @@ function SidebarNavigation() {
       style={{ top: "0", cursor: "pointer" }}
       onClick={() => handleNavigate("/")}
     >
-      <FontAwesomeIcon icon={faBoltLightning} size="2xl" />
-      <h2 className="logo">ApexTrack</h2>
+      <Link to="/" className="lp-nav-brand">
+        <div className="lp-nav-icon">⚡</div>
+        <span className="lp-nav-name">Fit<span>Forge</span></span>
+      </Link>
     </Container>
   );
 

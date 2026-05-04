@@ -24,9 +24,9 @@ async function main() {
   /* ─── Subscription ──────────────────────────────────────── */
   await db.query('DELETE FROM Subscription');
   await db.query(
-    `INSERT INTO Subscription (userId, plan, status, billingCycle, autoRenew, startsAt, expiresAt)
-     VALUES (?, ?, ?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 1 MONTH))`,
-    [userId, 'pro', 'active', 'monthly', true]
+    `INSERT INTO Subscription (userId, plan, status, billingCycle, autoRenew, maxVisits, usedVisits, startsAt, expiresAt)
+     VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 1 MONTH))`,
+    [userId, 'pro', 'active', 'monthly', true, 4, 1]
   );
   console.log('✅ Seeded user subscription (Pro plan)');
 
@@ -315,6 +315,37 @@ async function main() {
       );
     }
   }
+  /* ─── Subscription Benefits ────────────────────────────── */
+  await db.query('DELETE FROM SubscriptionBenefit');
+  const benefits = [
+    // Basic
+    { planId: 'basic', text: 'Gym floor access (6AM – 10PM)', included: true },
+    { planId: 'basic', text: 'Free weights & machines', included: true },
+    { planId: 'basic', text: 'Cardio zone (treadmills, bikes)', included: true },
+    { planId: 'basic', text: 'Changing rooms & lockers', included: true },
+    { planId: 'basic', text: 'Group fitness classes', included: false },
+    { planId: 'basic', text: 'Swimming pool & jacuzzi', included: false },
+    // Pro
+    { planId: 'pro', text: 'Gym floor access (24/7)', included: true },
+    { planId: 'pro', text: 'Unlimited group fitness classes', included: true },
+    { planId: 'pro', text: 'Swimming pool & jacuzzi', included: true },
+    { planId: 'pro', text: 'Sauna & steam room', included: true },
+    { planId: 'pro', text: 'Personal trainer sessions', included: false },
+    // Elite
+    { planId: 'elite', text: 'Everything in Pro', included: true },
+    { planId: 'elite', text: '4× personal trainer sessions / mo', included: true },
+    { planId: 'elite', text: 'Monthly nutrition consultation', included: true },
+    { planId: 'elite', text: 'Guest passes (4/month)', included: true },
+  ];
+
+  for (const b of benefits) {
+    await db.query(
+      'INSERT INTO SubscriptionBenefit (planId, benefitText, isIncluded) VALUES (?, ?, ?)',
+      [b.planId, b.text, b.included]
+    );
+  }
+  console.log('✅ Seeded subscription benefits');
+
   await seedDiet();
   console.log('\n🎉 All done! Login: john.doe@email.com / password123');
 }
