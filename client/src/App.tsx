@@ -15,7 +15,10 @@ import SignUp from "./pages/signup";
 import Landing from "./pages/landing";
 import MyBookings from "./pages/myBookings";
 import AdminDashboard from "./pages/adminDashboard";
-import { AuthProvider } from "./context/AuthContext";
+import { useAuth, AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
+import { SubscriptionProvider } from "./context/SubscriptionContext";
+import { Navigate } from "react-router-dom";
 
 function MainLayout() {
   return (
@@ -31,35 +34,48 @@ function MainLayout() {
   );
 }
 
-import { ThemeProvider } from "./context/ThemeContext";
-import { SubscriptionProvider } from "./context/SubscriptionContext";
+function RootRoute() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100 bg-dark text-cyan">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  return user ? <Navigate to="/dashboard" replace /> : <Landing />;
+}
 
 function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
         <SubscriptionProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/landing" element={<Landing />} />
-            <Route path="/" element={<Landing />} />
-            {/* Auth routes without sidebar/navbar */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
+          <BrowserRouter>
+            <Routes>
+              {/* Root logic: landing if guest, dashboard if logged in */}
+              <Route path="/" element={<RootRoute />} />
+              
+              {/* Public routes */}
+              <Route path="/landing" element={<Landing />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
 
-            {/* Main app routes with sidebar/navbar */}
-            <Route element={<ProtectedRoute />}>
-              <Route element={<MainLayout />}>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/diet" element={<Diet />} />
-                <Route path="/exercises" element={<Exercises />} />
-                <Route path="/exercises/:id" element={<ExerciseDetail />} />
-                <Route path="/bookings" element={<MyBookings />} />
-                <Route path="/progress" element={<Progress />} />
-                <Route path="/plans" element={<Plans />} />
-                <Route path="/settings" element={<Settings />} />
+              {/* Main app routes with sidebar/navbar */}
+              <Route element={<ProtectedRoute />}>
+                <Route element={<MainLayout />}>
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/diet" element={<Diet />} />
+                  <Route path="/exercises" element={<Exercises />} />
+                  <Route path="/exercises/:id" element={<ExerciseDetail />} />
+                  <Route path="/bookings" element={<MyBookings />} />
+                  <Route path="/progress" element={<Progress />} />
+                  <Route path="/plans" element={<Plans />} />
+                  <Route path="/settings" element={<Settings />} />
                   <Route path="/subscription" element={<Subscription />} />
                 </Route>
 

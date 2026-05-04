@@ -252,3 +252,131 @@
 .admin-modal .btn-link:hover {
   color: var(--text-primary) !important;
 }
+
+/* ── Admin Tabs ──────────────────────────────────── */
+
+.admin-tabs {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.admin-tabs .nav-link {
+  color: var(--text-secondary) !important;
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  padding: 1rem 1.5rem !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  transition: all 0.2s ease !important;
+}
+
+.admin-tabs .nav-link:hover {
+  color: var(--text-primary) !important;
+}
+
+.admin-tabs .nav-link.active {
+  background: transparent !important;
+  color: var(--accent-cyan) !important;
+  border-bottom: 2px solid var(--accent-cyan) !important;
+}
+
+/* ── Custom Switch ───────────────────────────────── */
+
+.custom-switch .form-check-input {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-color) !important;
+}
+
+.custom-switch .form-check-input:checked {
+  background-color: var(--accent-cyan) !important;
+  border-color: var(--accent-cyan) !important;
+}
+
+/* ── Plan Badges ─────────────────────────────────── */
+
+.admin-badge-basic {
+  background: rgba(80, 230, 120, 0.1) !important;
+  color: var(--success) !important;
+  border: 1px solid rgba(80, 230, 120, 0.2) !important;
+}
+
+.admin-badge-pro {
+  background: rgba(61, 255, 255, 0.1) !important;
+  color: var(--accent-cyan) !important;
+  border: 1px solid rgba(61, 255, 255, 0.2) !important;
+}
+
+.admin-badge-elite {
+  background: rgba(255, 165, 0, 0.1) !important;
+  color: #ffa500 !important;
+  border: 1px solid rgba(255, 165, 0, 0.2) !important;
+}
+
+.admin-badge-danger {
+  background: var(--danger-dim) !important;
+  color: var(--danger) !important;
+  border: 1px solid var(--danger-dim) !important;
+}
+
+.visits-indicator {
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.benefit-track-item {
+  transition: all 0.2s ease;
+  border-color: var(--border-color) !important;
+}
+
+.benefit-track-item:hover {
+  border-color: var(--accent-cyan-border) !important;
+  background: var(--bg-card) !important;
+  transform: translateX(4px);
+}
+
+.benefit-track-item .form-control-sm {
+  font-size: 0.75rem !important;
+  border-radius: 6px !important;
+  padding: 0.25rem 0.5rem !important;
+}
+
+/* ── Search Bar ──────────────────────────────────── */
+
+.search-wrapper {
+  min-width: 280px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+.admin-search-input {
+  width: 100%;
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  padding: 0.6rem 1rem 0.6rem 2.5rem !important;
+  border-radius: 12px !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.admin-search-input:focus {
+  outline: none !important;
+  border-color: var(--accent-cyan-border) !important;
+  box-shadow: 0 0 0 3px var(--accent-cyan-dim) !important;
+  background: var(--bg-card) !important;
+}
+
+.admin-search-input::placeholder {
+  color: var(--text-dim) !important;
+  opacity: 0.6;
+}
