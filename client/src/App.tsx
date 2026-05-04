@@ -12,6 +12,7 @@ import Diet from "./pages/diet";
 import Subscription from "./pages/subscription";
 import Login from "./pages/login";
 import SignUp from "./pages/signup";
+import Landing from "./pages/landing";
 import MyBookings from "./pages/myBookings";
 import AdminDashboard from "./pages/adminDashboard";
 import { AuthProvider } from "./context/AuthContext";
@@ -40,6 +41,9 @@ function App() {
         <SubscriptionProvider>
         <BrowserRouter>
           <Routes>
+            {/* Public routes */}
+            <Route path="/landing" element={<Landing />} />
+            <Route path="/" element={<Landing />} />
             {/* Auth routes without sidebar/navbar */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />

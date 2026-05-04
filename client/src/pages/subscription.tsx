@@ -178,7 +178,7 @@ function Subscription() {
 
   const handleCancel = async () => {
     if (!window.confirm("Are you sure you want to cancel your subscription? You will lose premium access at the end of your billing period.")) return;
-    
+
     try {
       await api.patch("/api/subscriptions/cancel", {});
       await refreshSubscription();

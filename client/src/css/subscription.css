@@ -235,6 +235,7 @@
   overflow: hidden;
   position: relative;
   transition: transform 0.25s, box-shadow 0.25s;
+  background: var(--bg-card);
 }
 
 .sub-card:hover {
@@ -348,7 +349,7 @@
 }
 
 .sub-feature--excluded {
-  color: #2e2e2e;
+  color: var(--text-dim);
 }
 
 .sub-feature-icon {
