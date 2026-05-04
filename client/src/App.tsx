@@ -15,6 +15,7 @@ import SignUp from "./pages/signup";
 import MyBookings from "./pages/myBookings";
 import AdminDashboard from "./pages/adminDashboard";
 import { AuthProvider } from "./context/AuthContext";
+import TrainerProfile from "./pages/trainerProfile";
 
 function MainLayout() {
   return (
@@ -38,25 +39,26 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <SubscriptionProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Auth routes without sidebar/navbar */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
+          <BrowserRouter>
+            <Routes>
+              {/* Auth routes without sidebar/navbar */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
 
-            {/* Main app routes with sidebar/navbar */}
-            <Route element={<ProtectedRoute />}>
-              <Route element={<MainLayout />}>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/diet" element={<Diet />} />
-                <Route path="/exercises" element={<Exercises />} />
-                <Route path="/exercises/:id" element={<ExerciseDetail />} />
-                <Route path="/bookings" element={<MyBookings />} />
-                <Route path="/progress" element={<Progress />} />
-                <Route path="/plans" element={<Plans />} />
-                <Route path="/settings" element={<Settings />} />
+              {/* Main app routes with sidebar/navbar */}
+              <Route element={<ProtectedRoute />}>
+                <Route element={<MainLayout />}>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/diet" element={<Diet />} />
+                  <Route path="/exercises" element={<Exercises />} />
+                  <Route path="/exercises/:id" element={<ExerciseDetail />} />
+                  <Route path="/bookings" element={<MyBookings />} />
+                  <Route path="/progress" element={<Progress />} />
+                  <Route path="/plans" element={<Plans />} />
+                  <Route path="/settings" element={<Settings />} />
                   <Route path="/subscription" element={<Subscription />} />
+                  <Route path="/trainer/:id" element={<TrainerProfile />} />
                 </Route>
 
                 {/* Admin routes */}
