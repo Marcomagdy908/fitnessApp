@@ -92,12 +92,12 @@ export default function TrainerProfile() {
               src={trainer.imageUrl || ""}
               size="90"
               round
-              color="#0ff"
-              fgColor="#000"
+              color="var(--accent)"
+              fgColor="var(--bg-card)"
             />
             <h3>{trainer.name}</h3>
             <p style={{ color: "#aaa" }}>{trainer.title}</p>
-            <p style={{ color: "#0ff" }}>{trainer.specialty}</p>
+            <p style={{ color: "var(--accent)" }}>{trainer.specialty}</p>
           </div>
 
           <div className="dash-card">
@@ -144,7 +144,7 @@ export default function TrainerProfile() {
               <FontAwesomeIcon icon={faStar} /> Rating
             </div>
 
-            <h2 style={{ color: "#0ff" }}>{trainer.rating}</h2>
+            <h2 style={{ color: "var(--accent)" }}>{trainer.rating}</h2>
             <p style={{ color: "#aaa" }}>{trainer.reviews} reviews</p>
           </div>
 
