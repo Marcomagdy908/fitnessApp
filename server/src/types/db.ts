@@ -148,6 +148,7 @@ export interface MealLogRow extends RowDataPacket {
 
 export interface TrainerRow extends RowDataPacket {
   id: number;
+  userId: number | null;
   name: string;
   title: string;
   specialty: string;

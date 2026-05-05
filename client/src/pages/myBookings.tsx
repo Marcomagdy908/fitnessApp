@@ -10,20 +10,27 @@ import {
   faCrown,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/myBookings.css";
+import { fetchApi } from "../utils/api.ts";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 /* ─── Types ─────────────────────────────────────────────────── */
 interface Trainer {
   id: number;
   name: string;
+  title: string;
   specialty: string;
+  specialtyIcon: string;
+  specialtyColor: string;
   rating: number;
   reviews: number;
-  experience: string;
+  experience: number;
   avatar: string;
-  price: number;
+  pricePerSession: number;
   available: boolean;
   bio: string;
   tags: string[];
+  certifications: string[];
 }
 
 interface GymClass {
@@ -54,15 +61,14 @@ interface Booking {
 }
 
 /* ─── Mock Data ─────────────────────────────────────────────── */
-const MOCK_TRAINERS: Trainer[] = [
-  { id: 1, name: "Marcus 'The Engine' Thorne", specialty: "Bodybuilding", rating: 4.9, reviews: 124, experience: "12 yrs", avatar: "🧔", price: 45, available: true, bio: "Focus on hypertrophy and metabolic conditioning.", tags: ["Bulking", "Powerlifting"] },
-  { id: 2, name: "Sarah 'Zen' Miller", specialty: "Yoga & Flexibility", rating: 5.0, reviews: 89, experience: "8 yrs", avatar: "🧘‍♀️", price: 35, available: true, bio: "Expert in Vinyasa and mobility recovery.", tags: ["Yoga", "Meditation"] },
-];
+
 
 const MOCK_CLASSES: GymClass[] = [
   { id: 1, name: "Morning HIIT", instructor: "Marcus Thorne", time: "07:00 AM", date: "Mon, Apr 26", duration: "45 min", location: "Studio A", spots: 12, category: "Cardio", isPremium: false },
   { id: 2, name: "Power Yoga", instructor: "Sarah Miller", time: "09:30 AM", date: "Mon, Apr 26", duration: "60 min", location: "Zen Room", spots: 8, category: "Flexibility", isPremium: true },
 ];
+
+
 
 const MOCK_BOOKINGS: Booking[] = [
   { id: 101, trainerName: "Marcus Thorne", trainerAvatar: "🧔", specialty: "Bodybuilding", date: "Wed, Apr 21", time: "04:00 PM", duration: "60 min", price: 45, status: "confirmed", notes: "Focus on leg day form." },
@@ -70,10 +76,14 @@ const MOCK_BOOKINGS: Booking[] = [
 
 /* ─── Component ──────────────────────────────────────────────── */
 function MyBookings() {
+  const navigate = useNavigate();
+  const handleTrainerClick = (trainerId: number) => {
+    navigate(`/trainer/${trainerId}`);
+  };
   const [primaryTab, setPrimaryTab] = useState<"history" | "classes" | "trainers">("history");
   const [bookings, setBookings] = useState<Booking[]>(MOCK_BOOKINGS);
   const [classes, setClasses] = useState<GymClass[]>(MOCK_CLASSES);
-  const [trainers] = useState<Trainer[]>(MOCK_TRAINERS);
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [hasSubscription] = useState(false); // Gate check
 
   const cancelBooking = (id: number) => {
@@ -83,6 +93,25 @@ function MyBookings() {
   const toggleClassBooking = (id: number) => {
     setClasses(prev => prev.map(c => c.id === id ? { ...c, isBooked: !c.isBooked, spots: c.isBooked ? c.spots + 1 : c.spots - 1 } : c));
   };
+
+
+  const fetchTrainers = async () => {
+    try {
+      const res = await fetchApi("/api/trainers");
+      if (res) {
+        const { data } = await res.json();
+        setTrainers(data);
+      
+      }
+    } catch (err) {
+      console.error("Failed to fetch trainers:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchTrainers();
+  }, []);
+
 
   return (
     <div className="bookings-page">
@@ -186,7 +215,7 @@ function MyBookings() {
           <div className="section-title"><FontAwesomeIcon icon={faUserTie} /> Personal Trainers</div>
           <div className="trainers-grid">
             {trainers.map(t => (
-              <div key={t.id} className="trainer-card">
+              <div key={t.id} className="trainer-card" onClick={() => handleTrainerClick(t.id)}>
                 <div className="trainer-availability available"><span className="avail-dot"></span> Available</div>
                 <div className="trainer-top">
                   <div className="trainer-avatar">{t.avatar}</div>
@@ -202,10 +231,10 @@ function MyBookings() {
                 </div>
                 <p className="trainer-bio">{t.bio}</p>
                 <div className="trainer-tags">
-                  {t.tags.map(tag => <span key={tag} className="trainer-tag">{tag}</span>)}
+                  {Array.isArray(t.tags) && t.tags.map(tag => <span key={tag} className="trainer-tag">{tag}</span>)}
                 </div>
                 <div className="trainer-actions">
-                  <button className="trainer-book-btn">Book ${t.price}/hr</button>
+                  <button className="trainer-book-btn">Book ${t.pricePerSession}/hr</button>
                 </div>
               </div>
             ))}

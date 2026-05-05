@@ -70,3 +70,17 @@ export const adminOnly = (
   }
   next();
 };
+
+export const trainerOnly = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+): void => {
+  if (req.user?.role !== "TRAINER" && req.user?.role !== "ADMIN") {
+    res
+      .status(403)
+      .json({ success: false, message: "Forbidden — trainer access only" });
+    return;
+  }
+  next();
+};

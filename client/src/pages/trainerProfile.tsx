@@ -20,8 +20,8 @@ type Trainer = {
   title: string;
   specialty: string;
   bio: string;
-  certifications: string;
-  tags: string;
+  certifications: string | string[];
+  tags: string | string[];
   imageUrl: string | null;
   rating: number;
   reviews: number;
@@ -108,7 +108,10 @@ export default function TrainerProfile() {
           <div className="dash-card">
             <div className="dash-card-title">Certifications</div>
 
-            {trainer.certifications?.split(",").map((c, i) => (
+            {(Array.isArray(trainer.certifications) 
+              ? trainer.certifications 
+              : trainer.certifications?.split(",") || []
+            ).map((c, i) => (
               <div key={i} className="tag-item">
                 🏅 {c.trim()}
               </div>
@@ -152,7 +155,10 @@ export default function TrainerProfile() {
             <div className="dash-card-title">Tags</div>
 
             <div className="tags-wrap">
-              {trainer.tags?.split(",").map((t, i) => (
+              {(Array.isArray(trainer.tags) 
+                ? trainer.tags 
+                : trainer.tags?.split(",") || []
+              ).map((t, i) => (
                 <span key={i} className="tag">
                   {t.trim()}
                 </span>

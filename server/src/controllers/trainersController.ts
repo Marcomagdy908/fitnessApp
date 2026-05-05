@@ -11,7 +11,25 @@ export const getTrainers = async (
     const [trainers] = await db.query<TrainerRow[] & { length: number }>(
       "SELECT * FROM Trainer ORDER BY rating DESC",
     );
-    res.json({ success: true, data: trainers });
+    
+    const parseJSON = (str: string | null) => {
+      if (!str) return [];
+      try {
+        return JSON.parse(str);
+      } catch (e) {
+        console.error("Failed to parse JSON:", str);
+        return [];
+      }
+    };
+    
+    // Parse JSON strings
+    const parsedTrainers = trainers.map(t => ({
+      ...t,
+      tags: parseJSON(t.tags),
+      certifications: parseJSON(t.certifications)
+    }));
+
+    res.json({ success: true, data: parsedTrainers });
   } catch (err) {
     next(err);
   }
@@ -45,10 +63,27 @@ export const getTrainer = async (
       res.status(404).json({ success: false, message: "Trainer not found" });
       return;
     }
+
+    const parseJSON = (str: string | null) => {
+      if (!str) return [];
+      try {
+        return JSON.parse(str);
+      } catch (e) {
+        console.error("Failed to parse JSON:", str);
+        return [];
+      }
+    };
+
+    const parsedTrainer = {
+      ...trainer,
+      tags: parseJSON(trainer.tags),
+      certifications: parseJSON(trainer.certifications)
+    };
+
     res.json({
       success: true,
       data: {
-        ...trainer,
+        ...parsedTrainer,
         bookings,
       },
     });

@@ -21,6 +21,13 @@ async function main() {
   );
   console.log('✅ Seeded admin user (admin@apextrack.com / admin123)');
 
+  const [trainerUserResult] = await db.query<ResultSetHeader>(
+    'INSERT INTO User (name, email, password, role) VALUES (?, ?, ?, ?)',
+    ['Alex Carter', 'alex.trainer@email.com', hashedPassword, 'TRAINER']
+  );
+  const trainerUserId = trainerUserResult.insertId;
+  console.log('✅ Seeded trainer user (alex.trainer@email.com / password123)');
+
   /* ─── Subscription ──────────────────────────────────────── */
   await db.query('DELETE FROM Subscription');
   await db.query(
@@ -34,6 +41,7 @@ async function main() {
   await db.query('DELETE FROM Trainer');
   const trainers = [
     {
+      userId: trainerUserId,
       name: "Alex Carter",
       title: "Head Strength Coach",
       specialty: "Powerlifting & Strength",
@@ -140,9 +148,9 @@ async function main() {
   const trainerIds: number[] = [];
   for (const t of trainers) {
     const [res] = await db.query<ResultSetHeader>(
-      `INSERT INTO Trainer (name, title, specialty, specialtyIcon, specialtyColor, avatar, rating, reviews, experience, pricePerSession, sessionsCompleted, bio, certifications, tags, available)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [t.name, t.title, t.specialty, t.specialtyIcon, t.specialtyColor, t.avatar, t.rating, t.reviews, t.experience, t.pricePerSession, t.sessionsCompleted, t.bio, t.certifications, t.tags, t.available]
+      `INSERT INTO Trainer (userId, name, title, specialty, specialtyIcon, specialtyColor, avatar, rating, reviews, experience, pricePerSession, sessionsCompleted, bio, certifications, tags, available)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [(t as any).userId || null, t.name, t.title, t.specialty, t.specialtyIcon, t.specialtyColor, t.avatar, t.rating, t.reviews, t.experience, t.pricePerSession, t.sessionsCompleted, t.bio, t.certifications, t.tags, t.available]
     );
     trainerIds.push(res.insertId);
   }
