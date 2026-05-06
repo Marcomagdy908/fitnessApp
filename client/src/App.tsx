@@ -22,7 +22,6 @@ import { SubscriptionProvider } from "./context/SubscriptionContext";
 import { Navigate } from "react-router-dom";
 import TrainerDashboard from "./pages/trainer/TrainerDashboard";
 import TrainerPlans from "./pages/trainer/TrainerPlans";
-import TrainerSettings from "./pages/trainer/TrainerSettings";
 import TrainerDiet from "./pages/trainer/TrainerDiet";
 
 function MainLayout() {
@@ -87,10 +86,6 @@ function App() {
                   <Route path="/trainer" element={<TrainerDashboard />} />
                   <Route path="/trainer/diet" element={<TrainerDiet />} />
                   <Route path="/trainer/plans" element={<TrainerPlans />} />
-                  <Route
-                    path="/trainer/settings"
-                    element={<TrainerSettings />}
-                  />
                 </Route>
 
                 {/* Admin routes */}
