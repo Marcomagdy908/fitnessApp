@@ -16,11 +16,14 @@ import Landing from "./pages/landing";
 import MyBookings from "./pages/myBookings";
 import AdminDashboard from "./pages/adminDashboard";
 import TrainerProfile from "./pages/trainerProfile";
-
 import { useAuth, AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { SubscriptionProvider } from "./context/SubscriptionContext";
 import { Navigate } from "react-router-dom";
+import TrainerDashboard from "./pages/trainer/TrainerDashboard";
+import TrainerPlans from "./pages/trainer/TrainerPlans";
+import TrainerSettings from "./pages/trainer/TrainerSettings";
+import TrainerDiet from "./pages/trainer/TrainerDiet";
 
 function MainLayout() {
   return (
@@ -60,10 +63,8 @@ function App() {
           <BrowserRouter>
             <Routes>
               {/* Auth routes without sidebar/navbar */}
-
               {/* Root logic: landing if guest, dashboard if logged in */}
               <Route path="/" element={<RootRoute />} />
-
               {/* Public routes */}
               <Route path="/landing" element={<Landing />} />
               <Route path="/login" element={<Login />} />
@@ -73,7 +74,6 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
                   {/* <Route path="/" element={<Dashboard />} /> */}
-
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/diet" element={<Diet />} />
                   <Route path="/exercises" element={<Exercises />} />
@@ -84,6 +84,13 @@ function App() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/subscription" element={<Subscription />} />
                   <Route path="/trainer/:id" element={<TrainerProfile />} />
+                  <Route path="/trainer" element={<TrainerDashboard />} />
+                  <Route path="/trainer/diet" element={<TrainerDiet />} />
+                  <Route path="/trainer/plans" element={<TrainerPlans />} />
+                  <Route
+                    path="/trainer/settings"
+                    element={<TrainerSettings />}
+                  />
                 </Route>
 
                 {/* Admin routes */}

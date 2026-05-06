@@ -1,0 +1,217 @@
+.trainer-dashboard {
+  padding: 2rem;
+  background: var(--bg-primary);
+  min-height: 100vh;
+  color: var(--text-primary);
+}
+
+/* HEADER */
+.trainer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.trainer-header h1 {
+  font-size: 1.8rem;
+  font-weight: 900;
+}
+
+.add-btn {
+  background: var(--accent-cyan);
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* STATS */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  text-align: center;
+  transition: 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-cyan);
+}
+
+.stat-card h3 {
+  font-size: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+/* CLIENTS */
+.clients-section h2 {
+  margin-bottom: 1rem;
+}
+
+.clients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.client-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  border-radius: 16px;
+}
+
+.client-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badge.active {
+  background: rgba(61, 210, 100, 0.15);
+  color: #3dd260;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+}
+
+.badge.expired {
+  background: rgba(255, 80, 80, 0.15);
+  color: #ff5050;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+}
+
+.client-plan {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+/* PROGRESS */
+.progress-bar {
+  height: 6px;
+  background: var(--bg-surface);
+  border-radius: 999px;
+  margin-top: 0.8rem;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent-cyan);
+  transition: width 0.3s;
+}
+
+.progress-text {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-box {
+  background: var(--bg-card);
+  padding: 1.8rem;
+  border-radius: 18px;
+  width: 360px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  animation: pop 0.2s ease;
+}
+
+/* animation */
+@keyframes pop {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* FORM */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.modal-form label {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* INPUTS */
+.modal-form input,
+.modal-form textarea {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.6rem;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  outline: none;
+  transition: 0.2s;
+}
+
+.modal-form input:focus,
+.modal-form textarea:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 2px rgba(0, 200, 255, 0.2);
+}
+
+/* BUTTONS */
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.2rem;
+  gap: 0.5rem;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.modal-actions button:first-child {
+  background: #2a2a2a;
+  color: white;
+}
+
+.modal-actions button:last-child {
+  background: var(--accent-cyan);
+  color: black;
+}
+
+.modal-actions button:hover {
+  transform: translateY(-2px);
+}

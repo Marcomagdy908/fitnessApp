@@ -45,6 +45,8 @@ export default function TrainerProfile() {
     try {
       const res = await fetchApi(`/api/trainers/${id}`);
       const json = await res.json();
+      console.log("RAW RESPONSE =", json); // 👈 ضيفي دي
+
       setTrainer(json.data);
     } finally {
       setLoading(false);
@@ -108,8 +110,8 @@ export default function TrainerProfile() {
           <div className="dash-card">
             <div className="dash-card-title">Certifications</div>
 
-            {(Array.isArray(trainer.certifications) 
-              ? trainer.certifications 
+            {(Array.isArray(trainer.certifications)
+              ? trainer.certifications
               : trainer.certifications?.split(",") || []
             ).map((c, i) => (
               <div key={i} className="tag-item">
@@ -155,8 +157,8 @@ export default function TrainerProfile() {
             <div className="dash-card-title">Tags</div>
 
             <div className="tags-wrap">
-              {(Array.isArray(trainer.tags) 
-                ? trainer.tags 
+              {(Array.isArray(trainer.tags)
+                ? trainer.tags
                 : trainer.tags?.split(",") || []
               ).map((t, i) => (
                 <span key={i} className="tag">

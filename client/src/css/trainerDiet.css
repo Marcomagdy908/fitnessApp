@@ -1,0 +1,300 @@
+/* ─────────────────────────────
+   WRAPPER
+──────────────────────────── */
+.diet-wrapper {
+  padding: 2.5rem;
+  background: var(--bg-primary);
+  min-height: 100vh;
+}
+
+/* ─────────────────────────────
+   HEADER
+──────────────────────────── */
+.diet-header h1 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.diet-header p {
+  color: #777;
+  font-size: 0.95rem;
+  margin-top: 0.3rem;
+}
+
+/* ─────────────────────────────
+   GRID
+──────────────────────────── */
+.diet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* ─────────────────────────────
+   CARD
+──────────────────────────── */
+.diet-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 1.5rem;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.diet-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  border-color: rgba(61, 255, 255, 0.25);
+}
+
+/* ─────────────────────────────
+   TOP SECTION
+──────────────────────────── */
+.diet-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.diet-top h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.diet-badge {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(123, 97, 255, 0.15);
+  color: #a98dff;
+  border: 1px solid rgba(123, 97, 255, 0.3);
+}
+
+/* ─────────────────────────────
+   DESCRIPTION
+──────────────────────────── */
+.diet-desc {
+  font-size: 0.9rem;
+  color: #777;
+  margin: 0.8rem 0;
+  line-height: 1.5;
+}
+
+/* ─────────────────────────────
+   META
+──────────────────────────── */
+.diet-meta {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.8rem;
+}
+
+/* ─────────────────────────────
+   MEALS LIST (VIEW)
+──────────────────────────── */
+.meal-list {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.meal-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: #ddd;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ─────────────────────────────
+   ACTIONS
+──────────────────────────── */
+.diet-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.diet-actions button {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: 0.2s;
+}
+
+.diet-actions button:first-child {
+  background: rgba(61, 255, 255, 0.12);
+  color: var(--accent-cyan);
+}
+
+.diet-actions button:first-child:hover {
+  background: rgba(61, 255, 255, 0.2);
+}
+
+.diet-actions button:last-child {
+  background: rgba(255, 80, 80, 0.12);
+  color: #ff5050;
+}
+
+.diet-actions button:last-child:hover {
+  background: rgba(255, 80, 80, 0.2);
+}
+
+/* ─────────────────────────────
+   MODAL OVERLAY
+──────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* ─────────────────────────────
+   MODAL BOX
+──────────────────────────── */
+.modal-box {
+  background: var(--bg-card);
+  width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 18px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.modal-box h2 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+/* ─────────────────────────────
+   FORM SECTION
+──────────────────────────── */
+.modal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.modal-section input,
+.modal-section textarea {
+  padding: 0.65rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.modal-section textarea {
+  min-height: 70px;
+  resize: none;
+}
+
+/* ─────────────────────────────
+   SECTION TITLE
+──────────────────────────── */
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+/* ─────────────────────────────
+   ADD MEAL BUTTON
+──────────────────────────── */
+.add-meal {
+  background: var(--accent-cyan);
+  border: none;
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  color: #000;
+  font-weight: 700;
+}
+
+/* ─────────────────────────────
+   MEAL EDIT CARD
+──────────────────────────── */
+.meal-edit-card {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) auto;
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.meal-edit-card input {
+  padding: 0.4rem;
+  font-size: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+/* ─────────────────────────────
+   DELETE MEAL
+──────────────────────────── */
+.delete-meal {
+  background: rgba(255, 80, 80, 0.15);
+  border: none;
+  color: #ff5050;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0.4rem;
+}
+
+/* ─────────────────────────────
+   MODAL ACTIONS
+──────────────────────────── */
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.modal-actions button:first-child {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.modal-actions button:last-child {
+  background: var(--accent-cyan);
+  color: #000;
+}

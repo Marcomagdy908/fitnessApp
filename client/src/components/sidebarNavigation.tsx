@@ -25,8 +25,15 @@ function SidebarNavigation() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
 
-  const navigationList = [
+  const settingsPath =
+    user?.role === "ADMIN"
+      ? "/admin/settings"
+      : user?.role === "TRAINER"
+        ? `/trainer/${user?.id}`
+        : "/settings";
+  const userMenu = [
     { name: "Dashboard", icon: faHome, path: "/" },
     { name: "Exercises", icon: faDumbbell, path: "/exercises" },
     { name: "Diet", icon: faUtensils, path: "/diet" },
@@ -37,13 +44,24 @@ function SidebarNavigation() {
     { name: "Settings", icon: faCog, path: "/settings" },
   ];
 
-  const { user } = useAuth();
+  const trainerMenu = [
+    { name: "Dashboard", icon: faHome, path: "/trainer" },
+    { name: "Exercises", icon: faDumbbell, path: "/exercises" },
+    { name: "Diet", icon: faUtensils, path: "/trainer/diet" },
+    { name: "Plans", icon: faClipboardList, path: "/trainer/plans" },
+    { name: "Profile", icon: faCog, path: settingsPath },
+  ];
 
-  const fullNavigationList = [...navigationList];
-  if (user?.role === "ADMIN") {
-    fullNavigationList.push({ name: "Admin", icon: faUserShield, path: "/admin" });
-  }
-
+  const adminMenu = [
+    { name: "Admin", icon: faUserShield, path: "/admin" },
+    { name: "Settings", icon: faCog, path: settingsPath },
+  ];
+  const navigationList =
+    user?.role === "ADMIN"
+      ? adminMenu
+      : user?.role === "TRAINER"
+        ? trainerMenu
+        : userMenu;
   const handleNavigate = (path: string) => {
     navigate(path);
     setIsOpen(false); // close overlay on navigation
@@ -58,12 +76,14 @@ function SidebarNavigation() {
     >
       <Link to="/" className="lp-nav-brand">
         <div className="lp-nav-icon">⚡</div>
-        <span className="lp-nav-name">Fit<span>Forge</span></span>
+        <span className="lp-nav-name">
+          Fit<span>Forge</span>
+        </span>
       </Link>
     </Container>
   );
 
-  const NavigationList = fullNavigationList.map((item) => {
+  const NavigationList = navigationList.map((item) => {
     const active = location.pathname === item.path;
     return (
       <Container
@@ -73,19 +93,14 @@ function SidebarNavigation() {
         style={{ top: "0", cursor: "pointer" }}
         onClick={() => handleNavigate(item.path)}
       >
-        <FontAwesomeIcon
-          icon={item.icon}
-          size="2xl"
-        />
-        <h6 className="logo nav-label">
-          {item.name}
-        </h6>
+        <FontAwesomeIcon icon={item.icon} size="2xl" />
+        <h6 className="logo nav-label">{item.name}</h6>
       </Container>
     );
   });
 
   /* ── Bottom nav (mobile ≤768px) ── */
-  const BottomNav = fullNavigationList.map((item) => {
+  const BottomNav = navigationList.map((item) => {
     const active = location.pathname === item.path;
     return (
       <button
@@ -94,12 +109,8 @@ function SidebarNavigation() {
         onClick={() => handleNavigate(item.path)}
         aria-label={item.name}
       >
-        <FontAwesomeIcon
-          icon={item.icon}
-        />
-        <span className="bottom-nav-label">
-          {item.name}
-        </span>
+        <FontAwesomeIcon icon={item.icon} />
+        <span className="bottom-nav-label">{item.name}</span>
       </button>
     );
   });
@@ -133,9 +144,7 @@ function SidebarNavigation() {
       </div>
 
       {/* ── Mobile bottom navigation (≤768px) ── */}
-      <nav className="bottom-nav">
-        {BottomNav}
-      </nav>
+      <nav className="bottom-nav">{BottomNav}</nav>
     </>
   );
 }
