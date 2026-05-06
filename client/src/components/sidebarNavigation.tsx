@@ -29,7 +29,7 @@ function SidebarNavigation() {
 
   const settingsPath =
     user?.role === "ADMIN"
-      ? "/admin/settings"
+      ? "/settings"
       : user?.role === "TRAINER"
         ? `/trainer/${user?.id}`
         : "/settings";

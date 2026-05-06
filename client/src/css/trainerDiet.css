@@ -1,300 +1,514 @@
-/* ─────────────────────────────
-   WRAPPER
-──────────────────────────── */
+/* ═══════════════════════════════════════════
+   TRAINER DIET — Premium Styles
+═══════════════════════════════════════════ */
+
 .diet-wrapper {
   padding: 2.5rem;
   background: var(--bg-primary);
   min-height: 100vh;
+  color: var(--text-primary);
 }
 
-/* ─────────────────────────────
-   HEADER
-──────────────────────────── */
+/* ── Header ── */
+.diet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2.5rem;
+  animation: fadeSlideDown 0.5s ease both;
+}
+
 .diet-header h1 {
   font-size: 2.2rem;
   font-weight: 900;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.5px;
+  margin: 0 0 0.3rem;
 }
 
 .diet-header p {
-  color: #777;
   font-size: 0.95rem;
-  margin-top: 0.3rem;
+  color: var(--text-secondary);
+  margin: 0;
 }
 
-/* ─────────────────────────────
-   GRID
-──────────────────────────── */
+.diet-header-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--accent-purple-dim);
+  color: var(--accent-purple);
+  border: 1px solid var(--accent-purple-border);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* ── Grid ── */
 .diet-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   gap: 1.5rem;
-  margin-top: 2rem;
 }
 
-/* ─────────────────────────────
-   CARD
-──────────────────────────── */
+/* ── Card ── */
 .diet-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 1.5rem;
-  transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  animation: fadeSlideUp 0.5s ease both;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-top: 3px solid var(--border-color);
 }
 
 .diet-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  border-color: rgba(61, 255, 255, 0.25);
+  box-shadow: var(--shadow-md);
 }
 
-/* ─────────────────────────────
-   TOP SECTION
-──────────────────────────── */
+.diet-card-cyan  { border-top-color: var(--accent-cyan); }
+.diet-card-cyan:hover  { box-shadow: 0 12px 35px var(--accent-cyan-dim); border-color: var(--accent-cyan-border); }
+
+.diet-card-purple { border-top-color: var(--accent-purple); }
+.diet-card-purple:hover { box-shadow: 0 12px 35px var(--accent-purple-dim); border-color: var(--accent-purple-border); }
+
+.diet-card-green  { border-top-color: var(--success); }
+.diet-card-green:hover  { box-shadow: 0 12px 35px var(--success-dim); border-color: var(--success); }
+
+.diet-card-gold   { border-top-color: var(--accent-gold); }
+.diet-card-gold:hover   { box-shadow: 0 12px 35px var(--accent-gold-dim); border-color: var(--accent-gold); }
+
+/* ── Top Row ── */
 .diet-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 0.75rem;
 }
 
 .diet-top h3 {
   font-size: 1.2rem;
   font-weight: 800;
   color: var(--text-primary);
+  margin: 0;
 }
 
 .diet-badge {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   padding: 0.25rem 0.7rem;
   border-radius: 999px;
-  background: rgba(123, 97, 255, 0.15);
-  color: #a98dff;
-  border: 1px solid rgba(123, 97, 255, 0.3);
+  border: 1px solid;
 }
 
-/* ─────────────────────────────
-   DESCRIPTION
-──────────────────────────── */
+.diet-badge-cyan   { background: var(--accent-cyan-dim);   color: var(--accent-cyan);   border-color: var(--accent-cyan-border); }
+.diet-badge-purple { background: var(--accent-purple-dim); color: var(--accent-purple); border-color: var(--accent-purple-border); }
+.diet-badge-green  { background: var(--success-dim);       color: var(--success);       border-color: var(--success-dim); }
+.diet-badge-gold   { background: var(--accent-gold-dim);   color: var(--accent-gold);   border-color: var(--accent-gold-dim); }
+
 .diet-desc {
-  font-size: 0.9rem;
-  color: #777;
-  margin: 0.8rem 0;
-  line-height: 1.5;
-}
-
-/* ─────────────────────────────
-   META
-──────────────────────────── */
-.diet-meta {
-  font-size: 0.75rem;
+  font-size: 0.88rem;
   color: var(--text-secondary);
-  margin-bottom: 0.8rem;
+  line-height: 1.55;
+  margin-bottom: 1rem;
 }
 
-/* ─────────────────────────────
-   MEALS LIST (VIEW)
-──────────────────────────── */
-.meal-list {
-  margin-top: 0.5rem;
+/* ── Calorie bar ── */
+.diet-cal-row {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+}
+
+.diet-cal-icon { color: var(--warning); font-size: 0.85rem; }
+.diet-cal-label { flex: 1; }
+.diet-cal-pct { font-weight: 800; color: var(--text-primary); }
+
+.diet-cal-bar {
+  height: 6px;
+  background: var(--bg-surface);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 1.2rem;
+}
+
+.diet-cal-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+  border-radius: 999px;
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.diet-cal-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 2s infinite linear;
+}
+
+/* ── Meal list ── */
+.meal-list { display: flex; flex-direction: column; gap: 0.1rem; }
+
+.meal-list-header {
+  display: flex;
+  align-items: center;
   gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
 }
 
 .meal-row {
   display: flex;
-  justify-content: space-between;
-  font-size: 0.78rem;
-  color: #ddd;
-  padding: 0.4rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.85rem;
+  flex-wrap: wrap;
 }
 
-/* ─────────────────────────────
-   ACTIONS
-──────────────────────────── */
+.meal-row:last-child { border-bottom: none; }
+
+.meal-row-name { flex: 1; color: var(--text-primary); font-weight: 600; }
+.meal-row-cal  { color: var(--warning); font-size: 0.8rem; font-weight: 700; }
+
+.meal-macros { display: flex; gap: 0.3rem; }
+
+.macro-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  letter-spacing: 0.03em;
+}
+
+.macro-p { background: var(--accent-cyan-dim);   color: var(--accent-cyan);   }
+.macro-c { background: var(--accent-purple-dim); color: var(--accent-purple); }
+.macro-f { background: var(--warning-dim);       color: var(--warning);       }
+
+/* ── Actions ── */
 .diet-actions {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: 0.7rem;
+  margin-top: 1.2rem;
 }
 
-.diet-actions button {
+.diet-btn-edit,
+.diet-btn-delete {
   flex: 1;
-  padding: 0.6rem;
+  padding: 0.7rem;
   border-radius: 12px;
-  border: none;
+  border: 1px solid;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.85rem;
-  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all 0.3s ease;
 }
 
-.diet-actions button:first-child {
-  background: rgba(61, 255, 255, 0.12);
+.diet-btn-edit {
+  background: var(--accent-cyan-dim);
   color: var(--accent-cyan);
+  border-color: var(--accent-cyan-border);
 }
 
-.diet-actions button:first-child:hover {
-  background: rgba(61, 255, 255, 0.2);
+.diet-btn-edit:hover {
+  background: var(--accent-cyan-border);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px var(--accent-cyan-dim);
 }
 
-.diet-actions button:last-child {
-  background: rgba(255, 80, 80, 0.12);
-  color: #ff5050;
+.diet-btn-delete {
+  background: var(--danger-dim);
+  color: var(--danger);
+  border-color: var(--danger-dim);
 }
 
-.diet-actions button:last-child:hover {
-  background: rgba(255, 80, 80, 0.2);
+.diet-btn-delete:hover {
+  background: color-mix(in srgb, var(--danger-dim) 60%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px var(--danger-dim);
 }
 
-/* ─────────────────────────────
-   MODAL OVERLAY
-──────────────────────────── */
+/* ── Modal ── */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: color-mix(in srgb, var(--bg-primary) 70%, transparent);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 999;
+  animation: fadeIn 0.2s ease;
 }
 
-/* ─────────────────────────────
-   MODAL BOX
-──────────────────────────── */
 .modal-box {
   background: var(--bg-card);
-  width: 520px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 2rem;
+  width: 560px;
   max-height: 85vh;
   overflow-y: auto;
-  border-radius: 18px;
-  padding: 1.5rem;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-md);
+  animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.modal-box h2 {
-  font-size: 1.3rem;
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  font-size: 1.4rem;
   font-weight: 800;
-  margin-bottom: 1rem;
+  color: var(--text-primary);
+  margin: 0;
 }
 
-/* ─────────────────────────────
-   FORM SECTION
-──────────────────────────── */
+.modal-header-icon {
+  color: var(--accent-cyan);
+  font-size: 1.2rem;
+}
+
 .modal-section {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  margin-bottom: 1rem;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
 }
 
-.modal-section input,
-.modal-section textarea {
-  padding: 0.65rem;
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
+.modal-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: -0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.modal-input {
   background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0.8rem;
   color: var(--text-primary);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.modal-section textarea {
-  min-height: 70px;
-  resize: none;
+.modal-input:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px var(--accent-cyan-dim);
 }
 
-/* ─────────────────────────────
-   SECTION TITLE
-──────────────────────────── */
+.modal-textarea { min-height: 80px; resize: vertical; }
+
+.modal-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
 .section-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 0.85rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
 
-/* ─────────────────────────────
-   ADD MEAL BUTTON
-──────────────────────────── */
 .add-meal {
-  background: var(--accent-cyan);
-  border: none;
-  padding: 0.35rem 0.7rem;
-  border-radius: 8px;
-  font-size: 0.7rem;
-  cursor: pointer;
-  color: #000;
-  font-weight: 700;
-}
-
-/* ─────────────────────────────
-   MEAL EDIT CARD
-──────────────────────────── */
-.meal-edit-card {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr) auto;
-  gap: 0.4rem;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.meal-edit-card input {
-  padding: 0.4rem;
-  font-size: 0.75rem;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-surface);
-  color: var(--text-primary);
-}
-
-/* ─────────────────────────────
-   DELETE MEAL
-──────────────────────────── */
-.delete-meal {
-  background: rgba(255, 80, 80, 0.15);
-  border: none;
-  color: #ff5050;
-  border-radius: 8px;
-  cursor: pointer;
-  padding: 0.4rem;
-}
-
-/* ─────────────────────────────
-   MODAL ACTIONS
-──────────────────────────── */
-.modal-actions {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.modal-actions button {
-  flex: 1;
-  padding: 0.6rem;
-  border-radius: 10px;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--accent-cyan);
+  color: var(--text-inverse);
   border: none;
+  padding: 0.35rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
   cursor: pointer;
-  font-weight: 700;
+  transition: all 0.2s ease;
 }
 
-.modal-actions button:first-child {
+.add-meal:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--accent-cyan-dim); }
+
+/* Meal edit card */
+.meal-edit-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  animation: fadeSlideUp 0.3s ease both;
+}
+
+.meal-edit-input {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  outline: none;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.meal-edit-input:focus { border-color: var(--accent-cyan); }
+.meal-name-input { font-weight: 600; }
+
+.meal-edit-macros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) auto;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+.meal-macro-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.meal-macro-field input {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.4rem 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  outline: none;
+  text-align: center;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.meal-macro-field input:focus { border-color: var(--accent-cyan); }
+
+.meal-macro-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.delete-meal {
+  background: var(--danger-dim);
+  color: var(--danger);
+  border: 1px solid var(--danger-dim);
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-meal:hover { background: color-mix(in srgb, var(--danger-dim) 60%, transparent); transform: scale(1.1); }
+
+/* Modal actions */
+.modal-actions { display: flex; gap: 0.8rem; margin-top: 1.5rem; }
+
+.modal-btn-cancel,
+.modal-btn-save {
+  flex: 1;
+  padding: 0.8rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  border: 1px solid;
+}
+
+.modal-btn-cancel {
   background: var(--bg-surface);
   color: var(--text-primary);
-  border: 1px solid var(--border-color);
+  border-color: var(--border-color);
 }
 
-.modal-actions button:last-child {
+.modal-btn-cancel:hover { background: var(--bg-secondary); }
+
+.modal-btn-save {
   background: var(--accent-cyan);
-  color: #000;
+  color: var(--text-inverse);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 4px 15px var(--accent-cyan-dim);
+}
+
+.modal-btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-cyan-border); }
+
+/* ── Animations ── */
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes popUp {
+  from { transform: scale(0.92) translateY(20px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .diet-wrapper { padding: 1.2rem; }
+  .diet-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .modal-box { width: 95vw; padding: 1.2rem; }
+  .meal-edit-macros { grid-template-columns: 1fr 1fr; }
+  .modal-row-2 { grid-template-columns: 1fr; }
 }

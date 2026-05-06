@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Badge } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -356,11 +357,28 @@ function ExerciseDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const exercise = id
-    ? (MOCK_EXERCISES[id] ?? getFallbackExercise(id))
-    : getFallbackExercise("unknown");
+  const [isEditing, setIsEditing] = useState(false);
+  const [exercise, setExercise] = useState<ExerciseDetail>(() => 
+    id ? (MOCK_EXERCISES[id] ?? getFallbackExercise(id)) : getFallbackExercise("unknown")
+  );
+
+  useEffect(() => {
+    setExercise(id ? (MOCK_EXERCISES[id] ?? getFallbackExercise(id)) : getFallbackExercise("unknown"));
+    setIsEditing(false);
+  }, [id]);
 
   const maxWeight = Math.max(...exercise.history.map((h) => h.weight || 0), 1);
+
+  const handleSave = () => {
+    if (id && MOCK_EXERCISES[id]) {
+      MOCK_EXERCISES[id] = exercise;
+    }
+    setIsEditing(false);
+  };
+
+  const handleChange = (field: keyof ExerciseDetail, value: any) => {
+    setExercise((prev) => ({ ...prev, [field]: value }));
+  };
 
   return (
     <div className="ed-page">
@@ -372,6 +390,17 @@ function ExerciseDetails() {
 
       {/* ── Hero ── */}
       <div className="ed-hero">
+        <div style={{ position: "absolute", top: "1rem", right: "1rem", zIndex: 10 }}>
+          {isEditing ? (
+            <button className="ed-back-btn" style={{ margin: 0, background: "var(--accent-cyan)", color: "var(--text-inverse)", border: "none" }} onClick={handleSave}>
+              <FontAwesomeIcon icon={faCheckCircle} /> Save
+            </button>
+          ) : (
+            <button className="ed-back-btn" style={{ margin: 0 }} onClick={() => setIsEditing(true)}>
+              Edit Exercise
+            </button>
+          )}
+        </div>
         <div className="ed-hero-img-wrap">
           <img
             src={exercise.image}
@@ -404,7 +433,16 @@ function ExerciseDetails() {
                 {exercise.difficulty}
               </Badge>
             </div>
-            <h1 className="ed-hero-title">{exercise.name}</h1>
+            {isEditing ? (
+              <input 
+                className="ed-edit-input" 
+                style={{ fontSize: "2.2rem", fontWeight: 900, background: "var(--bg-surface)", color: "var(--text-primary)", border: "1px dashed var(--border-color)", padding: "0.2rem 0.5rem", width: "100%", marginBottom: "0.5rem", borderRadius: "8px" }}
+                value={exercise.name} 
+                onChange={(e) => handleChange("name", e.target.value)} 
+              />
+            ) : (
+              <h1 className="ed-hero-title">{exercise.name}</h1>
+            )}
             <div className="ed-hero-rating">
               {[1, 2, 3, 4, 5].map((s) => (
                 <FontAwesomeIcon
@@ -432,7 +470,7 @@ function ExerciseDetails() {
         <div className="ed-stats-row">
           <div className="ed-stat-card">
             <FontAwesomeIcon icon={faLayerGroup} className="ed-stat-icon" />
-            <span className="ed-stat-value">{exercise.sets}</span>
+            {isEditing ? <input style={{ width: "60px", textAlign: "center", background: "var(--bg-surface)", color: "var(--text-primary)", border: "1px dashed var(--border-color)", borderRadius: "4px" }} type="number" value={exercise.sets} onChange={(e) => handleChange("sets", parseInt(e.target.value))} /> : <span className="ed-stat-value">{exercise.sets}</span>}
             <span className="ed-stat-label">Sets</span>
           </div>
           <div className="ed-stat-card">
@@ -440,26 +478,30 @@ function ExerciseDetails() {
               icon={exercise.reps !== null ? faRotate : faClock}
               className="ed-stat-icon"
             />
-            <span className="ed-stat-value">
-              {exercise.reps !== null ? exercise.reps : exercise.time}
-            </span>
+            {isEditing ? (
+              <input style={{ width: "60px", textAlign: "center", background: "var(--bg-surface)", color: "var(--text-primary)", border: "1px dashed var(--border-color)", borderRadius: "4px" }} value={exercise.reps !== null ? exercise.reps : exercise.time || ""} onChange={(e) => exercise.reps !== null ? handleChange("reps", parseInt(e.target.value) || 0) : handleChange("time", e.target.value)} />
+            ) : (
+              <span className="ed-stat-value">
+                {exercise.reps !== null ? exercise.reps : exercise.time}
+              </span>
+            )}
             <span className="ed-stat-label">
               {exercise.reps !== null ? "Reps" : "Duration"}
             </span>
           </div>
           <div className="ed-stat-card">
             <FontAwesomeIcon icon={faClock} className="ed-stat-icon" />
-            <span className="ed-stat-value">{exercise.restTime}</span>
+            {isEditing ? <input style={{ width: "80px", textAlign: "center", background: "var(--bg-surface)", color: "var(--text-primary)", border: "1px dashed var(--border-color)", borderRadius: "4px" }} value={exercise.restTime} onChange={(e) => handleChange("restTime", e.target.value)} /> : <span className="ed-stat-value">{exercise.restTime}</span>}
             <span className="ed-stat-label">Rest</span>
           </div>
           <div className="ed-stat-card">
             <FontAwesomeIcon icon={faFire} className="ed-stat-icon" />
-            <span className="ed-stat-value">{exercise.calories}</span>
+            {isEditing ? <input style={{ width: "60px", textAlign: "center", background: "var(--bg-surface)", color: "var(--text-primary)", border: "1px dashed var(--border-color)", borderRadius: "4px" }} type="number" value={exercise.calories} onChange={(e) => handleChange("calories", parseInt(e.target.value))} /> : <span className="ed-stat-value">{exercise.calories}</span>}
             <span className="ed-stat-label">kcal/30 min</span>
           </div>
           <div className="ed-stat-card">
             <FontAwesomeIcon icon={faWeight} className="ed-stat-icon" />
-            <span className="ed-stat-value">{exercise.tempo}</span>
+            {isEditing ? <input style={{ width: "60px", textAlign: "center", background: "var(--bg-surface)", color: "var(--text-primary)", border: "1px dashed var(--border-color)", borderRadius: "4px" }} value={exercise.tempo} onChange={(e) => handleChange("tempo", e.target.value)} /> : <span className="ed-stat-value">{exercise.tempo}</span>}
             <span className="ed-stat-label">Tempo</span>
           </div>
         </div>
@@ -474,7 +516,15 @@ function ExerciseDetails() {
                 <FontAwesomeIcon icon={faDumbbell} className="ed-card-icon" />
                 Instructions
               </h3>
-              <p className="ed-paragraph">{exercise.instructions}</p>
+              {isEditing ? (
+                <textarea 
+                  style={{ width: "100%", minHeight: "100px", background: "var(--bg-surface)", color: "var(--text-primary)", border: "1px dashed var(--border-color)", padding: "0.5rem", borderRadius: "8px", outline: "none", fontSize: "0.85rem", lineHeight: "1.65" }} 
+                  value={exercise.instructions} 
+                  onChange={(e) => handleChange("instructions", e.target.value)} 
+                />
+              ) : (
+                <p className="ed-paragraph">{exercise.instructions}</p>
+              )}
             </div>
 
             {/* Muscles Worked */}

@@ -15,7 +15,7 @@ import SignUp from "./pages/signup";
 import Landing from "./pages/landing";
 import MyBookings from "./pages/myBookings";
 import AdminDashboard from "./pages/adminDashboard";
-import TrainerProfile from "./pages/trainerProfile";
+import TrainerProfile from "./pages/trainer/trainerProfile";
 import { useAuth, AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { SubscriptionProvider } from "./context/SubscriptionContext";
