@@ -69,3 +69,111 @@
     display: none;
   }
 }
+
+/* Avatar Dropdown Styles */
+.avatar-container {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.avatar-container:hover {
+  transform: scale(1.05);
+}
+
+.avatar-dropdown {
+  position: absolute;
+  top: calc(100% + 15px);
+  right: 0;
+  width: 220px;
+  background: var(--bg-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  padding: 12px 0;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  animation: dropdown-fade-in 0.2s ease-out;
+  transform-origin: top right;
+}
+
+@keyframes dropdown-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown-header {
+  padding: 8px 20px 12px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 8px;
+}
+
+.header-name {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-email {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background: rgba(var(--accent-cyan-rgb), 0.1);
+  color: var(--accent-cyan);
+}
+
+.dropdown-item i, .dropdown-item svg {
+  margin-right: 12px;
+  width: 16px;
+  text-align: center;
+}
+
+.dropdown-item.logout {
+  color: #ff4d4d;
+  border-top: 1px solid var(--border-color);
+  margin-top: 8px;
+  padding-top: 15px;
+}
+
+.dropdown-item.logout:hover {
+  background: rgba(255, 77, 77, 0.1);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 8px 0;
+}

@@ -15,7 +15,7 @@ type User = {
   id: number;
   name: string;
   email: string;
-  role: "USER" | "ADMIN";
+  role: "USER" | "ADMIN" | "TRAINER";
   avatar?: string;
   status?: string;
   subscriptionPlan?: string;
@@ -47,7 +47,7 @@ export default function AdminDashboard() {
   const [formData, setFormData] = useState<{
     name: string;
     email: string;
-    role: "USER" | "ADMIN";
+    role: "USER" | "ADMIN" | "TRAINER";
     subscriptionPlan: string;
     theme: "light" | "dark";
   }>({
@@ -315,7 +315,7 @@ export default function AdminDashboard() {
                             </div>
                           </td>
                           <td>
-                            <Badge bg={undefined} className={`admin-badge ${user.role === 'ADMIN' ? 'admin-badge-purple' : ''}`}>
+                            <Badge bg={undefined} className={`admin-badge ${user.role === 'ADMIN' ? 'admin-badge-purple' : user.role === 'TRAINER' ? 'admin-badge-gold' : ''}`}>
                               {user.role}
                             </Badge>
                           </td>
@@ -492,10 +492,11 @@ export default function AdminDashboard() {
                   <Form.Label>System Role</Form.Label>
                   <Form.Select
                     value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value as "USER" | "ADMIN" })}
+                    onChange={(e) => setFormData({ ...formData, role: e.target.value as "USER" | "ADMIN" | "TRAINER" })}
                   >
                     <option value="USER">User</option>
                     <option value="ADMIN">Admin</option>
+                    <option value="TRAINER">Trainer</option>
                   </Form.Select>
                 </Form.Group>
                 <Form.Group className="mb-4">

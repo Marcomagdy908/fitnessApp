@@ -162,6 +162,12 @@
   border-color: var(--success-dim) !important;
 }
 
+.admin-badge-gold {
+  background: rgba(255, 200, 50, 0.1) !important;
+  color: var(--accent-gold) !important;
+  border: 1px solid var(--accent-gold-dim) !important;
+}
+
 
 .text-muted {
     color: var(--text-secondary) !important;

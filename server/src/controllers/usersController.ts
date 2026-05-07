@@ -14,7 +14,7 @@ const updateProfileSchema = z.object({
 const adminUpdateUserSchema = z.object({
   name: z.string().min(2).optional(),
   email: z.string().email().optional(),
-  role: z.enum(["USER", "ADMIN"]).optional(),
+  role: z.enum(["USER", "ADMIN", "TRAINER"]).optional(),
   avatar: z.string().url().optional(),
   subscriptionPlan: z.string().optional(),
   maxVisits: z.number().optional(),

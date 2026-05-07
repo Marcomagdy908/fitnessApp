@@ -51,7 +51,13 @@ function RootRoute() {
     );
   }
 
-  return user ? <Navigate to="/dashboard" replace /> : <Landing />;
+  if (user) {
+    if (user.role === "ADMIN") return <Navigate to="/admin" replace />;
+    if (user.role === "TRAINER") return <Navigate to="/trainer" replace />;
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Landing />;
 }
 
 function App() {

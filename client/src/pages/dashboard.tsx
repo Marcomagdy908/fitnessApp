@@ -159,7 +159,7 @@ export default function Dashboard() {
   const timer = useTimer(120); // Static for now
   const plan = dash.trainingPlan ?? DEFAULT_PLAN;
   const planProgress = plan.totalSessions > 0 ? (plan.completedSessions / plan.totalSessions) * 100 : 0;
-  const weekProgress = plan.totalWeeks > 0 ? ((plan.week - 1) / plan.totalWeeks) * 100 : 0;
+  const weekProgress = plan.totalWeeks > 0 ? Math.max(0, ((plan.week - 1) / plan.totalWeeks) * 100) : 0;
 
   const today = new Date().getDay();
   const doneIndices = dash.weeklyActivity;
@@ -169,7 +169,7 @@ export default function Dashboard() {
       <div className="dash-grid">
         {/* ══ COLUMN 1 ══════════════════════════ */}
         <div className="dash-col">
-          {/* Gym Membership (New) */}
+          {/* Gym Membership */}
           <div className="dash-card membership-card">
             <div className="dash-card-title">
               <span className="title-icon"><FontAwesomeIcon icon={faCrown} /></span>
@@ -215,28 +215,27 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Today's Targets */}
+          {/* Weekly Calories Bar Chart */}
           <div className="dash-card">
             <div className="dash-card-title">
-              <span className="title-icon"><FontAwesomeIcon icon={faBullseye} /></span>
-              Today's Targets
+              <span className="title-icon"><FontAwesomeIcon icon={faFire} /></span>
+              Weekly Calories Burned
             </div>
-            <div className="stat-row">
-              {[
-                { label: "Weight", value: dash.todayWeight ? `${dash.todayWeight}` : "—", unit: "kg", pct: dash.todayWeight ? Math.min(100, (dash.todayWeight / 100) * 100) : 0 },
-                { label: "Calories", value: `${dash.todayCaloriesLogged}`, unit: "kcal", pct: Math.min(100, (dash.todayCaloriesLogged / 2400) * 100) },
-                { label: "Streak", value: `🔥${dash.streak}`, unit: "days", pct: Math.min(100, (dash.streak / 7) * 100) },
-              ].map((s) => (
-                <div className="stat-box" key={s.label}>
-                  <div className="stat-label">{s.label}</div>
-                  <div className="stat-value">{s.value}</div>
-                  <div className="stat-unit">{s.unit}</div>
-                  <div className="progress-track">
-                    <div className="progress-fill" style={{ width: `${s.pct}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
+            <ResponsiveContainer width="100%" height={185}>
+              <BarChart data={dash.weeklyCalories} barSize={28} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--accent-cyan)" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="var(--accent-cyan-dim)" stopOpacity={0.35} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
+                <XAxis dataKey="day" tick={{ fill: "#555", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "#555", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={ttStyle} formatter={(v) => [`${v} kcal`, "Burned"]} cursor={{ fill: "rgba(61,255,255,0.05)" }} />
+                <Bar dataKey="kcal" fill="url(#barGrad)" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
@@ -270,34 +269,6 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Rest Timer Widget (Re-added) */}
-          <div className="dash-card">
-            <TimerRing timer={timer} />
-          </div>
-
-          {/* Weekly Calories Bar Chart */}
-          <div className="dash-card">
-            <div className="dash-card-title">
-              <span className="title-icon"><FontAwesomeIcon icon={faFire} /></span>
-              Weekly Calories Burned
-            </div>
-            <ResponsiveContainer width="100%" height={185}>
-              <BarChart data={dash.weeklyCalories} barSize={28} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--accent-cyan)" stopOpacity={0.9} />
-                    <stop offset="100%" stopColor="var(--accent-cyan-dim)" stopOpacity={0.35} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
-                <XAxis dataKey="day" tick={{ fill: "#555", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "#555", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={ttStyle} formatter={(v) => [`${v} kcal`, "Burned"]} cursor={{ fill: "rgba(61,255,255,0.05)" }} />
-                <Bar dataKey="kcal" fill="url(#barGrad)" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
           {/* Weight Trend Area Chart */}
           <div className="dash-card">
             <div className="dash-card-title">
@@ -305,7 +276,7 @@ export default function Dashboard() {
               Weight Trend
             </div>
             {dash.weightProgress.length > 0 ? (
-              <ResponsiveContainer width="100%" height={165}>
+              <ResponsiveContainer width="100%" height={220}>
                 <AreaChart data={dash.weightProgress} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
                   <defs>
                     <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
@@ -324,11 +295,16 @@ export default function Dashboard() {
               <div style={{ color: "#555", fontSize: "0.8rem", padding: "1rem 0" }}>No weight data logged yet.</div>
             )}
           </div>
+
+          {/* Rest Timer Widget */}
+          <div className="dash-card timer-card">
+            <TimerRing timer={timer} />
+          </div>
         </div>
 
         {/* ══ COLUMN 3 ══════════════════════════ */}
         <div className="dash-col">
-          {/* User / Daily Progress */}
+          {/* Daily Progress */}
           <div className="dash-card">
             <div className="dash-card-title">
               <span className="title-icon"><FontAwesomeIcon icon={faChartLine} /></span>
@@ -358,6 +334,30 @@ export default function Dashboard() {
                   <div className="progress-fill" style={{ width: `${Math.min(100, (dash.streak / 7) * 100)}%` }} />
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Today's Targets */}
+          <div className="dash-card">
+            <div className="dash-card-title">
+              <span className="title-icon"><FontAwesomeIcon icon={faBullseye} /></span>
+              Today's Targets
+            </div>
+            <div className="stat-row grid-stats">
+              {[
+                { label: "Weight", value: dash.todayWeight ? `${dash.todayWeight}` : "—", unit: "kg", pct: dash.todayWeight ? Math.min(100, (dash.todayWeight / 100) * 100) : 0 },
+                { label: "Calories", value: `${dash.todayCaloriesLogged}`, unit: "kcal", pct: Math.min(100, (dash.todayCaloriesLogged / 2400) * 100) },
+                { label: "Streak", value: `🔥${dash.streak}`, unit: "days", pct: Math.min(100, (dash.streak / 7) * 100) },
+              ].map((s) => (
+                <div className="stat-box" key={s.label}>
+                  <div className="stat-label">{s.label}</div>
+                  <div className="stat-value">{s.value}</div>
+                  <div className="stat-unit">{s.unit}</div>
+                  <div className="progress-track">
+                    <div className="progress-fill" style={{ width: `${s.pct}%` }} />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
