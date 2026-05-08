@@ -5,7 +5,7 @@ import {
   faDumbbell,
   faCalendarCheck,
   faChartLine,
-  faFire,
+
   faBullseye,
   faAppleWhole,
   faLayerGroup,

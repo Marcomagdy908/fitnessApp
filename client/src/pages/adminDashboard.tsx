@@ -41,7 +41,6 @@ type Benefit = {
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [formData, setFormData] = useState<{
@@ -96,7 +95,6 @@ export default function AdminDashboard() {
       const res = await api.get("/api/users");
       if (res.data.success) setUsers(res.data.users.map((u: User) => ({ ...u, status: "Active" })));
     } catch { }
-    finally { setLoading(false); }
   };
 
   const handleEditClick = (user: User) => {

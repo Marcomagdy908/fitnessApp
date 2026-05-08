@@ -88,7 +88,7 @@ const categoryColors: Record<string, string> = {
 const makeSet = (id: number, weight: string, reps: string, done = false): ExSet => ({ id, weight, reps, done });
 
 /* ─── Profile injuries (loaded from API) ── */
-const PROFILE_INJURIES: string[] = []; // replaced by state below
+
 
 /* ─── Component ──────────────────────────────────────────────── */
 function Exercises() {

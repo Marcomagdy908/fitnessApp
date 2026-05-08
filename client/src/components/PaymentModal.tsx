@@ -245,7 +245,7 @@ export default function PaymentModal({ booking, onClose, onPaid }: Props) {
             <hr className="pm-summary-divider" />
             <div className="pm-summary-total">
               <span className="pm-total-label">Total Due</span>
-              <span className="pm-total-amount">${(booking.totalPrice || 0).toFixed(2)}</span>
+              <span className="pm-total-amount">${(Number(booking.totalPrice) || 0).toFixed(2)}</span>
             </div>
           </div>
 
@@ -391,7 +391,7 @@ export default function PaymentModal({ booking, onClose, onPaid }: Props) {
             ) : (
               <>
                 <FontAwesomeIcon icon={faLock} />
-                Pay ${(booking.totalPrice || 0).toFixed(2)}
+                Pay ${(Number(booking.totalPrice) || 0).toFixed(2)}
               </>
             )}
           </button>

@@ -14,7 +14,7 @@ import {
   faHourglassHalf,
   faBan,
   faStar,
-  faLocationDot,
+
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/myBookings.css";
 import { api } from "../utils/api";

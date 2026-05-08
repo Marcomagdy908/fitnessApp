@@ -237,7 +237,7 @@ function Diet() {
     { calories: 0, protein: 0, carbs: 0, fat: 0 }
   );
 
-  const calPct = Math.min(100, Math.round((totals.calories / dailyTarget.calories) * 100));
+
   const addMeal = async () => {
     if (!form.name || !form.calories) return;
     const body = {
