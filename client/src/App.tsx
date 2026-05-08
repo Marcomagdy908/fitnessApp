@@ -23,6 +23,7 @@ import { Navigate } from "react-router-dom";
 import TrainerDashboard from "./pages/trainer/TrainerDashboard";
 import TrainerPlans from "./pages/trainer/TrainerPlans";
 import TrainerDiet from "./pages/trainer/TrainerDiet";
+import TrainerClasses from "./pages/trainer/TrainerClasses";
 
 function MainLayout() {
   return (
@@ -92,6 +93,7 @@ function App() {
                   <Route path="/trainer" element={<TrainerDashboard />} />
                   <Route path="/trainer/diet" element={<TrainerDiet />} />
                   <Route path="/trainer/plans" element={<TrainerPlans />} />
+                  <Route path="/trainer/classes" element={<TrainerClasses />} />
                 </Route>
 
                 {/* Admin routes */}

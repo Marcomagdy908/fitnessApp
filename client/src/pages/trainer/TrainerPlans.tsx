@@ -60,24 +60,24 @@ export default function TrainerPlans() {
   );
 
   return (
-    <div className="plans-wrapper">
+    <div className="tr-plans-wrapper">
       {/* HEADER */}
-      <div className="plans-header">
+      <div className="tr-plans-header">
         <div>
           <h1>Training Plans</h1>
           <p>Design and manage programs for your clients</p>
         </div>
-        <div className="plans-header-right">
-          <div className="plans-search-wrap">
-            <FontAwesomeIcon icon={faSearch} className="plans-search-icon" />
+        <div className="tr-plans-header-right">
+          <div className="tr-plans-search-wrap">
+            <FontAwesomeIcon icon={faSearch} className="tr-plans-search-icon" />
             <input
-              className="plans-search"
+              className="tr-plans-search"
               placeholder="Search plans…"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
           </div>
-          <div className="plans-count-badge">
+          <div className="tr-plans-count-badge">
             <FontAwesomeIcon icon={faLayerGroup} />
             <span>{plans.length} Plans</span>
           </div>
@@ -85,53 +85,53 @@ export default function TrainerPlans() {
       </div>
 
       {/* SUMMARY ROW */}
-      <div className="plans-summary-row">
+      <div className="tr-plans-summary-row">
         {[
           { label: "Total Plans", value: plans.length, icon: faLayerGroup, color: "purple" },
           { label: "Clients Using", value: plans.reduce((a, p) => a + p.clients, 0), icon: faUser, color: "cyan" },
           { label: "Advanced Plans", value: plans.filter(p => p.level === "Advanced").length, icon: faFire, color: "gold" },
           { label: "Avg. Days/Week", value: Math.round(plans.reduce((a, p) => a + p.days, 0) / plans.length), icon: faArrowTrendUp, color: "green" },
         ].map((s, i) => (
-          <div className={`plans-summary-card plans-summary-${s.color}`} key={i} style={{ animationDelay: `${i * 0.08}s` }}>
-            <div className="plans-summary-icon"><FontAwesomeIcon icon={s.icon} /></div>
-            <div className="plans-summary-value">{s.value}</div>
-            <div className="plans-summary-label">{s.label}</div>
+          <div className={`tr-plans-summary-card tr-plans-summary-${s.color}`} key={i} style={{ animationDelay: `${i * 0.08}s` }}>
+            <div className="tr-plans-summary-icon"><FontAwesomeIcon icon={s.icon} /></div>
+            <div className="tr-plans-summary-value">{s.value}</div>
+            <div className="tr-plans-summary-label">{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* GRID */}
-      <div className="plans-grid">
+      <div className="tr-plans-grid">
         {filtered.map((plan, idx) => {
           const col = LEVEL_COLOR[plan.level] ?? "purple";
           return (
-            <div key={plan.id} className={`admin-plan-card plan-card-${col}`} style={{ animationDelay: `${0.2 + idx * 0.07}s` }}>
-              <div className="plan-card-header">
-                <div className="plan-card-icon-wrap">
+            <div key={plan.id} className={`tr-admin-plan-card tr-plan-card-${col}`} style={{ animationDelay: `${0.2 + idx * 0.07}s` }}>
+              <div className="tr-plan-card-header">
+                <div className="tr-plan-card-icon-wrap">
                   <FontAwesomeIcon icon={faDumbbell} />
                 </div>
-                <span className={`plan-badge plan-badge-${col}`}>{plan.level}</span>
+                <span className={`tr-plan-badge tr-plan-badge-${col}`}>{plan.level}</span>
               </div>
 
-              <h3 className="plan-name">{plan.name}</h3>
-              <p className="plan-desc">{plan.description}</p>
+              <h3 className="tr-plan-name">{plan.name}</h3>
+              <p className="tr-plan-desc">{plan.description}</p>
 
-              <div className="plan-meta-row">
-                <div className="plan-meta-item">
+              <div className="tr-plan-meta-row">
+                <div className="tr-plan-meta-item">
                   <FontAwesomeIcon icon={faDumbbell} />
                   <span>{plan.days}×/week</span>
                 </div>
-                <div className="plan-meta-item">
+                <div className="tr-plan-meta-item">
                   <FontAwesomeIcon icon={faUser} />
                   <span>{plan.clients} clients</span>
                 </div>
               </div>
 
-              <div className="plan-actions">
-                <button className="edit-btn" onClick={() => openEdit(plan)}>
+              <div className="tr-plan-actions">
+                <button className="tr-edit-btn" onClick={() => openEdit(plan)}>
                   <FontAwesomeIcon icon={faPen} /> Edit
                 </button>
-                <button className="delete-btn" onClick={() => deletePlan(plan.id)}>
+                <button className="tr-delete-btn" onClick={() => deletePlan(plan.id)}>
                   <FontAwesomeIcon icon={faTrash} /> Delete
                 </button>
               </div>
@@ -140,9 +140,9 @@ export default function TrainerPlans() {
         })}
 
         {/* Add new card */}
-        <div className="admin-plan-card plan-card-add" style={{ animationDelay: `${0.2 + filtered.length * 0.07}s` }}>
-          <div className="plan-add-inner">
-            <div className="plan-add-icon"><FontAwesomeIcon icon={faPlus} /></div>
+        <div className="tr-admin-plan-card tr-plan-card-add" style={{ animationDelay: `${0.2 + filtered.length * 0.07}s` }}>
+          <div className="tr-plan-add-inner">
+            <div className="tr-plan-add-icon"><FontAwesomeIcon icon={faPlus} /></div>
             <p>Create a new plan</p>
           </div>
         </div>
@@ -150,39 +150,39 @@ export default function TrainerPlans() {
 
       {/* EDIT MODAL */}
       {editPlan && (
-        <div className="modal-overlay" onClick={() => setEditPlan(null)}>
-          <div className="modal-box" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <FontAwesomeIcon icon={faLayerGroup} className="modal-header-icon" />
+        <div className="tr-modal-overlay" onClick={() => setEditPlan(null)}>
+          <div className="tr-modal-box" onClick={e => e.stopPropagation()}>
+            <div className="tr-modal-header">
+              <FontAwesomeIcon icon={faLayerGroup} className="tr-modal-header-icon" />
               <h2>Edit Plan</h2>
             </div>
 
-            <div className="modal-form">
-              <label className="modal-form-label">Plan Name</label>
-              <input className="modal-form-input" value={editPlan.name}
+            <div className="tr-modal-form">
+              <label className="tr-modal-form-label">Plan Name</label>
+              <input className="tr-modal-form-input" value={editPlan.name}
                 onChange={e => setEditPlan({ ...editPlan, name: e.target.value })} />
 
-              <label className="modal-form-label">Description</label>
-              <textarea className="modal-form-input modal-form-textarea" value={editPlan.description}
+              <label className="tr-modal-form-label">Description</label>
+              <textarea className="tr-modal-form-input tr-modal-form-textarea" value={editPlan.description}
                 onChange={e => setEditPlan({ ...editPlan, description: e.target.value })} />
 
-              <div className="modal-row-2">
+              <div className="tr-modal-row-2">
                 <div>
-                  <label className="modal-form-label">Level</label>
-                  <input className="modal-form-input" value={editPlan.level}
+                  <label className="tr-modal-form-label">Level</label>
+                  <input className="tr-modal-form-input" value={editPlan.level}
                     onChange={e => setEditPlan({ ...editPlan, level: e.target.value })} />
                 </div>
                 <div>
-                  <label className="modal-form-label">Days / Week</label>
-                  <input className="modal-form-input" type="number" value={editPlan.days}
+                  <label className="tr-modal-form-label">Days / Week</label>
+                  <input className="tr-modal-form-input" type="number" value={editPlan.days}
                     onChange={e => setEditPlan({ ...editPlan, days: Number(e.target.value) })} />
                 </div>
               </div>
             </div>
 
-            <div className="modal-actions">
-              <button className="modal-btn-cancel" onClick={() => setEditPlan(null)}>Cancel</button>
-              <button className="modal-btn-save" onClick={saveEdit}>Save Changes</button>
+            <div className="tr-modal-actions">
+              <button className="tr-modal-btn-cancel" onClick={() => setEditPlan(null)}>Cancel</button>
+              <button className="tr-modal-btn-save" onClick={saveEdit}>Save Changes</button>
             </div>
           </div>
         </div>

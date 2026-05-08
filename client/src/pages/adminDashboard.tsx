@@ -3,13 +3,13 @@ import { Row, Col, Card, Table, Badge, Modal, Form, Button } from "react-bootstr
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUsers, faDumbbell, faCalendarAlt, faChartBar,
-  faUserShield, faPlus, faEdit, faTrash, 
+  faUserShield, faPlus, faEdit, faTrash,
   faSave, faTimes, faCrown, faSearch
 } from "@fortawesome/free-solid-svg-icons";
 import { Tabs, Tab } from "react-bootstrap";
 import "../css/dashboard.css";
 import "../css/admin.css";
-import { fetchApi } from "../utils/api";
+import { api } from "../utils/api";
 
 type User = {
   id: number;
@@ -86,28 +86,17 @@ export default function AdminDashboard() {
 
   const fetchBenefits = async () => {
     try {
-      const res = await fetchApi("/api/benefits");
-      const data = await res.json();
-      if (data.success) {
-        setBenefits(data.benefits);
-      }
-    } catch (err) {
-      console.error("Failed to fetch benefits", err);
-    }
+      const res = await api.get("/api/benefits");
+      if (res.data.success) setBenefits(res.data.benefits);
+    } catch { }
   };
 
   const fetchUsers = async () => {
     try {
-      const res = await fetchApi("/api/users");
-      const data = await res.json();
-      if (data.success) {
-        setUsers(data.users.map((u: User) => ({ ...u, status: "Active" })));
-      }
-    } catch (err) {
-      console.error("Failed to fetch users", err);
-    } finally {
-      setLoading(false);
-    }
+      const res = await api.get("/api/users");
+      if (res.data.success) setUsers(res.data.users.map((u: User) => ({ ...u, status: "Active" })));
+    } catch { }
+    finally { setLoading(false); }
   };
 
   const handleEditClick = (user: User) => {
@@ -126,52 +115,28 @@ export default function AdminDashboard() {
   const fetchUserBenefits = async (userId: number) => {
     setLoadingBenefits(true);
     try {
-      const res = await fetchApi(`/api/users/${userId}/benefits`);
-      const data = await res.json();
-      if (data.success) {
-        setUserBenefits(data.benefits);
-      }
-    } catch (err) {
-      console.error("Failed to fetch user benefits", err);
-    } finally {
-      setLoadingBenefits(false);
-    }
+      const res = await api.get(`/api/users/${userId}/benefits`);
+      if (res.data.success) setUserBenefits(res.data.benefits);
+    } catch { }
+    finally { setLoadingBenefits(false); }
   };
 
   const handleUpdateUserBenefit = async (benefit: UserBenefit) => {
     if (!editingUser) return;
     try {
-      const res = await fetchApi(`/api/users/${editingUser.id}/benefits`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(benefit),
-      });
-      const data = await res.json();
-      if (data.success) {
-        // Refresh local state if needed or just show success
-        console.log("Benefit updated");
-      }
-    } catch (err) {
-      console.error("Failed to update user benefit", err);
-    }
+      await api.put(`/api/users/${editingUser.id}/benefits`, benefit);
+    } catch { }
   };
 
   const handleSave = async () => {
     if (!editingUser) return;
     try {
-      const res = await fetchApi(`/api/users/${editingUser.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (data.success) {
+      const res = await api.put(`/api/users/${editingUser.id}`, formData);
+      if (res.data.success) {
         setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...formData } : u));
         setShowEditModal(false);
       }
-    } catch (err) {
-      console.error("Failed to update user", err);
-    }
+    } catch { }
   };
 
   const handleBenefitEdit = (benefit: Benefit) => {
@@ -193,47 +158,34 @@ export default function AdminDashboard() {
   const handleSaveBenefit = async () => {
     try {
       const url = editingBenefit ? `/api/benefits/${editingBenefit.id}` : "/api/benefits";
-      const method = editingBenefit ? "PUT" : "POST";
-
-      const res = await fetchApi(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(benefitFormData),
-      });
-      const data = await res.json();
-
-      if (data.success) {
+      const res = editingBenefit
+        ? await api.put(url, benefitFormData)
+        : await api.post(url, benefitFormData);
+      if (res.data.success) {
         if (editingBenefit) {
           setBenefits(benefits.map(b => b.id === editingBenefit.id ? { ...b, ...benefitFormData } : b));
         } else {
-          setBenefits([...benefits, data.benefit]);
+          setBenefits([...benefits, res.data.benefit]);
         }
         setShowBenefitModal(false);
       }
-    } catch (err) {
-      console.error("Failed to save benefit", err);
-    }
+    } catch { }
   };
 
   const handleDeleteBenefit = async (id: number) => {
     if (!window.confirm("Are you sure you want to delete this benefit?")) return;
     try {
-      const res = await fetchApi(`/api/benefits/${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (data.success) {
-        setBenefits(benefits.filter(b => b.id !== id));
-      }
-    } catch (err) {
-      console.error("Failed to delete benefit", err);
-    }
+      const res = await api.delete(`/api/benefits/${id}`);
+      if (res.data.success) setBenefits(benefits.filter(b => b.id !== id));
+    } catch { }
   };
 
   return (
-    <div className="dashboard-wrapper">
+    <div className="ud-dashboard-wrapper">
       <div className="admin-header d-flex justify-content-between align-items-end">
         <div>
-          <div className="dash-card-title mb-1">
-            <span className="title-icon"><FontAwesomeIcon icon={faUserShield} /></span>
+          <div className="ud-dash-card-title mb-1">
+            <span className="ud-title-icon"><FontAwesomeIcon icon={faUserShield} /></span>
             Administration
           </div>
           <h2 className="admin-title mb-0">System Control</h2>
@@ -241,10 +193,11 @@ export default function AdminDashboard() {
         <div className="d-flex gap-3 align-items-center">
           <div className="search-wrapper position-relative">
             <FontAwesomeIcon icon={faSearch} className="search-icon" />
-            <input 
-              type="text" 
-              placeholder="Search users..." 
+            <input
+              type="text"
+              placeholder="Search users..."
               className="admin-search-input"
+              autoComplete="off"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -255,7 +208,7 @@ export default function AdminDashboard() {
       <Row className="g-4 mb-4">
         {stats.map((stat, idx) => (
           <Col key={idx} md={3}>
-            <Card className="dash-card h-100">
+            <Card className="ud-dash-card h-100">
               <Card.Body className="d-flex align-items-center p-2">
                 <div
                   className="admin-stat-icon"
@@ -268,8 +221,8 @@ export default function AdminDashboard() {
                   <FontAwesomeIcon icon={stat.icon} />
                 </div>
                 <div>
-                  <div className="stat-label">{stat.label}</div>
-                  <div className="stat-value" style={{ fontSize: '1.4rem' }}>{stat.value}</div>
+                  <div className="ud-stat-label">{stat.label}</div>
+                  <div className="ud-stat-value" style={{ fontSize: '1.4rem' }}>{stat.value}</div>
                 </div>
               </Card.Body>
             </Card>
@@ -279,7 +232,7 @@ export default function AdminDashboard() {
 
       <Row className="g-4">
         <Col lg={8}>
-          <Card className="dash-card admin-table-card">
+          <Card className="ud-dash-card admin-table-card">
             <Card.Body className="p-0">
               <Tabs
                 activeKey={activeTab}
@@ -299,70 +252,68 @@ export default function AdminDashboard() {
                     </thead>
                     <tbody>
                       {users
-                        .filter(u => 
-                          u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          u.email.toLowerCase().includes(searchTerm.toLowerCase())
+                        .filter(u =>
+                          u.name.toLowerCase().includes(searchTerm.toLowerCase())
                         )
                         .map((user) => (
-                        <tr key={user.id}>
-                          <td className="ps-4">
-                            <div className="d-flex align-items-center">
-                              <div className="admin-avatar-sm me-3">{user.name.charAt(0)}</div>
-                              <div>
-                                <div className="text-primary fw-600" style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>{user.name}</div>
-                                <div className="text-muted small">{user.email}</div>
+                          <tr key={user.id}>
+                            <td className="ps-4">
+                              <div className="d-flex align-items-center">
+                                <div className="admin-avatar-sm me-3">{user.name.charAt(0)}</div>
+                                <div>
+                                  <div className="text-primary fw-600" style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>{user.name}</div>
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                          <td>
-                            <Badge bg={undefined} className={`admin-badge ${user.role === 'ADMIN' ? 'admin-badge-purple' : user.role === 'TRAINER' ? 'admin-badge-gold' : ''}`}>
-                              {user.role}
-                            </Badge>
-                          </td>
-                          <td>
-                            <div className="d-flex align-items-center gap-2">
-                              <div className="rounded-circle bg-success" style={{
-                                width: '6px',
-                                height: '6px',
-                                backgroundColor: 'var(--success)'
-                              }}></div>
-                              <span style={{
-                                fontSize: '0.8rem',
-                                fontWeight: 600,
-                                color: 'var(--success)'
-                              }}>
-                                {user.status}
-                              </span>
-                            </div>
-                          </td>
-                          <td>
-                            <Badge bg={undefined} className={`admin-badge ${user.theme === 'light' ? 'admin-badge-cyan' : 'admin-badge-purple'}`}>
-                              {user.theme || 'dark'}
-                            </Badge>
-                          </td>
-                          <td className="text-end pe-4">
-                            <button
-                              className="admin-action-btn"
-                              title="Edit User"
-                              onClick={() => handleEditClick(user)}
-                            >
-                              <FontAwesomeIcon icon={faEdit} />
-                            </button>
-                            <button className="admin-action-btn btn-delete" title="Delete User">
-                              <FontAwesomeIcon icon={faTrash} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                            </td>
+                            <td>
+                              <Badge bg={undefined} className={`admin-badge ${user.role === 'ADMIN' ? 'admin-badge-purple' : user.role === 'TRAINER' ? 'admin-badge-gold' : ''}`}>
+                                {user.role}
+                              </Badge>
+                            </td>
+                            <td>
+                              <div className="d-flex align-items-center gap-2">
+                                <div className="rounded-circle bg-success" style={{
+                                  width: '6px',
+                                  height: '6px',
+                                  backgroundColor: 'var(--success)'
+                                }}></div>
+                                <span style={{
+                                  fontSize: '0.8rem',
+                                  fontWeight: 600,
+                                  color: 'var(--success)'
+                                }}>
+                                  {user.status}
+                                </span>
+                              </div>
+                            </td>
+                            <td>
+                              <Badge bg={undefined} className={`admin-badge ${user.theme === 'light' ? 'admin-badge-cyan' : 'admin-badge-purple'}`}>
+                                {user.theme || 'dark'}
+                              </Badge>
+                            </td>
+                            <td className="text-end pe-4">
+                              <button
+                                className="admin-action-btn"
+                                title="Edit User"
+                                onClick={() => handleEditClick(user)}
+                              >
+                                <FontAwesomeIcon icon={faEdit} />
+                              </button>
+                              <button className="admin-action-btn btn-delete" title="Delete User">
+                                <FontAwesomeIcon icon={faTrash} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </Table>
                 </Tab>
 
                 <Tab eventKey="benefits" title={<span><FontAwesomeIcon icon={faCrown} className="me-2" />Plan Benefits</span>}>
                   <div className="px-4 py-3 d-flex justify-content-end border-bottom" style={{ borderColor: 'var(--border-color)' }}>
-                    <Button 
-                      variant="cyan" 
-                      size="sm" 
+                    <Button
+                      variant="cyan"
+                      size="sm"
                       onClick={handleAddBenefit}
                       style={{ borderRadius: '8px', fontWeight: 700, fontSize: '0.75rem' }}
                     >
@@ -414,8 +365,8 @@ export default function AdminDashboard() {
         </Col>
 
         <Col lg={4}>
-          <Card className="dash-card">
-            <div className="dash-card-title mb-4">System Performance</div>
+          <Card className="ud-dash-card">
+            <div className="ud-dash-card-title mb-4">System Performance</div>
 
             {[
               { name: "Server Load", value: 24, color: "var(--accent-cyan)" },
@@ -455,7 +406,7 @@ export default function AdminDashboard() {
         show={showEditModal}
         onHide={() => setShowEditModal(false)}
         centered
-        contentClassName="dash-card border-0"
+        contentClassName="ud-dash-card border-0"
         className="admin-modal"
       >
         <Modal.Header className="bg-transparent border-bottom border-secondary px-4 py-3">
@@ -516,7 +467,7 @@ export default function AdminDashboard() {
                 <Form.Group className="mt-4">
                   <Form.Label className="text-muted small text-uppercase fw-bold">Default Theme</Form.Label>
                   <div className="d-flex gap-3">
-                    <Form.Check 
+                    <Form.Check
                       type="radio"
                       label="Dark Mode"
                       name="theme"
@@ -525,7 +476,7 @@ export default function AdminDashboard() {
                       onChange={() => setFormData({ ...formData, theme: 'dark' })}
                       className="text-white"
                     />
-                    <Form.Check 
+                    <Form.Check
                       type="radio"
                       label="Light Mode"
                       name="theme"
@@ -555,9 +506,9 @@ export default function AdminDashboard() {
                         <Row className="g-2">
                           <Col md={4}>
                             <Form.Label className="text-muted" style={{ fontSize: '0.65rem' }}>USED</Form.Label>
-                            <Form.Control 
-                              type="number" 
-                              size="sm" 
+                            <Form.Control
+                              type="number"
+                              size="sm"
                               value={benefit.usedCount}
                               onChange={(e) => {
                                 const newBenefits = [...userBenefits];
@@ -571,9 +522,9 @@ export default function AdminDashboard() {
                           </Col>
                           <Col md={4}>
                             <Form.Label className="text-muted" style={{ fontSize: '0.65rem' }}>MAX</Form.Label>
-                            <Form.Control 
-                              type="number" 
-                              size="sm" 
+                            <Form.Control
+                              type="number"
+                              size="sm"
                               value={benefit.maxCount}
                               onChange={(e) => {
                                 const newBenefits = [...userBenefits];
@@ -587,9 +538,9 @@ export default function AdminDashboard() {
                           </Col>
                           <Col md={4}>
                             <Form.Label className="text-muted" style={{ fontSize: '0.65rem' }}>EXPIRY</Form.Label>
-                            <Form.Control 
-                              type="date" 
-                              size="sm" 
+                            <Form.Control
+                              type="date"
+                              size="sm"
                               value={benefit.expiresAt ? benefit.expiresAt.split('T')[0] : ''}
                               onChange={(e) => {
                                 const newBenefits = [...userBenefits];

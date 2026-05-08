@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { fetchApi } from "../utils/api";
+import { api } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import "../css/auth.css";
 
@@ -21,24 +21,11 @@ export default function Login() {
     }
 
     try {
-      const response = await fetchApi("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
-      }
-
-      login(data.user);
-      navigate("/"); // Redirect to dashboard
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unexpected error occurred");
+      const res = await api.post("/api/auth/login", { email, password });
+      login(res.data.user);
+      navigate("/");
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Login failed");
     }
   };
 

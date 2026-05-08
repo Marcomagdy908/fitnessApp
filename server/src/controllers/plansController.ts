@@ -27,7 +27,7 @@ export const getPlans = async (
 ): Promise<void> => {
   try {
     const [plans] = await db.query<WorkoutPlanRow[] & { length: number }>(
-      "SELECT * FROM WorkoutPlan WHERE userId = ? ORDER BY createdAt DESC",
+      "SELECT id, userId, name, description, daysPerWeek, level, weeks, goal, label, isActive, createdAt, updatedAt FROM WorkoutPlan WHERE userId = ? ORDER BY createdAt DESC",
       [req.user!.id]
     );
 
@@ -93,7 +93,7 @@ export const getPlan = async (
 ): Promise<void> => {
   try {
     const [plans] = await db.query<WorkoutPlanRow[] & { length: number }>(
-      "SELECT * FROM WorkoutPlan WHERE id = ? AND userId = ?",
+      "SELECT id, userId, name, description, daysPerWeek, level, weeks, goal, label, isActive, createdAt, updatedAt FROM WorkoutPlan WHERE id = ? AND userId = ?",
       [parseInt(req.params.id), req.user!.id]
     );
 

@@ -6,7 +6,7 @@ import {
   faClipboardList, faArrowTrendDown, faCalendarWeek,
   faStopwatch, faCrown, faCalendarCheck, faUserTie, faCalendarAlt
 } from "@fortawesome/free-solid-svg-icons";
-import { fetchApi } from "../utils/api";
+import { api } from "../utils/api";
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
@@ -106,31 +106,31 @@ function TimerRing({ timer }: { timer: ReturnType<typeof useTimer> }) {
   const done = timer.seconds === 0;
 
   return (
-    <div className="timer-wrap">
-      <div className="timer-label">
+    <div className="ud-timer-wrap">
+      <div className="ud-timer-label">
         <FontAwesomeIcon icon={faStopwatch} style={{ marginRight: "0.35rem" }} />
         Rest Timer
       </div>
-      <div className="timer-circle-wrap">
-        <svg className="timer-svg" viewBox="0 0 88 88">
-          <circle className="timer-track" cx="44" cy="44" r={RADIUS} />
+      <div className="ud-timer-circle-wrap">
+        <svg className="ud-timer-svg" viewBox="0 0 88 88">
+          <circle className="ud-timer-track" cx="44" cy="44" r={RADIUS} />
           <circle
-            className={`timer-arc ${done ? "timer-arc-done" : timer.running ? "timer-arc-running" : ""}`}
+            className={`ud-timer-arc ${done ? "ud-timer-arc-done" : timer.running ? "ud-timer-arc-running" : ""}`}
             cx="44" cy="44" r={RADIUS}
             strokeDasharray={CIRCUMFERENCE}
             strokeDashoffset={offset}
             transform="rotate(-90 44 44)"
           />
         </svg>
-        <div className={`timer-time ${done ? "timer-time-done" : ""}`}>{timer.display}</div>
+        <div className={`ud-timer-time ${done ? "ud-timer-time-done" : ""}`}>{timer.display}</div>
       </div>
-      <div className="timer-btns">
-        <button className="timer-btn" onClick={timer.toggle}>
+      <div className="ud-timer-btns">
+        <button className="ud-timer-btn" onClick={timer.toggle}>
           {timer.running ? "⏸ Pause" : timer.seconds === 0 ? "🔁 Again" : "▶ Start"}
         </button>
-        <button className="timer-btn timer-btn-ghost" onClick={timer.reset}>Reset</button>
+        <button className="ud-timer-btn ud-timer-btn-ghost" onClick={timer.reset}>Reset</button>
       </div>
-      {done && <div className="timer-done-msg">✅ Next set!</div>}
+      {done && <div className="ud-timer-done-msg">✅ Next set!</div>}
     </div>
   );
 }
@@ -151,9 +151,9 @@ export default function Dashboard() {
   const avatar = user?.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
   useEffect(() => {
-    fetchApi("/api/dashboard")
-      .then((r) => r.json())
-      .then((d) => { if (d.success) setDash(d.data); });
+    api.get("/api/dashboard")
+      .then(res => { if (res.data.success) setDash(res.data.data); })
+      .catch(() => {});
   }, []);
 
   const timer = useTimer(120); // Static for now
@@ -165,60 +165,60 @@ export default function Dashboard() {
   const doneIndices = dash.weeklyActivity;
 
   return (
-    <div className="dashboard-wrapper">
-      <div className="dash-grid">
+    <div className="ud-dashboard-wrapper">
+      <div className="ud-dash-grid">
         {/* ══ COLUMN 1 ══════════════════════════ */}
-        <div className="dash-col">
+        <div className="ud-dash-col">
           {/* Gym Membership */}
-          <div className="dash-card membership-card">
-            <div className="dash-card-title">
-              <span className="title-icon"><FontAwesomeIcon icon={faCrown} /></span>
+          <div className="ud-dash-card ud-membership-card">
+            <div className="ud-dash-card-title">
+              <span className="ud-title-icon"><FontAwesomeIcon icon={faCrown} /></span>
               Membership
             </div>
-            <div className={`membership-status ${dash.subscription.plan}`}>
+            <div className={`ud-membership-status ${dash.subscription.plan}`}>
               {dash.subscription.plan.toUpperCase()} PLAN
             </div>
-            <div className="membership-info">
+            <div className="ud-membership-info">
               {dash.subscription.plan === 'free' ? (
                 <p>Enjoy basic tracking. Upgrade for gym access and classes!</p>
               ) : (
-                <p>Status: <span className="status-active">{dash.subscription.status}</span></p>
+                <p>Status: <span className="ud-status-active">{dash.subscription.status}</span></p>
               )}
-              <a href="/subscription" className="membership-link">Manage Membership →</a>
+              <a href="/subscription" className="ud-membership-link">Manage Membership →</a>
             </div>
           </div>
 
           {/* Training Plan */}
-          <div className="dash-card plan-card">
-            <div className="dash-card-title">
-              <span className="title-icon"><FontAwesomeIcon icon={faDumbbell} /></span>
+          <div className="ud-dash-card ud-plan-card">
+            <div className="ud-dash-card-title">
+              <span className="ud-title-icon"><FontAwesomeIcon icon={faDumbbell} /></span>
               Training Plan
             </div>
-            <div className="plan-phase-badge">{plan.phase} Phase</div>
-            <div className="plan-name-lg">{plan.name}</div>
-            <div className="plan-week-row">
-              <span className="plan-week-label">Week</span>
-              <span className="plan-week-num">
+            <div className="ud-plan-phase-badge">{plan.phase} Phase</div>
+            <div className="ud-plan-name-lg">{plan.name}</div>
+            <div className="ud-plan-week-row">
+              <span className="ud-plan-week-label">Week</span>
+              <span className="ud-plan-week-num">
                 {plan.week}
-                <span className="plan-week-total">/ {plan.totalWeeks}</span>
+                <span className="ud-plan-week-total">/ {plan.totalWeeks}</span>
               </span>
             </div>
-            <div className="plan-prog-label">
+            <div className="ud-plan-prog-label">
               <span>Plan Progress</span><span>{Math.round(weekProgress)}%</span>
             </div>
-            <div className="progress-track">
-              <div className="progress-fill gradient-purple" style={{ width: `${weekProgress}%` }} />
+            <div className="ud-progress-track">
+              <div className="ud-progress-fill gradient-purple" style={{ width: `${weekProgress}%` }} />
             </div>
-            <div className="plan-milestone">
-              <span className="milestone-dot" />
+            <div className="ud-plan-milestone">
+              <span className="ud-milestone-dot" />
               Next: {plan.nextMilestone}
             </div>
           </div>
 
           {/* Weekly Calories Bar Chart */}
-          <div className="dash-card">
-            <div className="dash-card-title">
-              <span className="title-icon"><FontAwesomeIcon icon={faFire} /></span>
+          <div className="ud-dash-card">
+            <div className="ud-dash-card-title">
+              <span className="ud-title-icon"><FontAwesomeIcon icon={faFire} /></span>
               Weekly Calories Burned
             </div>
             <ResponsiveContainer width="100%" height={185}>
@@ -240,39 +240,39 @@ export default function Dashboard() {
         </div>
 
         {/* ══ COLUMN 2 — WIDE ═══════════════════ */}
-        <div className="dash-col">
+        <div className="ud-dash-col">
           {/* Upcoming Session */}
-          <div className="dash-card upcoming-card">
-            <div className="dash-card-title">
-              <span className="title-icon"><FontAwesomeIcon icon={faCalendarCheck} /></span>
+          <div className="ud-dash-card ud-upcoming-card">
+            <div className="ud-dash-card-title">
+              <span className="ud-title-icon"><FontAwesomeIcon icon={faCalendarCheck} /></span>
               Upcoming Session
             </div>
             {dash.nextBooking ? (
-              <div className="upcoming-body">
-                <div className="upcoming-info">
-                  <div className="upcoming-type">
+              <div className="ud-upcoming-body">
+                <div className="ud-upcoming-info">
+                  <div className="ud-upcoming-type">
                     <FontAwesomeIcon icon={dash.nextBooking.type === 'class' ? faCalendarAlt : faUserTie} />
                     {dash.nextBooking.type === 'class' ? 'Group Class' : 'Trainer Session'}
                   </div>
-                  <div className="upcoming-name">{dash.nextBooking.name || dash.nextBooking.trainerName}</div>
-                  <div className="upcoming-time">
+                  <div className="ud-upcoming-name">{dash.nextBooking.name || dash.nextBooking.trainerName}</div>
+                  <div className="ud-upcoming-time">
                     {new Date(dash.nextBooking.scheduledAt).toLocaleString([], { weekday: 'long', hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
-                <a href="/my-bookings" className="upcoming-btn">View All</a>
+                <a href="/bookings" className="ud-upcoming-btn">View All</a>
               </div>
             ) : (
-              <div className="upcoming-empty">
+              <div className="ud-upcoming-empty">
                 <p>No sessions booked yet.</p>
-                <a href="/gym-classes" className="book-link">Book a class →</a>
+                <a href="/gym-classes" className="ud-book-link">Book a class →</a>
               </div>
             )}
           </div>
 
           {/* Weight Trend Area Chart */}
-          <div className="dash-card">
-            <div className="dash-card-title">
-              <span className="title-icon"><FontAwesomeIcon icon={faArrowTrendDown} /></span>
+          <div className="ud-dash-card">
+            <div className="ud-dash-card-title">
+              <span className="ud-title-icon"><FontAwesomeIcon icon={faArrowTrendDown} /></span>
               Weight Trend
             </div>
             {dash.weightProgress.length > 0 ? (
@@ -297,64 +297,64 @@ export default function Dashboard() {
           </div>
 
           {/* Rest Timer Widget */}
-          <div className="dash-card timer-card">
+          <div className="ud-dash-card ud-timer-card">
             <TimerRing timer={timer} />
           </div>
         </div>
 
         {/* ══ COLUMN 3 ══════════════════════════ */}
-        <div className="dash-col">
+        <div className="ud-dash-col">
           {/* Daily Progress */}
-          <div className="dash-card">
-            <div className="dash-card-title">
-              <span className="title-icon"><FontAwesomeIcon icon={faChartLine} /></span>
+          <div className="ud-dash-card">
+            <div className="ud-dash-card-title">
+              <span className="ud-title-icon"><FontAwesomeIcon icon={faChartLine} /></span>
               Daily Progress
             </div>
-            <div className="avatar-wrap">
-              <div className="avatar-ring">
+            <div className="ud-avatar-wrap">
+              <div className="ud-avatar-ring">
                 <img src={avatar} alt="avatar" />
               </div>
-              <div className="avatar-info">
-                <div className="user-name">{user?.name}</div>
-                <div className="user-email">{user?.email}</div>
+              <div className="ud-avatar-info">
+                <div className="ud-user-name">{user?.name}</div>
+                <div className="ud-user-email">{user?.email}</div>
               </div>
             </div>
-            <div className="stat-row">
-              <div className="stat-box">
-                <div className="stat-label">Workouts</div>
-                <div className="stat-value">{plan.completedSessions}</div>
-                <div className="progress-track">
-                  <div className="progress-fill" style={{ width: `${planProgress}%` }} />
+            <div className="ud-stat-row">
+              <div className="ud-stat-box">
+                <div className="ud-stat-label">Workouts</div>
+                <div className="ud-stat-value">{plan.completedSessions}</div>
+                <div className="ud-progress-track">
+                  <div className="ud-progress-fill" style={{ width: `${planProgress}%` }} />
                 </div>
               </div>
-              <div className="stat-box">
-                <div className="stat-label">Streak</div>
-                <div className="stat-value">🔥 {dash.streak}</div>
-                <div className="progress-track">
-                  <div className="progress-fill" style={{ width: `${Math.min(100, (dash.streak / 7) * 100)}%` }} />
+              <div className="ud-stat-box">
+                <div className="ud-stat-label">Streak</div>
+                <div className="ud-stat-value">🔥 {dash.streak}</div>
+                <div className="ud-progress-track">
+                  <div className="ud-progress-fill" style={{ width: `${Math.min(100, (dash.streak / 7) * 100)}%` }} />
                 </div>
               </div>
             </div>
           </div>
 
           {/* Today's Targets */}
-          <div className="dash-card">
-            <div className="dash-card-title">
-              <span className="title-icon"><FontAwesomeIcon icon={faBullseye} /></span>
+          <div className="ud-dash-card">
+            <div className="ud-dash-card-title">
+              <span className="ud-title-icon"><FontAwesomeIcon icon={faBullseye} /></span>
               Today's Targets
             </div>
-            <div className="stat-row grid-stats">
+            <div className="ud-stat-row grid-stats">
               {[
                 { label: "Weight", value: dash.todayWeight ? `${dash.todayWeight}` : "—", unit: "kg", pct: dash.todayWeight ? Math.min(100, (dash.todayWeight / 100) * 100) : 0 },
                 { label: "Calories", value: `${dash.todayCaloriesLogged}`, unit: "kcal", pct: Math.min(100, (dash.todayCaloriesLogged / 2400) * 100) },
                 { label: "Streak", value: `🔥${dash.streak}`, unit: "days", pct: Math.min(100, (dash.streak / 7) * 100) },
               ].map((s) => (
-                <div className="stat-box" key={s.label}>
-                  <div className="stat-label">{s.label}</div>
-                  <div className="stat-value">{s.value}</div>
-                  <div className="stat-unit">{s.unit}</div>
-                  <div className="progress-track">
-                    <div className="progress-fill" style={{ width: `${s.pct}%` }} />
+                <div className="ud-stat-box" key={s.label}>
+                  <div className="ud-stat-label">{s.label}</div>
+                  <div className="ud-stat-value">{s.value}</div>
+                  <div className="ud-stat-unit">{s.unit}</div>
+                  <div className="ud-progress-track">
+                    <div className="ud-progress-fill" style={{ width: `${s.pct}%` }} />
                   </div>
                 </div>
               ))}
@@ -362,22 +362,22 @@ export default function Dashboard() {
           </div>
 
           {/* Sets History */}
-          <div className="dash-card">
-            <div className="dash-card-title">
-              <span className="title-icon"><FontAwesomeIcon icon={faClipboardList} /></span>
+          <div className="ud-dash-card">
+            <div className="ud-dash-card-title">
+              <span className="ud-title-icon"><FontAwesomeIcon icon={faClipboardList} /></span>
               Sets History
             </div>
-            <div className="history-list">
+            <div className="ud-history-list">
               {dash.setsHistory.length === 0 ? (
                 <div style={{ color: "#555", fontSize: "0.8rem" }}>No session history yet.</div>
               ) : (
                 dash.setsHistory.map((set) => (
-                  <div className="history-row" key={set.id}>
-                    <div className="history-num">{set.id}</div>
-                    <div className="history-name">{set.name}</div>
-                    <div className="history-meta">{set.reps}</div>
-                    <div className="history-meta">{set.weight}</div>
-                    <div className="history-kcal">{set.kcal}</div>
+                  <div className="ud-history-row" key={set.id}>
+                    <div className="ud-history-num">{set.id}</div>
+                    <div className="ud-history-name">{set.name}</div>
+                    <div className="ud-history-meta">{set.reps}</div>
+                    <div className="ud-history-meta">{set.weight}</div>
+                    <div className="ud-history-kcal">{set.kcal}</div>
                   </div>
                 ))
               )}
@@ -385,19 +385,19 @@ export default function Dashboard() {
           </div>
 
           {/* Week Heatmap */}
-          <div className="dash-card">
-            <div className="dash-card-title">
-              <span className="title-icon"><FontAwesomeIcon icon={faCalendarWeek} /></span>
+          <div className="ud-dash-card">
+            <div className="ud-dash-card-title">
+              <span className="ud-title-icon"><FontAwesomeIcon icon={faCalendarWeek} /></span>
               This Week
             </div>
-            <div className="week-heatmap">
+            <div className="ud-week-heatmap">
               {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => {
                 const done = doneIndices.includes(i);
                 const isToday = i === (today === 0 ? 6 : today - 1);
                 return (
-                  <div key={d} className={`heat-day ${done ? "heat-done" : "heat-rest"} ${isToday ? "heat-today" : ""}`}>
-                    <div className="heat-label">{d}</div>
-                    <div className="heat-dot">{done ? "✓" : "–"}</div>
+                  <div key={d} className={`ud-heat-day ${done ? "ud-heat-done" : "ud-heat-rest"} ${isToday ? "ud-heat-today" : ""}`}>
+                    <div className="ud-heat-label">{d}</div>
+                    <div className="ud-heat-dot">{done ? "✓" : "–"}</div>
                   </div>
                 );
               })}

@@ -132,3 +132,11 @@ export const getDietPlans = async (req: AuthRequest, res: Response, next: NextFu
     next(err);
   }
 };
+export const getNutritionTips = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const [tips] = await db.query("SELECT * FROM NutritionTip");
+    res.json({ success: true, data: tips });
+  } catch (err) {
+    next(err);
+  }
+};

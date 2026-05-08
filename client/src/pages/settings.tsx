@@ -25,15 +25,8 @@ import {
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import "../css/settings.css";
 import { useTheme } from "../context/ThemeContext";
-import { fetchApi } from "../utils/api";
+import { api } from "../utils/api";
 
-const MOCK_GOALS = {
-  weeklyWorkouts: 4,
-  dailyCalories: 2400,
-  weightGoal: 82, // kg
-  currentWeight: 80, // kg
-  height: 181, // cm
-};
 
 /* ─── Section nav items ──────────────────────────────────────── */
 const NAV_ITEMS = [
@@ -160,28 +153,21 @@ function Settings() {
   const [username, setUsername] = useState("");
   const [avatar, setAvatar] = useState("https://cdn-icons-png.flaticon.com/512/149/149071.png");
   const [joinDate, setJoinDate] = useState("");
+  const [saved, setSaved] = useState(false);
 
-  // Fetch true user data from the database on mount
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await fetchApi("/api/auth/me");
-        const data = await res.json();
-        if (data.success && data.user) {
-          setName(data.user.name || "");
-          setEmail(data.user.email || "");
-          setUsername(data.user.username || "");
-          if (data.user.avatar) setAvatar(data.user.avatar);
-          if (data.user.createdAt) {
-            const date = new Date(data.user.createdAt);
-            setJoinDate(date.toLocaleDateString("en-US", { month: "long", year: "numeric" }));
-          }
+    api.get("/api/auth/me")
+      .then(res => {
+        const u = res.data.user;
+        if (u) {
+          setName(u.name || "");
+          setEmail(u.email || "");
+          setUsername(u.username || "");
+          if (u.avatar) setAvatar(u.avatar);
+          if (u.createdAt) setJoinDate(new Date(u.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" }));
         }
-      } catch (err) {
-        console.error("Error fetching profile", err);
-      }
-    };
-    fetchProfile();
+      })
+      .catch(() => {});
   }, []);
 
   /* Preferences state */
@@ -198,14 +184,11 @@ function Settings() {
     achievements: true,
   });
 
-  /* Goals state */
-  const [weeklyWorkouts, setWeeklyWorkouts] = useState(
-    MOCK_GOALS.weeklyWorkouts,
-  );
-  const [dailyCalories, setDailyCalories] = useState(MOCK_GOALS.dailyCalories);
-  const [weightGoal, setWeightGoal] = useState(MOCK_GOALS.weightGoal);
-  const [currentWeight, setCurrentWeight] = useState(MOCK_GOALS.currentWeight);
-  const [height, setHeight] = useState(MOCK_GOALS.height);
+  const [weeklyWorkouts, setWeeklyWorkouts] = useState(4);
+  const [dailyCalories, setDailyCalories] = useState(2400);
+  const [weightGoal, setWeightGoal] = useState(82);
+  const [currentWeight, setCurrentWeight] = useState(80);
+  const [height, setHeight] = useState(181);
 
   /* Privacy state */
   const [privacyToggles, setPrivacyToggles] = useState<Record<string, boolean>>(
@@ -216,66 +199,100 @@ function Settings() {
     },
   );
 
-  /* Injuries state */
   const INJURY_OPTIONS = ["Lower Back", "Knee", "Shoulder", "Wrist", "Ankle", "Hip", "Neck", "Elbow"];
-  const [injuries, setInjuries] = useState<string[]>(["Lower Back", "Knee"]);
+  interface InjuryRecord { id: number; type: string; status: string; }
+  const [injuryRecords, setInjuryRecords] = useState<InjuryRecord[]>([]);
+  const injuries = injuryRecords.filter(i => i.status === "active").map(i => i.type);
   const [injuryInput, setInjuryInput] = useState("");
-  const addInjury = (inj: string) => {
-    if (inj && !injuries.includes(inj)) setInjuries((prev) => [...prev, inj]);
+
+  useEffect(() => {
+    api.get("/api/injuries").then(res => {
+      if (res.data.success) setInjuryRecords(res.data.data);
+    }).catch(() => {});
+  }, []);
+
+  const addInjury = async (inj: string) => {
+    if (!inj || injuries.includes(inj)) { setInjuryInput(""); return; }
+    try {
+      const res = await api.post("/api/injuries", { type: inj, severity: "moderate", status: "active" });
+      if (res.data.success) setInjuryRecords(prev => [...prev, res.data.data]);
+    } catch {}
     setInjuryInput("");
   };
-  const removeInjury = (inj: string) => setInjuries((prev) => prev.filter((i) => i !== inj));
+  const removeInjury = async (inj: string) => {
+    const record = injuryRecords.find(r => r.type === inj && r.status === "active");
+    if (!record) return;
+    try {
+      await api.delete(`/api/injuries/${record.id}`);
+      setInjuryRecords(prev => prev.filter(r => r.id !== record.id));
+    } catch {}
+  };
 
-  /* Saved feedback */
-  const [saved, setSaved] = useState(false);
   const handleSave = async () => {
     try {
-      const res = await fetchApi("/api/users/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          username,
-          avatar,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to save profile. Please try again.");
-      }
-
+      await api.put("/api/users/profile", { name, username, avatar });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    } catch (err) {
-      console.error(err);
-      alert(err instanceof Error ? err.message : "An error occurred");
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Failed to save profile.");
     }
   };
 
-  const toggleNotif = (key: string) =>
+  const [passwords, setPasswords] = useState({
+    current: "",
+    new: "",
+    confirm: ""
+  });
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState({ text: "", type: "" });
+    const toggleNotif = (key: string) =>
     setNotifToggles((prev) => ({ ...prev, [key]: !prev[key] }));
-  const togglePrivacy = (key: string) =>
-    setPrivacyToggles((prev) => ({ ...prev, [key]: !prev[key] }));
 
-  const handleLogout = async() => {
-    try {
-      const res = await fetchApi("/api/auth/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await res.json();
-      if (data.success) {
-        navigate("/login");
-      }
-    } catch (err) {
-      console.error("Error logging out", err);
+  const togglePrivacy = (key: keyof typeof privacyToggles) => {
+    setPrivacyToggles((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!passwords.current || !passwords.new || !passwords.confirm) {
+      setPasswordMessage({ text: "All fields are required", type: "error" });
+      return;
+    }
+    if (passwords.new !== passwords.confirm) {
+      setPasswordMessage({ text: "Passwords do not match", type: "error" });
+      return;
+    }
+    if (passwords.new.length < 6) {
+      setPasswordMessage({ text: "New password must be at least 6 characters", type: "error" });
+      return;
     }
 
-    console.log("Logout");
+    setPasswordLoading(true);
+    setPasswordMessage({ text: "", type: "" });
+    try {
+      const res = await api.put("/api/users/password", {
+        currentPassword: passwords.current,
+        newPassword: passwords.new
+      });
+      if (res.data.success) {
+        setPasswordMessage({ text: "Password updated successfully!", type: "success" });
+        setPasswords({ current: "", new: "", confirm: "" });
+      }
+    } catch (err: any) {
+      setPasswordMessage({ 
+        text: err.response?.data?.message || "Failed to update password", 
+        type: "error" 
+      });
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+  const handleLogout = async () => {
+    try {
+      await api.post("/api/auth/logout");
+      navigate("/login");
+    } catch {
+      navigate("/login");
+    }
   };
 
   /* BMI calc */
@@ -767,28 +784,38 @@ function Settings() {
                 <div className="settings-fields">
                   <InputRow
                     label="Current Password"
-                    value=""
+                    value={passwords.current}
                     type="password"
                     icon={faLock}
+                    onChange={(v) => setPasswords({ ...passwords, current: v as string })}
                   />
                   <InputRow
                     label="New Password"
-                    value=""
+                    value={passwords.new}
                     type="password"
                     icon={faLock}
+                    onChange={(v) => setPasswords({ ...passwords, new: v as string })}
                   />
                   <InputRow
                     label="Confirm Password"
-                    value=""
+                    value={passwords.confirm}
                     type="password"
                     icon={faLock}
+                    onChange={(v) => setPasswords({ ...passwords, confirm: v as string })}
                   />
                 </div>
+                {passwordMessage.text && (
+                  <div className={`settings-message ${passwordMessage.type}`} style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
+                    {passwordMessage.text}
+                  </div>
+                )}
                 <button
                   className="settings-btn-primary"
                   style={{ marginTop: "1rem" }}
+                  onClick={handleUpdatePassword}
+                  disabled={passwordLoading}
                 >
-                  Update Password
+                  {passwordLoading ? "Updating..." : "Update Password"}
                 </button>
               </div>
 

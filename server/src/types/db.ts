@@ -41,6 +41,10 @@ export interface UserRow extends RowDataPacket {
   avatar: string | null;
   role: string;
   subscriptionPlan: string;
+  targetCalories: number;
+  targetProtein: number;
+  targetCarbs: number;
+  targetFat: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -222,6 +226,7 @@ export interface TrainerBookingRow extends RowDataPacket {
   scheduledAt: Date;
   durationMins: number;
   status: string;
+  paymentStatus: string;
   notes: string | null;
   totalPrice: number;
   createdAt: Date;
@@ -231,4 +236,22 @@ export interface TrainerBookingRow extends RowDataPacket {
   trainerAvatar?: string;
   trainerSpecialty?: string;
   trainerSpecialtyColor?: string;
+  // Client fields (trainer-side)
+  clientName?: string;
+  clientEmail?: string;
+}
+
+export interface PaymentRow extends RowDataPacket {
+  id: number;
+  bookingId: number;
+  bookingType: string;
+  userId: number;
+  amount: number;
+  currency: string;
+  status: string;
+  method: string | null;
+  transactionRef: string | null;
+  paidAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 }

@@ -385,10 +385,10 @@
 }
 
 .sub-cta-btn--active {
-  background: var(--border-color);
-  color: var(--text-dim);
-  cursor: default;
-  opacity: 0.6;
+  background: var(--accent-cyan-dim);
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  opacity: 0.8;
 }
 
 .sub-card--active {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { api } from "../utils/api";
-import { fetchApi } from "../utils/api";
 import {
   faUtensils,
   faFire,
@@ -77,36 +77,8 @@ interface DietPlan {
 }
 
 
-/* ─── Nutrition Tips ─────────────────────────────────────────── */
-const nutritionTips = [
-  {
-    icon: "💧",
-    color: "rgba(61,255,255,0.12)",
-    title: "Stay Hydrated",
-    desc: "Drink 35–40 ml of water per kg of bodyweight daily. Dehydration kills performance.",
-  },
-  {
-    icon: "⏰",
-    color: "rgba(255,200,50,0.12)",
-    title: "Meal Timing",
-    desc: "Eat a protein-rich meal within 2 hours post-workout to maximise muscle protein synthesis.",
-  },
-  {
-    icon: "🥦",
-    color: "rgba(80,230,120,0.12)",
-    title: "Micronutrients",
-    desc: "Fill at least half your plate with vegetables to hit your vitamin and mineral targets.",
-  },
-  {
-    icon: "🏷️",
-    color: "rgba(169,141,255,0.12)",
-    title: "Track Everything",
-    desc: "Use a calorie app for 2–4 weeks to build awareness of portion sizes and macro splits.",
-  },
-];
 
-/* ─── Calorie targets for Tracker ────────────────────────────────────────── */
-const DAILY_TARGET = { calories: 2400, protein: 180, carbs: 270, fat: 70 };
+/* ─── Category config for Tracker ────────────────────────────────────────── */
 
 /* ─── Category config for Tracker ────────────────────────────────────────── */
 const categoryConfig = {
@@ -149,7 +121,17 @@ function MacroBar({ value, max, color }: { value: number; max: number; color: st
 
 /* ─── Component ──────────────────────────────────────────────── */
 function Diet() {
+  const { user } = useAuth();
+  
+  const dailyTarget = {
+    calories: user?.targetCalories || 2400,
+    protein: user?.targetProtein || 180,
+    carbs: user?.targetCarbs || 270,
+    fat: user?.targetFat || 70
+  };
+
   const [dietPlans, setDietPlans] = useState<DietPlan[]>([]);
+  const [nutritionTips, setNutritionTips] = useState<any[]>([]);
   const [primaryTab, setPrimaryTab] = useState<"programs" | "tracker">("programs");
   /* Fetch diet plans */
   useEffect(() => {
@@ -159,6 +141,23 @@ function Diet() {
         if (res.data.data.length > 0) {
           setActivePlanId(res.data.data[0].planId);
         }
+      }
+    });
+
+    api.get("/api/meals/tips").then((res) => {
+      if (res.data.success) {
+        setNutritionTips(res.data.data.map((t: any) => ({
+          icon: t.icon,
+          color: t.color,
+          title: t.title,
+          desc: t.description
+        })));
+      }
+    });
+
+    api.get("/api/injuries").then((res) => {
+      if (res.data.success) {
+        setUserInjuries(res.data.data.map((i: any) => i.type));
       }
     });
   }, []);
@@ -176,6 +175,7 @@ function Diet() {
   const [altMeals, setAltMeals] = useState<AltMeal[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [activeInjury, setActiveInjury] = useState<string | null>(null);
+  const [userInjuries, setUserInjuries] = useState<string[]>([]);
   const [form, setForm] = useState({
     time: "", name: "", calories: "", protein: "", carbs: "", fat: "",
     category: "snack" as LoggedMeal["category"],
@@ -212,11 +212,21 @@ function Diet() {
         .then((res) => {
           if (res.data.success && res.data.data.length > 0) {
             setAltMeals(res.data.data);
-            setActiveInjury(res.data.data[0].injury);
+            
+            const filteredInjuries = [...new Set(res.data.data.map((m: any) => m.injury))]
+              .filter(inj => userInjuries.includes(inj as string));
+            
+            if (filteredInjuries.length > 0) {
+              if (!activeInjury || !filteredInjuries.includes(activeInjury)) {
+                setActiveInjury(filteredInjuries[0] as string);
+              }
+            } else {
+              setActiveInjury(null);
+            }
           }
         });
     }
-  }, [primaryTab]);
+  }, [primaryTab, userInjuries]);
 
   if (dietPlans.length === 0) return <div className="diet-page" style={{ color: "var(--text-secondary)", padding: "2rem" }}>Loading Nutrition Programs...</div>;
 
@@ -227,6 +237,7 @@ function Diet() {
     { calories: 0, protein: 0, carbs: 0, fat: 0 }
   );
 
+  const calPct = Math.min(100, Math.round((totals.calories / dailyTarget.calories) * 100));
   const addMeal = async () => {
     if (!form.name || !form.calories) return;
     const body = {
@@ -269,12 +280,8 @@ function Diet() {
       carbs: m.carbs,
       fat: m.fat,
     };
-    const res = await fetchApi("/api/meals", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
+    const res = await api.post("/api/meals", body);
+    const data = res.data;
     if (data.success) {
       const meal = data.data;
       setLoggedMeals((prev) => [...prev, {
@@ -290,9 +297,11 @@ function Diet() {
     }
   };
 
-  const remaining = { calories: Math.max(0, DAILY_TARGET.calories - totals.calories) };
+  const remaining = { calories: Math.max(0, dailyTarget.calories - totals.calories) };
   const activeAltMeals = altMeals.filter((m) => m.injury === activeInjury);
-  const profileInjuries = [...new Set(altMeals.map((m) => m.injury))];
+  
+  // Only show injuries that the user actually has
+  const profileInjuries = [...new Set(altMeals.map((m) => m.injury))].filter(inj => userInjuries.includes(inj));
 
   return (
     <div className="diet-page">
@@ -509,9 +518,9 @@ function Diet() {
                       <circle cx="60" cy="60" r="50" fill="none" stroke="var(--bg-surface)" strokeWidth="10" />
                       <circle
                         cx="60" cy="60" r="50" fill="none"
-                        stroke={totals.calories > DAILY_TARGET.calories ? "var(--danger)" : "var(--accent-cyan)"}
+                        stroke={totals.calories > dailyTarget.calories ? "var(--danger)" : "var(--accent-cyan)"}
                         strokeWidth="10"
-                        strokeDasharray={`${Math.min(314, (totals.calories / DAILY_TARGET.calories) * 314)} 314`}
+                        strokeDasharray={`${Math.min(314, (totals.calories / dailyTarget.calories) * 314)} 314`}
                         strokeLinecap="round"
                         transform="rotate(-90 60 60)"
                         style={{ transition: "stroke-dasharray 0.5s ease" }}
@@ -520,7 +529,7 @@ function Diet() {
                   </div>
                   <div className="summary-stats">
                     <div className="summary-stat-item">
-                      <div className="summary-stat-val">{DAILY_TARGET.calories.toLocaleString()}</div>
+                      <div className="summary-stat-val">{dailyTarget.calories.toLocaleString()}</div>
                       <div className="summary-stat-label">Daily Target</div>
                     </div>
                     <div className="summary-stat-item">
@@ -535,10 +544,12 @@ function Diet() {
                 </div>
 
                 <div className="macro-bars">
-                  <MacroProgress label="Calories" value={totals.calories} target={DAILY_TARGET.calories} color="#3dffff" icon={faFire} />
-                  <MacroProgress label="Protein"  value={totals.protein}  target={DAILY_TARGET.protein}  color="#ff6b6b" icon={faDrumstickBite} />
-                  <MacroProgress label="Carbs"    value={totals.carbs}    target={DAILY_TARGET.carbs}    color="#ffc832" icon={faBreadSlice} />
-                  <MacroProgress label="Fat"      value={totals.fat}      target={DAILY_TARGET.fat}      color="#50e678" icon={faDroplet} />
+                  <MacroProgress label="Calories" value={totals.calories} target={dailyTarget.calories} color="#3dffff" icon={faFire} />
+                  <div className="macro-progress-grid">
+                    <MacroProgress label="Protein" value={totals.protein} target={dailyTarget.protein} color="#ff6b6b" icon={faDrumstickBite} />
+                    <MacroProgress label="Carbs" value={totals.carbs} target={dailyTarget.carbs} color="#ffc832" icon={faBreadSlice} />
+                    <MacroProgress label="Fats" value={totals.fat} target={dailyTarget.fat} color="#50e678" icon={faDroplet} />
+                  </div>
                 </div>
               </div>
 

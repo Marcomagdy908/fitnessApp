@@ -11,6 +11,7 @@ import {
   faUtensils,
   faCrown,
   faCalendarCheck,
+  faCalendarPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -47,6 +48,7 @@ function SidebarNavigation() {
   const trainerMenu = [
     { name: "Dashboard", icon: faHome, path: "/trainer" },
     { name: "Exercises", icon: faDumbbell, path: "/exercises" },
+    { name: "Classes", icon: faCalendarPlus, path: "/trainer/classes" },
     { name: "Diet", icon: faUtensils, path: "/trainer/diet" },
     { name: "Plans", icon: faClipboardList, path: "/trainer/plans" },
     { name: "Profile", icon: faCog, path: settingsPath },

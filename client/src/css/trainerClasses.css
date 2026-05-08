@@ -1,0 +1,943 @@
+/* ═══════════════════════════════════════════════════════════
+   TRAINER CLASSES PAGE  (tc-*)
+   Premium dark/light-ready styles
+═══════════════════════════════════════════════════════════ */
+
+.tc-wrapper {
+  padding: 2.5rem;
+  background: var(--bg-primary);
+  min-height: 100vh;
+  color: var(--text-primary);
+}
+
+/* ── Header ── */
+.tc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+  animation: tc-slide-down 0.5s ease both;
+}
+
+.tc-header h1 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+  margin: 0 0 0.25rem;
+}
+
+.tc-header p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.tc-header-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--accent-cyan-dim);
+  color: var(--accent-cyan);
+  border: 1px solid var(--accent-cyan-border);
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+  animation: tc-slide-down 0.5s ease both;
+}
+
+/* ── Tabs ── */
+.tc-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0;
+}
+
+.tc-tab-btn {
+  background: none;
+  border: none;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.25s ease;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 8px 8px 0 0;
+}
+
+.tc-tab-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+.tc-tab-btn.active {
+  color: var(--accent-cyan);
+  border-bottom-color: var(--accent-cyan);
+  background: var(--accent-cyan-dim);
+}
+
+.tc-tab-badge {
+  background: var(--accent-cyan);
+  color: var(--bg-primary);
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  min-width: 18px;
+  text-align: center;
+}
+
+/* ── Create Class Button ── */
+.tc-create-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--accent-cyan);
+  color: var(--text-inverse);
+  border: none;
+  padding: 0.75rem 1.4rem;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-family: inherit;
+  box-shadow: 0 4px 18px var(--accent-cyan-dim);
+}
+
+.tc-create-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 26px var(--accent-cyan-border);
+}
+
+/* ── Classes Grid ── */
+.tc-classes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.4rem;
+}
+
+/* ── Class Card ── */
+.tc-class-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  animation: tc-slide-up 0.5s ease both;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  border-top: 3px solid var(--border-color);
+}
+
+.tc-class-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at top right, currentColor 0%, transparent 70%);
+  opacity: 0.04;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.tc-class-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+}
+
+.tc-class-card:hover::before {
+  opacity: 0.07;
+}
+
+.tc-class-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.8rem;
+}
+
+.tc-class-name {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.tc-class-plan-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.tc-badge-basic   { background: var(--success-dim);       color: var(--success);       border-color: var(--success-dim); }
+.tc-badge-pro     { background: var(--accent-cyan-dim);   color: var(--accent-cyan);   border-color: var(--accent-cyan-border); }
+.tc-badge-elite   { background: var(--accent-purple-dim); color: var(--accent-purple); border-color: var(--accent-purple-border); }
+
+.tc-class-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 1.1rem;
+}
+
+/* Info chips */
+.tc-class-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.tc-meta-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+}
+
+/* Spots progress */
+.tc-spots-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+}
+
+.tc-spots-count {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-left: auto;
+}
+
+.tc-spots-bar {
+  height: 6px;
+  background: var(--bg-surface);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 1.2rem;
+}
+
+.tc-spots-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Class card actions */
+.tc-class-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.tc-del-btn {
+  flex: 1;
+  padding: 0.65rem;
+  border-radius: 12px;
+  border: 1px solid var(--danger-dim);
+  background: var(--danger-dim);
+  color: var(--danger);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+
+.tc-del-btn:hover {
+  background: color-mix(in srgb, var(--danger-dim) 60%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px var(--danger-dim);
+}
+
+/* Empty state */
+.tc-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: var(--text-dim);
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.tc-empty-icon {
+  font-size: 3rem;
+  opacity: 0.4;
+}
+
+.tc-empty h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.tc-empty p {
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+/* ═══ Bookings Tab ═══ */
+
+.tc-bookings-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.tc-filter-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.tc-filter-btn:hover,
+.tc-filter-btn.active {
+  border-color: var(--accent-cyan-border);
+  color: var(--accent-cyan);
+  background: var(--accent-cyan-dim);
+}
+
+.tc-bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.tc-booking-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 1.2rem 1.4rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 1.2rem;
+  box-shadow: var(--shadow-sm);
+  animation: tc-slide-up 0.4s ease both;
+  transition: all 0.3s ease;
+}
+
+.tc-booking-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-cyan-border);
+}
+
+.tc-booking-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--accent-cyan-dim);
+  color: var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 900;
+  border: 2px solid var(--accent-cyan-border);
+  flex-shrink: 0;
+}
+
+.tc-booking-info {
+  min-width: 0;
+}
+
+.tc-booking-client {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tc-booking-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.tc-booking-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.tc-booking-price {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--accent-cyan);
+  white-space: nowrap;
+}
+
+.tc-booking-notes {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-style: italic;
+  margin-top: 0.15rem;
+}
+
+/* Status badge */
+.tc-status-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.tc-status-pending   { background: var(--warning-dim);   color: var(--warning);   border-color: var(--warning-dim); }
+.tc-status-confirmed { background: var(--success-dim);   color: var(--success);   border-color: var(--success-dim); }
+.tc-status-cancelled { background: var(--danger-dim);    color: var(--danger);    border-color: var(--danger-dim); }
+
+/* Booking action buttons */
+.tc-booking-btns {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.tc-confirm-btn,
+.tc-cancel-btn {
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.tc-confirm-btn {
+  background: var(--success-dim);
+  color: var(--success);
+  border-color: var(--success-dim);
+}
+
+.tc-confirm-btn:hover {
+  background: color-mix(in srgb, var(--success-dim) 60%, transparent);
+  transform: translateY(-1px);
+}
+
+.tc-cancel-btn {
+  background: var(--danger-dim);
+  color: var(--danger);
+  border-color: var(--danger-dim);
+}
+
+.tc-cancel-btn:hover {
+  background: color-mix(in srgb, var(--danger-dim) 60%, transparent);
+  transform: translateY(-1px);
+}
+
+/* ═══ Create Class Modal ═══ */
+
+.tc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--bg-primary) 70%, transparent);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: tc-fade-in 0.2s ease;
+}
+
+.tc-modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 22px;
+  padding: 2rem;
+  width: min(500px, 95vw);
+  box-shadow: var(--shadow-md);
+  animation: tc-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.tc-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.tc-modal-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--accent-cyan-dim);
+  color: var(--accent-cyan);
+  border: 1px solid var(--accent-cyan-border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.tc-modal-header h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+}
+
+.tc-modal-close {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tc-modal-close:hover { background: var(--danger-dim); color: var(--danger); border-color: var(--danger-dim); }
+
+.tc-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.tc-form-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.tc-form-input,
+.tc-form-select,
+.tc-form-textarea {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.25s ease;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tc-form-input:focus,
+.tc-form-select:focus,
+.tc-form-textarea:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px var(--accent-cyan-dim);
+}
+
+.tc-form-select {
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.tc-form-textarea {
+  min-height: 80px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.tc-form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.tc-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.tc-modal-cancel,
+.tc-modal-submit {
+  flex: 1;
+  padding: 0.85rem;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: inherit;
+  border: 1px solid;
+}
+
+.tc-modal-cancel {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.tc-modal-cancel:hover { background: var(--bg-secondary); }
+
+.tc-modal-submit {
+  background: var(--accent-cyan);
+  color: var(--text-inverse);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 4px 16px var(--accent-cyan-dim);
+}
+
+.tc-modal-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px var(--accent-cyan-border);
+}
+
+.tc-modal-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Spinner ── */
+.tc-spinner-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem;
+}
+
+.tc-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-cyan);
+  border-radius: 50%;
+  animation: tc-spin 0.8s linear infinite;
+}
+
+/* ── Animations ── */
+@keyframes tc-slide-down {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tc-slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tc-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes tc-pop {
+  from { transform: scale(0.9) translateY(20px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes tc-spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .tc-classes-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .tc-wrapper { padding: 1.2rem; }
+  .tc-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .tc-classes-grid { grid-template-columns: 1fr; }
+  .tc-booking-card {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+  }
+  .tc-booking-price { grid-column: 2; }
+  .tc-booking-btns { grid-column: 1 / -1; }
+  .tc-form-row-2 { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════
+   PERSONAL TRAINING CLIENTS TAB
+═══════════════════════════════════════════ */
+
+/* Roster grid */
+.tc-pt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.4rem;
+}
+
+/* PT client card */
+.tc-pt-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  animation: tc-slide-up 0.5s ease both;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.tc-pt-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-purple-border);
+}
+
+/* Card top row */
+.tc-pt-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.tc-pt-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent-purple-dim);
+  color: var(--accent-purple);
+  border: 2px solid var(--accent-purple-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.tc-pt-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.tc-pt-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tc-pt-email {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+/* Status badge variants */
+.tc-pt-status {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tc-pt-status-active    { background: var(--success-dim);         color: var(--success);         border-color: var(--success-dim); }
+.tc-pt-status-paused    { background: var(--warning-dim);         color: var(--warning);         border-color: var(--warning-dim); }
+.tc-pt-status-completed { background: var(--accent-purple-dim);   color: var(--accent-purple);   border-color: var(--accent-purple-border); }
+
+/* Info chips row */
+.tc-pt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.9rem;
+}
+
+.tc-pt-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+}
+
+/* Goal pill */
+.tc-pt-goal {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-purple);
+  background: var(--accent-purple-dim);
+  border: 1px solid var(--accent-purple-border);
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+  margin-bottom: 0.9rem;
+}
+
+/* Progress notes */
+.tc-pt-notes-wrap {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0.65rem 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.tc-pt-notes-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-dim);
+  margin: 0 0 0.3rem;
+}
+
+.tc-pt-notes-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Inline notes textarea (edit mode) */
+.tc-pt-notes-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  line-height: 1.5;
+  width: 100%;
+  resize: none;
+  min-height: 60px;
+}
+
+/* Card action bar */
+.tc-pt-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.tc-pt-action-btn {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.tc-pt-action-btn:hover {
+  border-color: var(--accent-cyan-border);
+  color: var(--accent-cyan);
+  background: var(--accent-cyan-dim);
+}
+
+.tc-pt-action-btn.danger:hover {
+  border-color: var(--danger-dim);
+  color: var(--danger);
+  background: var(--danger-dim);
+}
+
+.tc-pt-action-btn.save {
+  border-color: var(--success-dim);
+  color: var(--success);
+  background: var(--success-dim);
+}
+
+/* Status select inline */
+.tc-pt-status-select {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.3rem 0.6rem;
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.tc-pt-status-select:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px var(--accent-cyan-dim);
+}
+
+/* Add PT client modal – wider */
+.tc-pt-modal-box {
+  width: min(560px, 95vw);
+}
+
+@media (max-width: 640px) {
+  .tc-pt-grid { grid-template-columns: 1fr; }
+}
+

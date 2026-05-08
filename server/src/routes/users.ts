@@ -5,7 +5,8 @@ import {
   getAllUsers, 
   adminUpdateUser,
   getUserBenefits,
-  updateUserBenefit
+  updateUserBenefit,
+  updatePassword
 } from "../controllers/usersController";
 import { protect, adminOnly } from "../middleware/auth";
 
@@ -14,6 +15,7 @@ const router = Router();
 router.use(protect);
 router.get("/profile", getProfile);
 router.put("/profile", updateProfile);
+router.put("/password", updatePassword);
 
 // Admin routes
 router.get("/", adminOnly, getAllUsers);

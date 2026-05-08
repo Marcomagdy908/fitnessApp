@@ -9,21 +9,21 @@ async function main() {
   const hashedPassword = await bcrypt.hash('password123', 10);
   await db.query('DELETE FROM User');
   const [userResult] = await db.query<ResultSetHeader>(
-    'INSERT INTO User (name, email, password, role) VALUES (?, ?, ?, ?)',
-    ['John Doe', 'john.doe@email.com', hashedPassword, 'USER']
+    'INSERT INTO User (name, email, password, role, targetCalories, targetProtein, targetCarbs, targetFat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    ['John Doe', 'john.doe@email.com', hashedPassword, 'USER', 2800, 200, 350, 75]
   );
   const userId = userResult.insertId;
   console.log('✅ Seeded test user (john.doe@email.com / password123)');
 
   const [adminResult] = await db.query<ResultSetHeader>(
-    'INSERT INTO User (name, email, password, role) VALUES (?, ?, ?, ?)',
-    ['Admin User', 'admin@apextrack.com', hashedPassword, 'ADMIN']
+    'INSERT INTO User (name, email, password, role, targetCalories, targetProtein, targetCarbs, targetFat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    ['Admin User', 'admin@apextrack.com', hashedPassword, 'ADMIN', 2400, 180, 270, 70]
   );
   console.log('✅ Seeded admin user (admin@apextrack.com / admin123)');
 
   const [trainerUserResult] = await db.query<ResultSetHeader>(
-    'INSERT INTO User (name, email, password, role) VALUES (?, ?, ?, ?)',
-    ['Alex Carter', 'alex.trainer@email.com', hashedPassword, 'TRAINER']
+    'INSERT INTO User (name, email, password, role, targetCalories, targetProtein, targetCarbs, targetFat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    ['Alex Carter', 'alex.trainer@email.com', hashedPassword, 'TRAINER', 3000, 220, 350, 80]
   );
   const trainerUserId = trainerUserResult.insertId;
   console.log('✅ Seeded trainer user (alex.trainer@email.com / password123)');
@@ -199,7 +199,42 @@ async function main() {
      VALUES (?, ?, ?, ?, ?, ?, ?)`,
     [userId, trainerIds[0], trainerSessDate, 60, 'confirmed', 'Focus on deadlift form', trainers[0].pricePerSession]
   );
-  console.log('✅ Seeded sample bookings');
+
+  // Add more users for trainer roster
+  const [user2] = await db.query<ResultSetHeader>(
+    'INSERT INTO User (name, email, password, role) VALUES (?, ?, ?, ?)',
+    ['Sara Mohamed', 'sara@email.com', hashedPassword, 'USER']
+  );
+  const [user3] = await db.query<ResultSetHeader>(
+    'INSERT INTO User (name, email, password, role) VALUES (?, ?, ?, ?)',
+    ['Omar Khaled', 'omar@email.com', hashedPassword, 'USER']
+  );
+  const [user4] = await db.query<ResultSetHeader>(
+    'INSERT INTO User (name, email, password, role) VALUES (?, ?, ?, ?)',
+    ['Laila Hassan', 'laila@email.com', hashedPassword, 'USER']
+  );
+
+  // Add PTClient records
+  await db.query('DELETE FROM PTClient');
+  await db.query(
+    `INSERT INTO PTClient (trainerId, userId, goal, sessionsPerWeek, startDate, status) VALUES 
+     (?, ?, 'Fat Loss', 3, CURDATE(), 'active'),
+     (?, ?, 'Muscle Gain', 4, CURDATE(), 'active'),
+     (?, ?, 'Maintenance', 2, CURDATE(), 'active'),
+     (?, ?, 'Competition Prep', 5, CURDATE(), 'active')`,
+    [trainerIds[0], userId, trainerIds[0], user2.insertId, trainerIds[0], user3.insertId, trainerIds[0], user4.insertId]
+  );
+
+  // Add some subscriptions for these users
+  await db.query(
+    `INSERT INTO Subscription (userId, plan, status, billingCycle, autoRenew, startsAt, expiresAt) VALUES 
+     (?, 'basic', 'active', 'monthly', true, NOW(), DATE_ADD(NOW(), INTERVAL 1 MONTH)),
+     (?, 'pro', 'active', 'monthly', true, NOW(), DATE_ADD(NOW(), INTERVAL 1 MONTH)),
+     (?, 'elite', 'active', 'monthly', true, NOW(), DATE_ADD(NOW(), INTERVAL 1 MONTH))`,
+    [user2.insertId, user3.insertId, user4.insertId]
+  );
+
+  console.log('✅ Seeded trainer roster (4 clients)');
 
   /* ─── Exercises ─────────────────────────────────────────── */
   await db.query('DELETE FROM WorkoutSessionSet');
@@ -210,9 +245,18 @@ async function main() {
   const exercises = [
     { name:'Barbell Bench Press', category:'chest', difficulty:'intermediate', target:'chest, front deltoids, triceps', equipment:'barbell', sets:4, reps:8, timeSecs:null, image:'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&fit=crop&q=80', instructions:'Lie flat on a bench. Grip the bar just outside shoulder-width. Lower to your chest, pause, then press back up explosively.' },
     { name:'Push-Ups', category:'chest', difficulty:'beginner', target:'chest, shoulders, triceps', equipment:'bodyweight', sets:3, reps:15, timeSecs:null, image:'https://images.unsplash.com/photo-1598971639058-fab3c3109a3d?w=600&fit=crop&q=80', instructions:'Start in a plank position with hands slightly wider than shoulder-width. Lower your chest to the floor, then push back up.' },
+    { name:'Incline DB Press', category:'chest', difficulty:'intermediate', target:'upper chest, shoulders, triceps', equipment:'dumbbells', sets:3, reps:10, timeSecs:null, image:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&fit=crop&q=80', instructions:'Set bench to 30-45 degrees. Press dumbbells from shoulders until arms are straight.' },
     { name:'Deadlift', category:'back', difficulty:'intermediate', target:'lower back, hamstrings, glutes, traps', equipment:'barbell', sets:4, reps:5, timeSecs:null, image:'https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=600&fit=crop&q=80', instructions:'Stand with feet hip-width, bar over mid-foot. Hinge at hips, grip bar, brace core. Drive through the floor to stand tall.' },
+    { name:'Pull-up', category:'back', difficulty:'advanced', target:'lats, biceps, upper back', equipment:'pull-up bar', sets:3, reps:8, timeSecs:null, image:'https://images.unsplash.com/photo-1598971639058-fab3c3109a3d?w=600&fit=crop&q=80', instructions:'Grip bar slightly wider than shoulders. Pull yourself up until chin clears the bar.' },
+    { name:'Barbell Row', category:'back', difficulty:'intermediate', target:'mid-back, lats, biceps', equipment:'barbell', sets:3, reps:10, timeSecs:null, image:'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=600&fit=crop&q=80', instructions:'Hinge at 45 degrees, pull bar to your lower ribs while keeping back straight.' },
     { name:'Barbell Squat', category:'legs', difficulty:'intermediate', target:'quadriceps, glutes, hamstrings', equipment:'barbell', sets:4, reps:8, timeSecs:null, image:'https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?w=600&fit=crop&q=80', instructions:'Bar on upper traps, feet shoulder-width. Break at the hips and knees, descend until thighs are parallel, drive back up.' },
-    { name:'Overhead Press', category:'shoulders', difficulty:'intermediate', target:'front deltoids, lateral deltoids, triceps', equipment:'barbell', sets:4, reps:8, timeSecs:null, image:'https://images.unsplash.com/photo-1532384748853-8f54a8f476e2?w=600&fit=crop&q=80', instructions:'Hold the bar at shoulder height. Press straight up overhead, locking out elbows at the top. Lower to shoulder height with control.' },
+    { name:'Leg Press', category:'legs', difficulty:'beginner', target:'quads, glutes, hamstrings', equipment:'machine', sets:3, reps:12, timeSecs:null, image:'https://images.unsplash.com/photo-1583454110551-21f2fa2ec617?w=600&fit=crop&q=80', instructions:'Place feet hip-width on platform. Lower until knees are at 90 degrees, then press back up.' },
+    { name:'Overhead Press', category:'shoulders', difficulty:'intermediate', target:'front deltoids, lateral deltoids, triceps', equipment:'barbell', sets:4, reps:8, timeSecs:null, image:'https://images.unsplash.com/photo-1532384748853-8f54a8f476e2?w=600&fit=crop&q=80', instructions:'Hold the bar at shoulder height. Press straight up overhead, locking out elbows at the top.' },
+    { name:'Lateral Raise', category:'shoulders', difficulty:'beginner', target:'lateral deltoids', equipment:'dumbbells', sets:3, reps:15, timeSecs:null, image:'https://images.unsplash.com/photo-1581009146145-b5ef03a196ce?w=600&fit=crop&q=80', instructions:'Raise dumbbells out to your sides until arms are parallel with the floor.' },
+    { name:'Barbell Curl', category:'arms', difficulty:'beginner', target:'biceps', equipment:'barbell', sets:3, reps:12, timeSecs:null, image:'https://images.unsplash.com/photo-1581009146145-b5ef03a196ce?w=600&fit=crop&q=80', instructions:'Curl the bar towards your shoulders, keeping elbows pinned to your sides.' },
+    { name:'Tricep Pushdown', category:'arms', difficulty:'beginner', target:'triceps', equipment:'cable', sets:3, reps:12, timeSecs:null, image:'https://images.unsplash.com/photo-1591940742878-13aba4b7a35e?w=600&fit=crop&q=80', instructions:'Push cable attachment down until arms are fully locked out.' },
+    { name:'Plank', category:'core', difficulty:'beginner', target:'abs, obliques, lower back', equipment:'bodyweight', sets:3, reps:0, timeSecs:60, image:'https://images.unsplash.com/photo-1566241142559-40e1dab266c6?w=600&fit=crop&q=80', instructions:'Hold a straight-body position supported by forearms and toes.' },
+    { name:'Hanging Leg Raise', category:'core', difficulty:'advanced', target:'lower abs', equipment:'pull-up bar', sets:3, reps:12, timeSecs:null, image:'https://images.unsplash.com/photo-1598971639058-fab3c3109a3d?w=600&fit=crop&q=80', instructions:'Hang from a bar and raise your legs until they are parallel to the floor.' },
   ];
 
   const exerciseIds: number[] = [];
@@ -228,8 +272,9 @@ async function main() {
 
   /* ─── Training Plan ─────────────────────────────────────── */
   const [planResult] = await db.query<ResultSetHeader>(
-    `INSERT INTO WorkoutPlan (userId, name, description, daysPerWeek, isActive) VALUES (?, ?, ?, ?, ?)`,
-    [userId, 'Hypertrophy Block', 'Strength Phase — Next: Deload Week', 4, true]
+    `INSERT INTO WorkoutPlan (userId, name, description, daysPerWeek, level, weeks, goal, label, isActive) 
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [userId, 'Hypertrophy Block', 'Strength Phase — Next: Deload Week', 4, 'Intermediate', 12, 'Hypertrophy', 'Most Popular', true]
   );
   const planId = planResult.insertId;
 
@@ -323,6 +368,62 @@ async function main() {
       );
     }
   }
+  /* ─── Subscription Plans ────────────────────────────────── */
+  await db.query('DELETE FROM SubscriptionPlan');
+  const planData = [
+    {
+      planId: "basic",
+      name: "Basic",
+      price: 29.99,
+      annualPrice: 23.99,
+      description: "Full access to our gym floor — cardio machines, free weights, and resistance equipment. Perfect for solo training.",
+      icon: "faShieldHalved",
+      accentColor: "#888",
+      glowColor: "rgba(136,136,136,0.15)",
+      borderColor: "rgba(136,136,136,0.15)",
+      bgGradient: "linear-gradient(135deg, #0d0d0d 0%, #111 100%)",
+      popular: false,
+      cta: "Join Basic"
+    },
+    {
+      planId: "pro",
+      name: "Pro",
+      price: 59.99,
+      annualPrice: 47.99,
+      description: "The complete gym experience — unlimited classes, pool, sauna, and everything you need to transform your body.",
+      icon: "faDumbbell",
+      accentColor: "var(--accent-cyan)",
+      glowColor: "var(--accent-cyan-dim)",
+      borderColor: "var(--accent-cyan-border)",
+      bgGradient: "linear-gradient(135deg, #080f0f 0%, #0a1515 100%)",
+      popular: true,
+      cta: "Join Pro — First Week Free"
+    },
+    {
+      planId: "elite",
+      name: "VIP Elite",
+      price: 99.99,
+      annualPrice: 79.99,
+      description: "The ultimate membership. Everything in Pro plus dedicated personal training, nutrition coaching, and exclusive VIP perks.",
+      icon: "faTrophy",
+      accentColor: "#ffc832",
+      glowColor: "rgba(255,200,50,0.15)",
+      borderColor: "rgba(255,200,50,0.35)",
+      bgGradient: "linear-gradient(135deg, #111009 0%, #181400 100%)",
+      popular: false,
+      cta: "Go VIP Elite"
+    }
+  ];
+
+  for (const p of planData) {
+    await db.query(
+      `INSERT INTO SubscriptionPlan (planId, name, price, annualPrice, description, icon, accentColor, glowColor, borderColor, bgGradient, popular, cta)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [p.planId, p.name, p.price, p.annualPrice, p.description, p.icon, p.accentColor, p.glowColor, p.borderColor, p.bgGradient, p.popular, p.cta]
+    );
+  }
+  console.log('✅ Seeded subscription plans');
+
   /* ─── Subscription Benefits ────────────────────────────── */
   await db.query('DELETE FROM SubscriptionBenefit');
   const benefits = [
@@ -355,6 +456,9 @@ async function main() {
   console.log('✅ Seeded subscription benefits');
 
   await seedDiet();
+  await seedInjuryRestrictions();
+  await seedAlternativeMeals();
+  await seedNutritionTips();
   console.log('\n🎉 All done! Login: john.doe@email.com / password123');
 }
 
@@ -454,4 +558,167 @@ async function seedDiet() {
   }
 
   console.log('✅ Seeded diet plans');
+}
+
+async function seedInjuryRestrictions() {
+  console.log('🌱 Seeding injury restrictions…');
+  await db.query("DELETE FROM InjuryRestriction");
+
+  const restrictions = [
+    {
+      type: "Lower Back",
+      avoid: ["Deadlift", "Good Morning", "Romanian Deadlift", "Barbell Row", "Barbell Squat"],
+      tip: "Brace your core on every compound lift. Avoid hyperextension and heavy spinal loading."
+    },
+    {
+      type: "Knee",
+      avoid: ["Leg Press", "Deep Squat", "Lunges", "Jump Squat", "Box Jump"],
+      tip: "Keep your knee tracking over your toes. Avoid full-depth knee flexion under load."
+    },
+    {
+      type: "Shoulder",
+      avoid: ["Behind-Neck Press", "Upright Row", "Overhead Press", "Dips", "Wide-Grip Bench"],
+      tip: "Limit shoulder abduction above 90°. Keep elbows slightly in front of your body."
+    },
+    {
+      type: "Wrist",
+      avoid: ["Barbell Curl", "Push-up", "Front Squat", "Clean & Press", "Wrist Curl"],
+      tip: "Use neutral-grip attachments where possible. Straps can reduce wrist torque on pulling exercises."
+    },
+    {
+      type: "Ankle",
+      avoid: ["Running", "Box Jump", "Jump Rope", "Calf Raise", "Bulgarian Split Squat"],
+      tip: "Focus on seated/upper-body work while the ankle heals. Low-impact cycling is safe."
+    },
+    {
+      type: "Hip",
+      avoid: ["Hip Thrust", "Sumo Deadlift", "Deep Squat", "Leg Raise", "Hurdle Step"],
+      tip: "Reduce ROM on hip-dominant movements. Avoid anterior hip impingement."
+    }
+  ];
+
+  for (const r of restrictions) {
+    await db.query(
+      `INSERT INTO InjuryRestriction (injuryType, avoidExercises, tip) VALUES (?, ?, ?)`,
+      [r.type, JSON.stringify(r.avoid), r.tip]
+    );
+  }
+  console.log('✅ Seeded injury restrictions');
+}
+
+async function seedAlternativeMeals() {
+  console.log('🌱 Seeding alternative meals…');
+  await db.query("DELETE FROM AlternativeMeal");
+
+  const alternatives = [
+    {
+      injury: "Knee",
+      icon: "🐟",
+      name: "Anti-Inflammatory Salmon",
+      benefit: "Omega-3 fatty acids reduce joint inflammation and support ligament health.",
+      calories: 450,
+      protein: 35,
+      carbs: 5,
+      fat: 28
+    },
+    {
+      injury: "Shoulder",
+      icon: "🥛",
+      name: "Turmeric Golden Milk",
+      benefit: "Curcumin in turmeric is a powerful natural anti-inflammatory for rotator cuff recovery.",
+      calories: 180,
+      protein: 8,
+      carbs: 12,
+      fat: 10
+    },
+    {
+      injury: "Lower Back",
+      icon: "🥤",
+      name: "Collagen Berry Smoothie",
+      benefit: "Vitamin C and collagen peptides support spinal disc and connective tissue repair.",
+      calories: 320,
+      protein: 25,
+      carbs: 45,
+      fat: 5
+    },
+    {
+      injury: "Wrist",
+      icon: "🥑",
+      name: "Avocado & Walnut Toast",
+      benefit: "Healthy fats and Vitamin E support nerve health and reduce carpal tunnel symptoms.",
+      calories: 380,
+      protein: 12,
+      carbs: 40,
+      fat: 22
+    },
+    {
+      injury: "Ankle",
+      icon: "🥚",
+      name: "Fortified Bone Broth Soup",
+      benefit: "High in glycine and minerals essential for tendon remodeling and bone density.",
+      calories: 220,
+      protein: 18,
+      carbs: 10,
+      fat: 8
+    },
+    {
+      injury: "Hip",
+      icon: "🫐",
+      name: "Antioxidant Power Bowl",
+      benefit: "Anthocyanins from berries help reduce oxidative stress in large joint capsules.",
+      calories: 350,
+      protein: 15,
+      carbs: 65,
+      fat: 6
+    }
+  ];
+
+  for (const m of alternatives) {
+    await db.query(
+      `INSERT INTO AlternativeMeal (injury, icon, name, benefit, calories, protein, carbs, fat)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [m.injury, m.icon, m.name, m.benefit, m.calories, m.protein, m.carbs, m.fat]
+    );
+  }
+  console.log('✅ Seeded alternative meals');
+}
+
+async function seedNutritionTips() {
+  console.log('🌱 Seeding nutrition tips…');
+  await db.query("DELETE FROM NutritionTip");
+
+  const tips = [
+    {
+      icon: "💧",
+      color: "rgba(61,255,255,0.12)",
+      title: "Stay Hydrated",
+      desc: "Drink 35–40 ml of water per kg of bodyweight daily. Dehydration kills performance."
+    },
+    {
+      icon: "⏰",
+      color: "rgba(255,200,50,0.12)",
+      title: "Meal Timing",
+      desc: "Eat a protein-rich meal within 2 hours post-workout to maximise muscle protein synthesis."
+    },
+    {
+      icon: "🥦",
+      color: "rgba(80,230,120,0.12)",
+      title: "Micronutrients",
+      desc: "Fill at least half your plate with vegetables to hit your vitamin and mineral targets."
+    },
+    {
+      icon: "🏷️",
+      color: "rgba(169,141,255,0.12)",
+      title: "Track Everything",
+      desc: "Use a calorie app for 2–4 weeks to build awareness of portion sizes and macro splits."
+    }
+  ];
+
+  for (const t of tips) {
+    await db.query(
+      `INSERT INTO NutritionTip (icon, color, title, description) VALUES (?, ?, ?, ?)`,
+      [t.icon, t.color, t.title, t.desc]
+    );
+  }
+  console.log('✅ Seeded nutrition tips');
 }

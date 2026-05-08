@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCrown,
@@ -19,6 +19,7 @@ import {
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { useSubscription } from "../context/SubscriptionContext";
 import { api } from "../utils/api";
+import PaymentModal, { type PaymentBooking } from "../components/PaymentModal";
 import "../css/subscription.css";
 
 /* ─── Types ─────────────────────────────────────────────────── */
@@ -30,12 +31,12 @@ interface PlanFeature {
 interface MembershipPlan {
   id: string;
   name: string;
-  price: string;
-  annualPrice: string;
+  price: number;
+  annualPrice: number;
   period: string;
   badge?: string;
   description: string;
-  icon: IconDefinition;
+  icon: IconDefinition | string;
   accentColor: string;
   glowColor: string;
   borderColor: string;
@@ -45,94 +46,7 @@ interface MembershipPlan {
   popular: boolean;
 }
 
-/* ─── Membership Plan Data ───────────────────────────────────── */
-const plans: MembershipPlan[] = [
-  {
-    id: "basic",
-    name: "Basic",
-    price: "$29.99",
-    annualPrice: "$23.99",
-    period: "/ month",
-    description:
-      "Full access to our gym floor — cardio machines, free weights, and resistance equipment. Perfect for solo training.",
-    icon: faShieldHalved,
-    accentColor: "#888",
-    glowColor: "rgba(136,136,136,0.15)",
-    borderColor: "rgba(136,136,136,0.15)",
-    bgGradient: "linear-gradient(135deg, #0d0d0d 0%, #111 100%)",
-    popular: false,
-    cta: "Join Basic",
-    features: [
-      { text: "Gym floor access (6AM – 10PM)", included: true },
-      { text: "Free weights & machines", included: true },
-      { text: "Cardio zone (treadmills, bikes)", included: true },
-      { text: "Changing rooms & lockers", included: true },
-      { text: "Group fitness classes", included: false },
-      { text: "Swimming pool & jacuzzi", included: false },
-      { text: "Sauna & steam room", included: false },
-      { text: "Personal trainer sessions", included: false },
-      { text: "Nutrition consultation", included: false },
-      { text: "Guest passes (2/month)", included: false },
-    ],
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    price: "$59.99",
-    annualPrice: "$47.99",
-    period: "/ month",
-    badge: "Most Popular",
-    description:
-      "The complete gym experience — unlimited classes, pool, sauna, and everything you need to transform your body.",
-    icon: faDumbbell,
-    accentColor: "var(--accent-cyan)",
-    glowColor: "var(--accent-cyan-dim)",
-    borderColor: "var(--accent-cyan-border)",
-    bgGradient: "linear-gradient(135deg, #080f0f 0%, #0a1515 100%)",
-    popular: true,
-    cta: "Join Pro — First Week Free",
-    features: [
-      { text: "Gym floor access (24/7)", included: true },
-      { text: "Free weights & machines", included: true },
-      { text: "Cardio zone (treadmills, bikes)", included: true },
-      { text: "Changing rooms & lockers", included: true },
-      { text: "Unlimited group fitness classes", included: true },
-      { text: "Swimming pool & jacuzzi", included: true },
-      { text: "Sauna & steam room", included: true },
-      { text: "Personal trainer sessions", included: false },
-      { text: "Nutrition consultation", included: false },
-      { text: "Guest passes (2/month)", included: false },
-    ],
-  },
-  {
-    id: "elite",
-    name: "VIP Elite",
-    price: "$99.99",
-    annualPrice: "$79.99",
-    period: "/ month",
-    description:
-      "The ultimate membership. Everything in Pro plus dedicated personal training, nutrition coaching, and exclusive VIP perks.",
-    icon: faTrophy,
-    accentColor: "#ffc832",
-    glowColor: "rgba(255,200,50,0.15)",
-    borderColor: "rgba(255,200,50,0.35)",
-    bgGradient: "linear-gradient(135deg, #111009 0%, #181400 100%)",
-    popular: false,
-    cta: "Go VIP Elite",
-    features: [
-      { text: "Gym floor access (24/7)", included: true },
-      { text: "Free weights & machines", included: true },
-      { text: "Cardio zone (treadmills, bikes)", included: true },
-      { text: "Changing rooms & premium lockers", included: true },
-      { text: "Unlimited group fitness classes", included: true },
-      { text: "Swimming pool & jacuzzi", included: true },
-      { text: "Sauna & steam room", included: true },
-      { text: "4× personal trainer sessions / mo", included: true },
-      { text: "Monthly nutrition consultation", included: true },
-      { text: "Guest passes (4/month)", included: true },
-    ],
-  },
-];
+// Plans will be fetched from DB
 
 /* ─── Stats ──────────────────────────────────────────────────── */
 const stats = [
@@ -155,25 +69,46 @@ const facilities = [
 /* ─── Component ──────────────────────────────────────────────── */
 function Subscription() {
   const { subscription, refreshSubscription } = useSubscription();
+  const [plans, setPlans] = useState<MembershipPlan[]>([]);
+  const [loading, setLoading] = useState(true);
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [payingPlan, setPayingPlan] = useState<PaymentBooking | null>(null);
+
+  const icons: any = { faShieldHalved, faDumbbell, faTrophy };
+
+  useEffect(() => {
+    api.get("/api/subscriptions/plans")
+      .then(res => {
+        if (res.data.success) {
+          setPlans(res.data.data.map((p: any) => ({
+            ...p,
+            icon: icons[p.icon] || faDumbbell
+          })));
+        }
+      })
+      .catch(err => console.error("Failed to load plans", err))
+      .finally(() => setLoading(false));
+  }, []);
 
   const getPrice = (plan: MembershipPlan) =>
     billingCycle === "annual" ? plan.annualPrice : plan.price;
 
-  const handleSubscribe = async (planId: string) => {
-    setLoadingPlan(planId);
-    try {
-      await api.post("/api/subscriptions", {
-        plan: planId,
-        billingCycle
-      });
-      await refreshSubscription();
-    } catch (err) {
-      console.error("Subscription failed:", err);
-    } finally {
-      setLoadingPlan(null);
-    }
+  const handleOpenPayment = (plan: MembershipPlan) => {
+    console.log("Opening payment modal for plan:", plan.id);
+    const price = billingCycle === "annual" ? plan.annualPrice : plan.price;
+    setPayingPlan({
+      id: plan.id,
+      type: 'subscription',
+      planId: plan.id,
+      planName: plan.name,
+      totalPrice: price,
+      billingCycle,
+    });
+  };
+
+  const handlePaid = async () => {
+    setPayingPlan(null);
+    await refreshSubscription();
   };
 
   const handleCancel = async () => {
@@ -270,7 +205,13 @@ function Subscription() {
 
       {/* ── Pricing Cards ── */}
       <div className="sub-cards-grid">
-        {plans.map((plan) => (
+        {loading ? (
+           <div className="w-100 text-center py-5">
+              <div className="spinner-border text-cyan" role="status">
+                <span className="visually-hidden">Loading plans...</span>
+              </div>
+           </div>
+        ) : plans.map((plan) => (
           <div
             key={plan.id}
             className={`sub-card${plan.popular ? " sub-card--popular" : ""}${subscription?.plan === plan.id ? " sub-card--active" : ""}`}
@@ -298,14 +239,14 @@ function Subscription() {
 
             <div className="sub-card-inner">
               <div className="sub-plan-icon" style={{ color: plan.accentColor, background: `${plan.accentColor}14` }}>
-                <FontAwesomeIcon icon={plan.icon} />
+                <FontAwesomeIcon icon={plan.icon as any} />
               </div>
               <div className="sub-plan-name" style={{ color: plan.accentColor }}>{plan.name}</div>
               <div className="sub-price-row">
                 <div className="sub-price" style={{ color: plan.popular ? "var(--text-primary)" : "var(--text-secondary)" }}>
-                  {getPrice(plan)}
+                  ${getPrice(plan)}
                 </div>
-                <div className="sub-period">{plan.period}</div>
+                <div className="sub-period">{billingCycle === "annual" ? "/ year" : "/ month"}</div>
               </div>
               {billingCycle === "annual" && (
                 <div className="sub-annual-note">billed annually · save 20%</div>
@@ -325,10 +266,9 @@ function Subscription() {
 
               <button
                 className={`sub-cta-btn${subscription?.plan === plan.id ? " sub-cta-btn--active" : ""}`}
-                disabled={subscription?.plan === plan.id || loadingPlan === plan.id}
-                onClick={() => handleSubscribe(plan.id)}
+                onClick={() => handleOpenPayment(plan)}
               >
-                {loadingPlan === plan.id ? "Processing..." : subscription?.plan === plan.id ? "Current Plan" : plan.cta}
+                {subscription?.plan === plan.id ? "Current Plan" : plan.cta}
               </button>
             </div>
           </div>
@@ -361,6 +301,14 @@ function Subscription() {
       <p className="sub-fine-print">
         All memberships auto-renew. Cancel anytime with 30 days notice. No joining fee for first month. Prices in USD.
       </p>
+      {/* ════════ PAYMENT MODAL ════════ */}
+      {payingPlan && (
+        <PaymentModal
+          booking={payingPlan}
+          onClose={() => setPayingPlan(null)}
+          onPaid={handlePaid}
+        />
+      )}
     </div>
   );
 }

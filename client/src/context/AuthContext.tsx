@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { fetchApi } from "../utils/api";
+import { api } from "../utils/api";
 
 interface User {
   id: number;
@@ -8,6 +8,10 @@ interface User {
   role: "USER" | "ADMIN" | "TRAINER";
   avatar?: string;
   username?: string;
+  targetCalories?: number;
+  targetProtein?: number;
+  targetCarbs?: number;
+  targetFat?: number;
 }
 
 interface AuthContextType {
@@ -28,16 +32,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const refreshUser = async () => {
     try {
-      const response = await fetchApi("/api/auth/me");
-      const data = await response.json();
-
-      if (data.success && data.user) {
-        setUser(data.user);
+      const res = await api.get("/api/auth/me");
+      if (res.data.success && res.data.user) {
+        setUser(res.data.user);
       } else {
         setUser(null);
       }
-    } catch (error) {
-      console.error("Failed to fetch user:", error);
+    } catch {
       setUser(null);
     } finally {
       setLoading(false);
@@ -54,11 +55,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = async () => {
     try {
-      await fetchApi("/api/auth/logout", { method: "POST" });
+      await api.post("/api/auth/logout");
       setUser(null);
       window.location.href = "/login";
-    } catch (error) {
-      console.error("Logout failed:", error);
+    } catch {
+      setUser(null);
+      window.location.href = "/login";
     }
   };
 

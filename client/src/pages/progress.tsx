@@ -11,8 +11,14 @@ import {
   faCalendarWeek,
   faArrowTrendUp,
   faHandFist,
+  faSpinner,
+  faPlus,
+  faXmark,
+  faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import { useEffect, useState } from "react";
+import { api } from "../utils/api";
 import {
   BarChart,
   Bar,
@@ -32,39 +38,6 @@ import {
 import "../css/progress.css";
 import { useTheme } from "../context/ThemeContext";
 
-/* ─── Mock data ─────────────────────────────────── */
-const weeklyData = [
-  { day: "Mon", sessions: 4 },
-  { day: "Tue", sessions: 0 },
-  { day: "Wed", sessions: 5 },
-  { day: "Thu", sessions: 3 },
-  { day: "Fri", sessions: 6 },
-  { day: "Sat", sessions: 2 },
-  { day: "Sun", sessions: 0 },
-];
-
-const monthlyVolume = [
-  { week: "Wk 1", volume: 14 },
-  { week: "Wk 2", volume: 18 },
-  { week: "Wk 3", volume: 12 },
-  { week: "Wk 4", volume: 20 },
-];
-
-const muscleDonut = [
-  { name: "Legs", value: 35 },
-  { name: "Core", value: 28 },
-  { name: "Chest", value: 20 },
-  { name: "Back", value: 12 },
-  { name: "Arms", value: 5 },
-];
-
-const records = [
-  { exercise: "Squats", best: "4 × 15", date: "Feb 24" },
-  { exercise: "Push-Ups", best: "3 × 12", date: "Feb 22" },
-  { exercise: "Lunges", best: "3 × 10", date: "Feb 24" },
-  { exercise: "Plank", best: "3 × 45s", date: "Feb 20" },
-  { exercise: "Crunches", best: "3 × 20", date: "Feb 22" },
-];
 
 /* ─── Reusable card shell ────────────────────────── */
 function PCard({
@@ -96,7 +69,68 @@ function Progress() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  // Dynamic Theme Colors
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({
+    weight: "",
+    bodyFat: "",
+    notes: "",
+    date: new Date().toISOString().slice(0, 16)
+  });
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get("/api/progress/stats");
+      if (res.data.success) {
+        setStats(res.data.data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch progress stats:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        weight: parseFloat(form.weight) || undefined,
+        bodyFat: parseFloat(form.bodyFat) || undefined,
+        notes: form.notes || undefined,
+        date: new Date(form.date).toISOString()
+      };
+      const res = await api.post("/api/progress", payload);
+      if (res.data.success) {
+        setShowModal(false);
+        setForm({ weight: "", bodyFat: "", notes: "", date: new Date().toISOString().slice(0, 16) });
+        fetchData();
+      }
+    } catch (err) {
+      console.error("Failed to add progress entry:", err);
+      alert("Failed to add entry. Please check your inputs.");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: "60vh" }}>
+        <FontAwesomeIcon icon={faSpinner} spin size="2x" className="mb-3" style={{ color: "var(--accent-cyan)" }} />
+        <p className="text-muted">Analyzing your progress...</p>
+      </div>
+    );
+  }
+
+  if (!stats) return null;
+
+  const { summary, weeklyData, monthlyVolume, muscleStats, records, heatmap } = stats;
+
   const chartConfig = {
     gridStroke: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
     text: isDark ? "#888" : "#666",
@@ -110,13 +144,6 @@ function Progress() {
     ? ["#3dffff", "#a98dff", "#00bfff", "#ff6b6b", "#ffd166"]
     : ["#0891b2", "#7c3aed", "#0284c7", "#dc2626", "#d97706"];
 
-  const muscleRadial = [
-    { name: "Legs", value: 90, fill: COLORS[0] },
-    { name: "Core", value: 75, fill: COLORS[2] },
-    { name: "Chest", value: 60, fill: COLORS[1] },
-    { name: "Back", value: 45, fill: COLORS[3] },
-  ];
-
   const ttStyle = {
     background: chartConfig.tooltipBg,
     border: `1px solid ${chartConfig.tooltipBorder}`,
@@ -128,15 +155,23 @@ function Progress() {
 
   return (
     <div className="progress-page">
-      {/* Page heading */}
-      <h1 className="prog-page-title">
-        <FontAwesomeIcon
-          icon={faChartLine}
-          className="me-2"
-          style={{ color: "var(--accent-cyan)" }}
-        />
-        Progress
-      </h1>
+      <div className="prog-header-row mb-4">
+        <div>
+          <h1 className="prog-page-title mb-0">
+            <FontAwesomeIcon
+              icon={faChartLine}
+              className="me-2"
+              style={{ color: "var(--accent-cyan)" }}
+            />
+            Progress
+          </h1>
+          <p className="text-muted small mb-0">Track your fitness journey and personal bests</p>
+        </div>
+        <button className="prog-add-btn" onClick={() => setShowModal(true)}>
+          <FontAwesomeIcon icon={faPlus} className="me-2" />
+          Add Entry
+        </button>
+      </div>
 
       {/* ── Row 1: stat pills ── */}
       <Row className="g-3 mb-3">
@@ -144,25 +179,25 @@ function Progress() {
           {
             icon: faFire,
             label: "Current Streak",
-            value: "6 days",
+            value: `${summary.streak} days`,
             color: "#ff6b6b",
           },
           {
             icon: faCalendarCheck,
             label: "Sessions / Month",
-            value: "18",
+            value: summary.sessionsMonth,
             color: "var(--accent-cyan)",
           },
           {
             icon: faLayerGroup,
             label: "Total Exercises",
-            value: "90",
+            value: summary.totalExercises,
             color: "#a98dff",
           },
           {
             icon: faClock,
             label: "Avg. Duration",
-            value: "42 min",
+            value: `${summary.avgDuration} min`,
             color: "#ffd166",
           },
         ].map((s, i) => (
@@ -242,7 +277,7 @@ function Progress() {
             <ResponsiveContainer width="100%" height={140}>
               <PieChart>
                 <Pie
-                  data={muscleDonut}
+                  data={muscleStats}
                   cx="50%"
                   cy="50%"
                   innerRadius={38}
@@ -250,7 +285,7 @@ function Progress() {
                   paddingAngle={3}
                   dataKey="value"
                 >
-                  {muscleDonut.map((_, i) => (
+                  {muscleStats.map((_: any, i: number) => (
                     <Cell
                       key={i}
                       fill={COLORS[i % COLORS.length]}
@@ -265,14 +300,14 @@ function Progress() {
               </PieChart>
             </ResponsiveContainer>
             <div className="prog-legend">
-              {muscleDonut.map((m, i) => (
+              {muscleStats.map((m: any, i: number) => (
                 <div className="prog-legend-item" key={m.name}>
                   <span
                     className="prog-legend-dot"
-                    style={{ background: COLORS[i] }}
+                    style={{ background: COLORS[i % COLORS.length] }}
                   />
                   <span>{m.name}</span>
-                  <span style={{ color: COLORS[i], marginLeft: "auto" }}>
+                  <span style={{ color: COLORS[i % COLORS.length], marginLeft: "auto" }}>
                     {m.value}%
                   </span>
                 </div>
@@ -337,7 +372,7 @@ function Progress() {
                 cy="50%"
                 innerRadius="20%"
                 outerRadius="90%"
-                data={muscleRadial}
+                data={muscleStats.slice(0, 4).map((m: any, i: number) => ({ ...m, fill: COLORS[i % COLORS.length] }))}
                 startAngle={180}
                 endAngle={-180}
               >
@@ -352,14 +387,14 @@ function Progress() {
               </RadialBarChart>
             </ResponsiveContainer>
             <div className="prog-legend">
-              {muscleRadial.map((m) => (
+              {muscleStats.slice(0, 4).map((m: any, i: number) => (
                 <div className="prog-legend-item" key={m.name}>
                   <span
                     className="prog-legend-dot"
-                    style={{ background: m.fill }}
+                    style={{ background: COLORS[i % COLORS.length] }}
                   />
                   <span>{m.name}</span>
-                  <span style={{ color: m.fill, marginLeft: "auto" }}>
+                  <span style={{ color: COLORS[i % COLORS.length], marginLeft: "auto" }}>
                     {m.value}%
                   </span>
                 </div>
@@ -379,7 +414,7 @@ function Progress() {
                 <span>Best</span>
                 <span>Date</span>
               </div>
-              {records.map((r, i) => (
+              {records.map((r: { exercise: string; best: string; date: string }, i: number) => (
                 <div className="prog-records-row" key={i}>
                   <span className="prog-records-name">{r.exercise}</span>
                   <span className="prog-records-best">{r.best}</span>
@@ -393,31 +428,31 @@ function Progress() {
         <Col xs={12} lg={4}>
           <PCard title="This Week" icon={faCalendarWeek}>
             <div className="prog-heatmap">
-              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => {
-                const done = [0, 2, 3, 4, 5].includes(i);
-                const today = i === 5;
-                return (
-                  <div
-                    key={d}
-                    className={`prog-heat-day ${done ? "prog-heat-done" : "prog-heat-rest"} ${today ? "prog-heat-today" : ""}`}
-                  >
-                    <div className="prog-heat-label">{d}</div>
-                    <div className="prog-heat-dot">{done ? "✓" : "–"}</div>
-                  </div>
-                );
-              })}
+              {heatmap.map((d: any) => (
+                <div
+                  key={d.day}
+                  className={`prog-heat-day ${d.done ? "prog-heat-done" : "prog-heat-rest"} ${d.isToday ? "prog-heat-today" : ""}`}
+                >
+                  <div className="prog-heat-label">{d.day}</div>
+                  <div className="prog-heat-dot">{d.done ? "✓" : "–"}</div>
+                </div>
+              ))}
             </div>
             <div className="prog-cstats">
               <div className="prog-cstat">
-                <div className="prog-cstat-val">5/7</div>
+                <div className="prog-cstat-val">
+                  {heatmap.filter((d: any) => d.done).length}/7
+                </div>
                 <div className="prog-cstat-label">Days Hit</div>
               </div>
               <div className="prog-cstat">
-                <div className="prog-cstat-val">71%</div>
+                <div className="prog-cstat-val">
+                  {Math.round((heatmap.filter((d: any) => d.done).length / 7) * 100)}%
+                </div>
                 <div className="prog-cstat-label">Adherence</div>
               </div>
               <div className="prog-cstat">
-                <div className="prog-cstat-val">🔥6</div>
+                <div className="prog-cstat-val">🔥{summary.streak}</div>
                 <div className="prog-cstat-label">Streak</div>
               </div>
             </div>
@@ -430,23 +465,23 @@ function Progress() {
               {[
                 {
                   label: "Workouts",
-                  current: 18,
+                  current: summary.sessionsMonth,
                   target: 20,
-                  pct: 90,
+                  pct: Math.min(Math.round((summary.sessionsMonth / 20) * 100), 100),
                   color: "#3dffff",
                 },
                 {
                   label: "Exercises",
-                  current: 90,
+                  current: summary.totalExercises,
                   target: 100,
-                  pct: 90,
+                  pct: Math.min(Math.round((summary.totalExercises / 100) * 100), 100),
                   color: "#a98dff",
                 },
                 {
                   label: "Streak Days",
-                  current: 6,
+                  current: summary.streak,
                   target: 10,
-                  pct: 60,
+                  pct: Math.min(Math.round((summary.streak / 10) * 100), 100),
                   color: "#ff6b6b",
                 },
               ].map((g) => (
@@ -472,6 +507,67 @@ function Progress() {
           </PCard>
         </Col>
       </Row>
+
+      {/* ── Add Entry Modal ── */}
+      {showModal && (
+        <div className="prog-modal-backdrop" onClick={() => setShowModal(false)}>
+          <div className="prog-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="prog-modal-header">
+              <h2 className="prog-modal-title">Log Progress</h2>
+              <button className="prog-modal-close" onClick={() => setShowModal(false)}>
+                <FontAwesomeIcon icon={faXmark} />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="prog-modal-body">
+              <div className="prog-form-row">
+                <div className="prog-form-group">
+                  <label>Weight (kg)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    placeholder="75.5"
+                    value={form.weight}
+                    onChange={(e) => setForm({ ...form, weight: e.target.value })}
+                  />
+                </div>
+                <div className="prog-form-group">
+                  <label>Body Fat (%)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    placeholder="15.0"
+                    value={form.bodyFat}
+                    onChange={(e) => setForm({ ...form, bodyFat: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="prog-form-group">
+                <label>Date & Time</label>
+                <input
+                  type="datetime-local"
+                  value={form.date}
+                  onChange={(e) => setForm({ ...form, date: e.target.value })}
+                />
+              </div>
+              <div className="prog-form-group">
+                <label>Notes (optional)</label>
+                <textarea
+                  placeholder="Feeling strong today..."
+                  value={form.notes}
+                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                />
+              </div>
+              <div className="prog-modal-footer">
+                <button type="button" className="prog-btn-cancel" onClick={() => setShowModal(false)}>Cancel</button>
+                <button type="submit" className="prog-btn-submit">
+                  <FontAwesomeIcon icon={faCheck} className="me-2" />
+                  Save Entry
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -96,72 +96,72 @@ export default function TrainerDiet() {
   const totalMealCals = (meals: Meal[]) => meals.reduce((acc, m) => acc + m.calories, 0);
 
   return (
-    <div className="diet-wrapper">
+    <div className="tr-diet-wrapper">
       {/* HEADER */}
-      <div className="diet-header">
+      <div className="tr-diet-header">
         <div>
           <h1>Trainer Diet Plans</h1>
           <p>Manage nutrition plans for your clients</p>
         </div>
-        <div className="diet-header-badge">
+        <div className="tr-diet-header-badge">
           <FontAwesomeIcon icon={faAppleWhole} />
           <span>{diets.length} Active Plans</span>
         </div>
       </div>
 
       {/* GRID */}
-      <div className="diet-grid">
+      <div className="tr-diet-grid">
         {diets.map((diet, idx) => {
           const goalColor = GOAL_COLORS[diet.goal] ?? "purple";
           const totalCals = totalMealCals(diet.meals);
           const pct = Math.min(100, Math.round((totalCals / diet.caloriesTarget) * 100));
 
           return (
-            <div key={diet.id} className={`diet-card diet-card-${goalColor}`} style={{ animationDelay: `${idx * 0.1}s` }}>
-              <div className="diet-top">
+            <div key={diet.id} className={`tr-diet-card tr-diet-card-${goalColor}`} style={{ animationDelay: `${idx * 0.1}s` }}>
+              <div className="tr-diet-top">
                 <h3>{diet.name}</h3>
-                <span className={`diet-badge diet-badge-${goalColor}`}>{diet.goal}</span>
+                <span className={`tr-diet-badge tr-diet-badge-${goalColor}`}>{diet.goal}</span>
               </div>
 
-              <p className="diet-desc">{diet.description}</p>
+              <p className="tr-diet-desc">{diet.description}</p>
 
               {/* Calorie progress */}
-              <div className="diet-cal-row">
-                <FontAwesomeIcon icon={faFire} className="diet-cal-icon" />
-                <span className="diet-cal-label">
+              <div className="tr-diet-cal-row">
+                <FontAwesomeIcon icon={faFire} className="tr-diet-cal-icon" />
+                <span className="tr-diet-cal-label">
                   {totalCals} / {diet.caloriesTarget} kcal
                 </span>
-                <span className="diet-cal-pct">{pct}%</span>
+                <span className="tr-diet-cal-pct">{pct}%</span>
               </div>
-              <div className="diet-cal-bar">
-                <div className="diet-cal-fill" style={{ width: `${pct}%` }} />
+              <div className="tr-diet-cal-bar">
+                <div className="tr-diet-cal-fill" style={{ width: `${pct}%` }} />
               </div>
 
               {/* Meals */}
-              <div className="meal-list">
-                <div className="meal-list-header">
+              <div className="tr-meal-list">
+                <div className="tr-meal-list-header">
                   <FontAwesomeIcon icon={faUtensils} />
                   <span>Meals ({diet.meals.length})</span>
                 </div>
                 {diet.meals.map((m, i) => (
-                  <div key={i} className="meal-row">
-                    <span className="meal-row-name">{m.name}</span>
-                    <span className="meal-row-cal">{m.calories} kcal</span>
-                    <div className="meal-macros">
-                      <span className="macro-tag macro-p">P {m.protein}g</span>
-                      <span className="macro-tag macro-c">C {m.carbs}g</span>
-                      <span className="macro-tag macro-f">F {m.fat}g</span>
+                  <div key={i} className="tr-meal-row">
+                    <span className="tr-meal-row-name">{m.name}</span>
+                    <span className="tr-meal-row-cal">{m.calories} kcal</span>
+                    <div className="tr-meal-macros">
+                      <span className="tr-macro-tag tr-macro-p">P {m.protein}g</span>
+                      <span className="tr-macro-tag tr-macro-c">C {m.carbs}g</span>
+                      <span className="tr-macro-tag tr-macro-f">F {m.fat}g</span>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* Actions */}
-              <div className="diet-actions">
-                <button className="diet-btn-edit" onClick={() => openEdit(diet)}>
+              <div className="tr-diet-actions">
+                <button className="tr-diet-btn-edit" onClick={() => openEdit(diet)}>
                   <FontAwesomeIcon icon={faPen} /> Edit
                 </button>
-                <button className="diet-btn-delete" onClick={() => deleteDiet(diet.id)}>
+                <button className="tr-diet-btn-delete" onClick={() => deleteDiet(diet.id)}>
                   <FontAwesomeIcon icon={faTrash} /> Delete
                 </button>
               </div>
@@ -172,68 +172,68 @@ export default function TrainerDiet() {
 
       {/* ─── MODAL ─── */}
       {editDiet && (
-        <div className="modal-overlay" onClick={() => setEditDiet(null)}>
-          <div className="modal-box diet-modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <FontAwesomeIcon icon={faAppleWhole} className="modal-header-icon" />
+        <div className="tr-modal-overlay" onClick={() => setEditDiet(null)}>
+          <div className="tr-modal-box tr-diet-modal" onClick={e => e.stopPropagation()}>
+            <div className="tr-modal-header">
+              <FontAwesomeIcon icon={faAppleWhole} className="tr-modal-header-icon" />
               <h2>Edit Diet Plan</h2>
             </div>
 
-            <div className="modal-section">
-              <label className="modal-label">Plan Name</label>
-              <input className="modal-input" placeholder="Diet Name" value={editDiet.name}
+            <div className="tr-modal-section">
+              <label className="tr-modal-label">Plan Name</label>
+              <input className="tr-modal-input" placeholder="Diet Name" value={editDiet.name}
                 onChange={e => setEditDiet({ ...editDiet, name: e.target.value })} />
 
-              <div className="modal-row-2">
+              <div className="tr-modal-row-2">
                 <div>
-                  <label className="modal-label">Goal</label>
-                  <input className="modal-input" placeholder="Goal" value={editDiet.goal}
+                  <label className="tr-modal-label">Goal</label>
+                  <input className="tr-modal-input" placeholder="Goal" value={editDiet.goal}
                     onChange={e => setEditDiet({ ...editDiet, goal: e.target.value })} />
                 </div>
                 <div>
-                  <label className="modal-label">
+                  <label className="tr-modal-label">
                     <FontAwesomeIcon icon={faBullseye} /> Calories Target
                   </label>
-                  <input className="modal-input" type="number" placeholder="Calories" value={editDiet.caloriesTarget}
+                  <input className="tr-modal-input" type="number" placeholder="Calories" value={editDiet.caloriesTarget}
                     onChange={e => setEditDiet({ ...editDiet, caloriesTarget: Number(e.target.value) })} />
                 </div>
               </div>
 
-              <label className="modal-label">Description</label>
-              <textarea className="modal-input modal-textarea" placeholder="Description" value={editDiet.description}
+              <label className="tr-modal-label">Description</label>
+              <textarea className="tr-modal-input tr-modal-textarea" placeholder="Description" value={editDiet.description}
                 onChange={e => setEditDiet({ ...editDiet, description: e.target.value })} />
             </div>
 
-            <div className="modal-section">
-              <div className="section-title">
+            <div className="tr-modal-section">
+              <div className="tr-section-title">
                 <span><FontAwesomeIcon icon={faUtensils} /> Meals</span>
-                <button className="add-meal" onClick={addMeal}>
+                <button className="tr-add-meal" onClick={addMeal}>
                   <FontAwesomeIcon icon={faPlus} /> Add Meal
                 </button>
               </div>
 
               {editDiet.meals.map((meal, i) => (
-                <div key={i} className="meal-edit-card">
-                  <input className="meal-edit-input meal-name-input" placeholder="Meal name" value={meal.name}
+                <div key={i} className="tr-meal-edit-card">
+                  <input className="tr-meal-edit-input tr-meal-name-input" placeholder="Meal name" value={meal.name}
                     onChange={e => updateMeal(i, "name", e.target.value)} />
-                  <div className="meal-edit-macros">
-                    <div className="meal-macro-field">
-                      <span className="meal-macro-label"><FontAwesomeIcon icon={faFire} /> kcal</span>
+                  <div className="tr-meal-edit-macros">
+                    <div className="tr-meal-macro-field">
+                      <span className="tr-meal-macro-label"><FontAwesomeIcon icon={faFire} /> kcal</span>
                       <input type="number" value={meal.calories} onChange={e => updateMeal(i, "calories", Number(e.target.value))} />
                     </div>
-                    <div className="meal-macro-field">
-                      <span className="meal-macro-label">Protein</span>
+                    <div className="tr-meal-macro-field">
+                      <span className="tr-meal-macro-label">Protein</span>
                       <input type="number" value={meal.protein} onChange={e => updateMeal(i, "protein", Number(e.target.value))} />
                     </div>
-                    <div className="meal-macro-field">
-                      <span className="meal-macro-label"><FontAwesomeIcon icon={faDroplet} /> Carbs</span>
+                    <div className="tr-meal-macro-field">
+                      <span className="tr-meal-macro-label"><FontAwesomeIcon icon={faDroplet} /> Carbs</span>
                       <input type="number" value={meal.carbs} onChange={e => updateMeal(i, "carbs", Number(e.target.value))} />
                     </div>
-                    <div className="meal-macro-field">
-                      <span className="meal-macro-label">Fat</span>
+                    <div className="tr-meal-macro-field">
+                      <span className="tr-meal-macro-label">Fat</span>
                       <input type="number" value={meal.fat} onChange={e => updateMeal(i, "fat", Number(e.target.value))} />
                     </div>
-                    <button className="delete-meal" onClick={() => deleteMeal(i)}>
+                    <button className="tr-delete-meal" onClick={() => deleteMeal(i)}>
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </div>
@@ -241,9 +241,9 @@ export default function TrainerDiet() {
               ))}
             </div>
 
-            <div className="modal-actions">
-              <button className="modal-btn-cancel" onClick={() => setEditDiet(null)}>Cancel</button>
-              <button className="modal-btn-save" onClick={saveEdit}>Save Changes</button>
+            <div className="tr-modal-actions">
+              <button className="tr-modal-btn-cancel" onClick={() => setEditDiet(null)}>Cancel</button>
+              <button className="tr-modal-btn-save" onClick={saveEdit}>Save Changes</button>
             </div>
           </div>
         </div>

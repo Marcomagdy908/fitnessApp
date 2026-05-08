@@ -23,7 +23,7 @@ import {
   faTrophy,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/exercises.css";
-import { fetchApi } from "../utils/api";
+import { api } from "../utils/api";
 import { nameToId } from "../utils/exerciseUtils";
 
 /* ─── Types ──────────────────────────────────────────────────── */
@@ -77,48 +77,18 @@ const categoryColors: Record<string, string> = {
 };
 
 /* ─── Injury restrictions map ────────────────────────────────── */
-const injuryRestrictions: Record<string, { avoid: string[]; tip: string }> = {
-  "Lower Back": {
-    avoid: ["Deadlift", "Good Morning", "Romanian Deadlift", "Barbell Row", "Barbell Squat"],
-    tip: "Brace your core on every compound lift. Avoid hyperextension and heavy spinal loading.",
-  },
-  "Knee": {
-    avoid: ["Leg Press", "Deep Squat", "Lunges", "Jump Squat", "Box Jump"],
-    tip: "Keep your knee tracking over your toes. Avoid full-depth knee flexion under load.",
-  },
-  "Shoulder": {
-    avoid: ["Behind-Neck Press", "Upright Row", "Overhead Press", "Dips", "Wide-Grip Bench"],
-    tip: "Limit shoulder abduction above 90°. Keep elbows slightly in front of your body.",
-  },
-  "Wrist": {
-    avoid: ["Barbell Curl", "Push-up", "Front Squat", "Clean & Press", "Wrist Curl"],
-    tip: "Use neutral-grip attachments where possible. Straps can reduce wrist torque on pulling exercises.",
-  },
-  "Ankle": {
-    avoid: ["Running", "Box Jump", "Jump Rope", "Calf Raise", "Bulgarian Split Squat"],
-    tip: "Focus on seated/upper-body work while the ankle heals. Low-impact cycling is safe.",
-  },
-  "Hip": {
-    avoid: ["Hip Thrust", "Sumo Deadlift", "Deep Squat", "Leg Raise", "Hurdle Step"],
-    tip: "Reduce ROM on hip-dominant movements. Avoid anterior hip impingement.",
-  },
-};
+/* ─── Injury restrictions (loaded from API) ────────────────── */
+// replaces injuryRestrictions constant
 
 /* ─── Quick-add exercise presets ─────────────────────────────── */
-const exercisePresets: Record<string, string[]> = {
-  Chest:    ["Bench Press", "Incline DB Press", "Cable Fly", "Push-up", "Dips"],
-  Back:     ["Pull-up", "Lat Pulldown", "Barbell Row", "Seated Row", "Deadlift"],
-  Legs:     ["Barbell Squat", "Leg Press", "Romanian Deadlift", "Leg Curl", "Leg Extension"],
-  Shoulders:["Overhead Press", "Lateral Raise", "Front Raise", "Rear Delt Fly", "Upright Row"],
-  Arms:     ["Barbell Curl", "Hammer Curl", "Tricep Pushdown", "Skull Crusher", "Dips"],
-  Core:     ["Plank", "Cable Crunch", "Dead Bug", "Hanging Leg Raise", "Ab Wheel"],
-};
+/* ─── Quick-add exercise presets (derived from exercises) ───── */
+// replaces exercisePresets constant
 
 /* ─── Helpers ────────────────────────────────────────────────── */
 const makeSet = (id: number, weight: string, reps: string, done = false): ExSet => ({ id, weight, reps, done });
 
-/* ─── Profile injuries (placeholder) ── */
-const PROFILE_INJURIES = ["Lower Back", "Knee"];
+/* ─── Profile injuries (loaded from API) ── */
+const PROFILE_INJURIES: string[] = []; // replaced by state below
 
 /* ─── Component ──────────────────────────────────────────────── */
 function Exercises() {
@@ -141,13 +111,34 @@ function Exercises() {
   const [showSummary, setShowSummary] = useState(false);
   const [sessionStartTime] = useState(new Date());
   const [dismissedInjuries, setDismissedInjuries] = useState<string[]>([]);
+  const [profileInjuries, setProfileInjuries] = useState<string[]>([]);
+  const [injuryRestrictions, setInjuryRestrictions] = useState<Record<string, { avoid: string[]; tip: string }>>({});
+
+  useEffect(() => {
+    api.get("/api/injuries")
+      .then(res => {
+        if (res.data.success) {
+          setProfileInjuries(res.data.data.filter((i: any) => i.status === "active").map((i: any) => i.type));
+        }
+      });
+    
+    api.get("/api/injury-restrictions")
+      .then(res => {
+        if (res.data.success) {
+          const map: any = {};
+          res.data.data.forEach((r: any) => {
+            map[r.injuryType] = { avoid: r.avoidExercises, tip: r.tip };
+          });
+          setInjuryRestrictions(map);
+        }
+      });
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams({ limit: "100" });
-    fetchApi(`/api/exercises?${params}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.success) setExercises(data.data);
+    api.get(`/api/exercises?${params}`)
+      .then(res => {
+        if (res.data.success) setExercises(res.data.data);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -206,19 +197,52 @@ function Exercises() {
     ));
 
   /* Tracker Stats */
-  const activeInjuries = PROFILE_INJURIES.filter((i) => !dismissedInjuries.includes(i));
+  const activeInjuries = profileInjuries.filter((i) => !dismissedInjuries.includes(i));
+  
+  // Derived presets from library
+  const exercisePresets: Record<string, string[]> = {};
+  exercises.forEach(ex => {
+    const cat = ex.category.charAt(0).toUpperCase() + ex.category.slice(1);
+    if (!exercisePresets[cat]) exercisePresets[cat] = [];
+    if (exercisePresets[cat].length < 5) exercisePresets[cat].push(ex.name);
+  });
   const totalSets = trackedExercises.reduce((a, e) => a + e.sets.length, 0);
   const doneSets  = trackedExercises.reduce((a, e) => a + e.sets.filter((s) => s.done).length, 0);
   const totalVol  = trackedExercises.reduce((a, e) =>
     a + e.sets.filter((s) => s.done && !isNaN(Number(s.weight))).reduce((b, s) => b + Number(s.weight) * Number(s.reps || 0), 0), 0
   );
   
-  const finishWorkout = () => {
+  const finishWorkout = async () => {
     if (doneSets === 0) {
       alert("Please complete at least one set before finishing!");
       return;
     }
-    setShowSummary(true);
+
+    try {
+      const workoutData = {
+        name: `Workout - ${new Date().toLocaleDateString()}`,
+        durationSecs: Math.floor((new Date().getTime() - sessionStartTime.getTime()) / 1000),
+        caloriesBurned: Math.round(totalVol * 0.05), // Rough estimate
+        sets: trackedExercises.flatMap(ex => {
+          const exercise = exercises.find(e => e.name === ex.name);
+          return ex.sets.map(s => ({
+            exerciseId: exercise?.id || 0,
+            setNumber: ex.sets.indexOf(s) + 1,
+            reps: parseInt(s.reps) || 0,
+            weight: parseFloat(s.weight) || 0,
+            isCompleted: s.done
+          }));
+        }).filter(s => s.exerciseId > 0)
+      };
+
+      const res = await api.post("/api/workouts", workoutData);
+      if (res.data.success) {
+        setShowSummary(true);
+      }
+    } catch (err) {
+      console.error("Failed to save workout:", err);
+      alert("Failed to save workout. Please try again.");
+    }
   };
 
   const exerciseNames = trackedExercises.map((e) => e.name);

@@ -4,58 +4,35 @@ import { db } from "../services/db";
 import { AuthRequest } from "../middleware/auth";
 import { SubscriptionRow } from "../types/db";
 
-const PLANS = [
-  {
-    id: "free",
-    name: "Free",
-    price: 0,
-    features: ["Basic exercises", "Progress tracking"],
-  },
-  {
-    id: "basic",
-    name: "Basic",
-    price: 29.99,
-    features: [
-      "Gym floor access (6AM – 10PM)",
-      "Free weights & machines",
-      "Cardio zone",
-      "Changing rooms & lockers",
-    ],
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    price: 59.99,
-    features: [
-      "Gym floor access (24/7)",
-      "Unlimited group fitness classes",
-      "Swimming pool & jacuzzi",
-      "Sauna & steam room",
-    ],
-  },
-  {
-    id: "elite",
-    name: "VIP Elite",
-    price: 99.99,
-    features: [
-      "Everything in Pro",
-      "4× personal trainer sessions / mo",
-      "Monthly nutrition consultation",
-      "Guest passes (4/month)",
-    ],
-  },
-];
-
 const subscribeSchema = z.object({
-  plan: z.enum(["free", "basic", "pro", "elite"]),
+  plan: z.string(),
   billingCycle: z.enum(["monthly", "annual"]).default("monthly"),
+  paymentMethod: z.string().optional(),
+  transactionRef: z.string().optional(),
+  amount: z.number().optional(),
 });
 
-export const getSubscriptionPlans = (
+export const getSubscriptionPlans = async (
   _req: AuthRequest,
   res: Response,
-): void => {
-  res.json({ success: true, data: PLANS });
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const [plans] = await db.query<any[]>("SELECT * FROM SubscriptionPlan");
+    const [benefits] = await db.query<any[]>("SELECT * FROM SubscriptionBenefit");
+    
+    const data = plans.map(p => ({
+      ...p,
+      id: p.planId, // Align with frontend expectations
+      features: benefits
+        .filter(b => b.planId === p.planId)
+        .map(b => ({ text: b.benefitText, included: !!b.isIncluded }))
+    }));
+
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const getMySubscription = async (
@@ -80,7 +57,7 @@ export const subscribe = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { plan, billingCycle } = subscribeSchema.parse(req.body);
+    const { plan, billingCycle, paymentMethod, transactionRef, amount } = subscribeSchema.parse(req.body);
     
     // Set expiresAt based on billing cycle
     const expiresAt = new Date();
@@ -100,6 +77,18 @@ export const subscribe = async (
         expiresAt = VALUES(expiresAt)`,
       [req.user!.id, plan, billingCycle, expiresAt]
     );
+
+    const [subRows] = await db.query<any[]>("SELECT id FROM Subscription WHERE userId = ?", [req.user!.id]);
+    const subscriptionId = subRows[0]?.id;
+
+    // Record Payment if provided
+    if (transactionRef && subscriptionId) {
+      await db.query(
+        `INSERT INTO Payment (userId, bookingId, bookingType, amount, status, method, transactionRef, paidAt)
+         VALUES (?, ?, 'subscription', ?, 'completed', ?, ?, NOW())`,
+        [req.user!.id, subscriptionId, amount || 0, paymentMethod || 'card', transactionRef]
+      );
+    }
 
     const [rows] = await db.query<SubscriptionRow[] & { length: number }>(
       "SELECT * FROM Subscription WHERE userId = ?",

@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { api } from "../utils/api";
 import {
   faCalendarDays,
   faClock,
@@ -41,444 +42,6 @@ interface Plan {
 }
 
 /* ─── Plan Data ──────────────────────────────────────────────── */
-const plans: Plan[] = [
-  /* ── Push / Pull / Legs (6-day) ─────────────────────────── */
-  {
-    id: "ppl",
-    label: "Most Popular",
-    name: "Push / Pull / Legs",
-    description:
-      "The classic 6-day PPL split is one of the most effective programs for building size and strength. Push days hit chest, shoulders and triceps; pull days target back and biceps; leg days cover quads, hamstrings and calves. Each muscle group gets trained twice per week.",
-    level: "Intermediate",
-    daysPerWeek: 6,
-    weeks: 12,
-    goal: "Muscle & Strength",
-    days: [
-      {
-        day: "Monday",
-        type: "Push A",
-        badge: "push",
-        exercises: [
-          { name: "Barbell Bench Press", sets: 4, reps: "5-6" },
-          { name: "Incline Dumbbell Press", sets: 3, reps: "8-10" },
-          { name: "Cable Fly (Low-to-High)", sets: 3, reps: "12-15" },
-          { name: "Overhead Press", sets: 3, reps: "8-10" },
-          { name: "Lateral Raises", sets: 4, reps: "15-20" },
-          { name: "Tricep Rope Pushdown", sets: 3, reps: "12-15" },
-          { name: "Overhead Tricep Extension", sets: 3, reps: "10-12" },
-        ],
-        totalSets: 23,
-        duration: 65,
-        kcal: 420,
-      },
-      {
-        day: "Tuesday",
-        type: "Pull A",
-        badge: "pull",
-        exercises: [
-          { name: "Deadlift", sets: 4, reps: "4-6" },
-          { name: "Barbell Row", sets: 3, reps: "8-10" },
-          { name: "Lat Pulldown", sets: 3, reps: "10-12" },
-          { name: "Seated Cable Row", sets: 3, reps: "10-12" },
-          { name: "Face Pulls", sets: 3, reps: "15-20" },
-          { name: "Barbell Curl", sets: 3, reps: "8-10" },
-          { name: "Hammer Curl", sets: 3, reps: "10-12" },
-        ],
-        totalSets: 22,
-        duration: 65,
-        kcal: 440,
-      },
-      {
-        day: "Wednesday",
-        type: "Legs A",
-        badge: "legs",
-        exercises: [
-          { name: "Barbell Squat", sets: 4, reps: "5-6" },
-          { name: "Romanian Deadlift", sets: 3, reps: "8-10" },
-          { name: "Leg Press", sets: 3, reps: "10-12" },
-          { name: "Lying Leg Curl", sets: 3, reps: "10-12" },
-          { name: "Leg Extension", sets: 3, reps: "12-15" },
-          { name: "Standing Calf Raise", sets: 5, reps: "12-15" },
-        ],
-        totalSets: 21,
-        duration: 60,
-        kcal: 480,
-      },
-      {
-        day: "Thursday",
-        type: "Push B",
-        badge: "push",
-        exercises: [
-          { name: "Incline Barbell Press", sets: 4, reps: "5-6" },
-          { name: "Flat Dumbbell Press", sets: 3, reps: "10-12" },
-          { name: "Pec Deck Machine", sets: 3, reps: "12-15" },
-          { name: "Dumbbell Shoulder Press", sets: 3, reps: "10-12" },
-          { name: "Cable Lateral Raise", sets: 3, reps: "15-20" },
-          { name: "Skull Crushers", sets: 3, reps: "10-12" },
-          { name: "Tricep Dips", sets: 3, reps: "10-12" },
-        ],
-        totalSets: 22,
-        duration: 65,
-        kcal: 415,
-      },
-      {
-        day: "Friday",
-        type: "Pull B",
-        badge: "pull",
-        exercises: [
-          { name: "Pull-Ups / Weighted", sets: 4, reps: "6-8" },
-          { name: "Chest-Supported Row", sets: 3, reps: "10-12" },
-          { name: "Single-Arm DB Row", sets: 3, reps: "10-12" },
-          { name: "Cable Pullover", sets: 3, reps: "12-15" },
-          { name: "Rear Delt Fly", sets: 3, reps: "15-20" },
-          { name: "Incline Curl", sets: 3, reps: "10-12" },
-          { name: "Concentration Curl", sets: 3, reps: "12-15" },
-        ],
-        totalSets: 22,
-        duration: 60,
-        kcal: 400,
-      },
-      {
-        day: "Saturday",
-        type: "Legs B",
-        badge: "legs",
-        exercises: [
-          { name: "Front Squat / Hack Squat", sets: 4, reps: "8-10" },
-          { name: "Bulgarian Split Squat", sets: 3, reps: "10-12" },
-          { name: "Seated Leg Curl", sets: 3, reps: "10-12" },
-          { name: "Hip Thrust", sets: 3, reps: "10-12" },
-          { name: "Walking Lunges", sets: 3, reps: "12 each" },
-          { name: "Seated Calf Raise", sets: 5, reps: "15-20" },
-        ],
-        totalSets: 21,
-        duration: 60,
-        kcal: 475,
-      },
-      {
-        day: "Sunday",
-        type: "Rest",
-        badge: "rest",
-        exercises: [],
-        totalSets: 0,
-        duration: 0,
-        kcal: 0,
-      },
-    ],
-  },
-
-  /* ── Upper / Lower (4-day) ───────────────────────────────── */
-  {
-    id: "ul",
-    label: "Beginner Friendly",
-    name: "Upper / Lower Split",
-    description:
-      "A 4-day upper/lower split that trains each muscle group twice a week with built-in recovery. Upper days focus on chest, back, shoulders and arms; lower days work quads, hamstrings, glutes and calves. Perfect for going from beginner to intermediate.",
-    level: "Beginner → Intermediate",
-    daysPerWeek: 4,
-    weeks: 8,
-    goal: "Strength & Size",
-    days: [
-      {
-        day: "Monday",
-        type: "Upper A",
-        badge: "push",
-        exercises: [
-          { name: "Barbell Bench Press", sets: 3, reps: "6-8" },
-          { name: "Barbell Row", sets: 3, reps: "6-8" },
-          { name: "Dumbbell Shoulder Press", sets: 3, reps: "10-12" },
-          { name: "Pull-Ups", sets: 3, reps: "8-10" },
-          { name: "Barbell Curl", sets: 2, reps: "10-12" },
-          { name: "Skull Crushers", sets: 2, reps: "10-12" },
-        ],
-        totalSets: 16,
-        duration: 60,
-        kcal: 360,
-      },
-      {
-        day: "Tuesday",
-        type: "Lower A",
-        badge: "legs",
-        exercises: [
-          { name: "Barbell Squat", sets: 4, reps: "6-8" },
-          { name: "Romanian Deadlift", sets: 3, reps: "8-10" },
-          { name: "Leg Press", sets: 3, reps: "10-12" },
-          { name: "Leg Curl", sets: 3, reps: "10-12" },
-          { name: "Calf Raise", sets: 4, reps: "15-20" },
-        ],
-        totalSets: 17,
-        duration: 55,
-        kcal: 450,
-      },
-      {
-        day: "Wednesday",
-        type: "Rest",
-        badge: "rest",
-        exercises: [],
-        totalSets: 0,
-        duration: 0,
-        kcal: 0,
-      },
-      {
-        day: "Thursday",
-        type: "Upper B",
-        badge: "full",
-        exercises: [
-          { name: "Incline Dumbbell Press", sets: 3, reps: "8-10" },
-          { name: "Lat Pulldown", sets: 3, reps: "8-10" },
-          { name: "Cable Lateral Raise", sets: 3, reps: "12-15" },
-          { name: "Seated Cable Row", sets: 3, reps: "10-12" },
-          { name: "Hammer Curl", sets: 2, reps: "12-15" },
-          { name: "Tricep Pushdown", sets: 2, reps: "12-15" },
-        ],
-        totalSets: 16,
-        duration: 55,
-        kcal: 340,
-      },
-      {
-        day: "Friday",
-        type: "Lower B",
-        badge: "legs",
-        exercises: [
-          { name: "Deadlift", sets: 4, reps: "5-6" },
-          { name: "Bulgarian Split Squat", sets: 3, reps: "10-12" },
-          { name: "Leg Extension", sets: 3, reps: "12-15" },
-          { name: "Hip Thrust", sets: 3, reps: "10-12" },
-          { name: "Seated Calf Raise", sets: 4, reps: "15-20" },
-        ],
-        totalSets: 17,
-        duration: 55,
-        kcal: 460,
-      },
-      {
-        day: "Saturday",
-        type: "Rest",
-        badge: "rest",
-        exercises: [],
-        totalSets: 0,
-        duration: 0,
-        kcal: 0,
-      },
-      {
-        day: "Sunday",
-        type: "Rest",
-        badge: "rest",
-        exercises: [],
-        totalSets: 0,
-        duration: 0,
-        kcal: 0,
-      },
-    ],
-  },
-
-  /* ── Full Body (3-day) ───────────────────────────────────── */
-  {
-    id: "fb",
-    label: "Time-Efficient",
-    name: "Full Body 3×/Week",
-    description:
-      "Three full-body workouts per week with 48-hour recovery between sessions. Each session hits every major muscle group with a different exercise rotation so you hit 9 muscle groups per week without redundancy. Great for busy schedules or beginners.",
-    level: "Beginner",
-    daysPerWeek: 3,
-    weeks: 8,
-    goal: "General Fitness",
-    days: [
-      {
-        day: "Monday",
-        type: "Full Body A",
-        badge: "full",
-        exercises: [
-          { name: "Barbell Squat", sets: 3, reps: "8-10" },
-          { name: "Bench Press", sets: 3, reps: "8-10" },
-          { name: "Barbell Row", sets: 3, reps: "8-10" },
-          { name: "Overhead Press", sets: 3, reps: "8-10" },
-          { name: "Barbell Curl", sets: 2, reps: "12" },
-          { name: "Plank", sets: 3, reps: "45 sec" },
-        ],
-        totalSets: 17,
-        duration: 55,
-        kcal: 380,
-      },
-      {
-        day: "Tuesday",
-        type: "Rest",
-        badge: "rest",
-        exercises: [],
-        totalSets: 0,
-        duration: 0,
-        kcal: 0,
-      },
-      {
-        day: "Wednesday",
-        type: "Full Body B",
-        badge: "full",
-        exercises: [
-          { name: "Deadlift", sets: 3, reps: "6-8" },
-          { name: "Incline Dumbbell Press", sets: 3, reps: "10-12" },
-          { name: "Lat Pulldown", sets: 3, reps: "10-12" },
-          { name: "Dumbbell Shoulder Press", sets: 3, reps: "10-12" },
-          { name: "Hammer Curl", sets: 2, reps: "12" },
-          { name: "Calf Raise", sets: 3, reps: "15" },
-        ],
-        totalSets: 17,
-        duration: 55,
-        kcal: 370,
-      },
-      {
-        day: "Thursday",
-        type: "Rest",
-        badge: "rest",
-        exercises: [],
-        totalSets: 0,
-        duration: 0,
-        kcal: 0,
-      },
-      {
-        day: "Friday",
-        type: "Full Body C",
-        badge: "full",
-        exercises: [
-          { name: "Front Squat", sets: 3, reps: "8-10" },
-          { name: "Dumbbell Fly", sets: 3, reps: "12-15" },
-          { name: "Pull-Ups", sets: 3, reps: "Max" },
-          { name: "Lateral Raises", sets: 3, reps: "15" },
-          { name: "Romanian Deadlift", sets: 3, reps: "10-12" },
-          { name: "Ab Wheel Rollout", sets: 3, reps: "10-12" },
-        ],
-        totalSets: 18,
-        duration: 55,
-        kcal: 360,
-      },
-      {
-        day: "Saturday",
-        type: "Rest",
-        badge: "rest",
-        exercises: [],
-        totalSets: 0,
-        duration: 0,
-        kcal: 0,
-      },
-      {
-        day: "Sunday",
-        type: "Rest",
-        badge: "rest",
-        exercises: [],
-        totalSets: 0,
-        duration: 0,
-        kcal: 0,
-      },
-    ],
-  },
-
-  /* ── Bro Split (5-day) ───────────────────────────────────── */
-  {
-    id: "bro",
-    label: "Classic",
-    name: "Bro Split 5-Day",
-    description:
-      "The traditional bodybuilder split dedicating each day to one muscle group. High volume per session, full week to recover. Great for advanced lifters focused on hypertrophy and willing to go heavy every day.",
-    level: "Intermediate → Advanced",
-    daysPerWeek: 5,
-    weeks: 12,
-    goal: "Hypertrophy",
-    days: [
-      {
-        day: "Monday",
-        type: "Chest",
-        badge: "push",
-        exercises: [
-          { name: "Barbell Bench Press", sets: 4, reps: "6-8" },
-          { name: "Incline Dumbbell Press", sets: 4, reps: "8-10" },
-          { name: "Cable Fly", sets: 3, reps: "12-15" },
-          { name: "Dip (Chest-Focused)", sets: 3, reps: "10-12" },
-          { name: "Pec Deck", sets: 3, reps: "12-15" },
-        ],
-        totalSets: 17,
-        duration: 55,
-        kcal: 370,
-      },
-      {
-        day: "Tuesday",
-        type: "Back",
-        badge: "pull",
-        exercises: [
-          { name: "Deadlift", sets: 4, reps: "4-5" },
-          { name: "Barbell Row", sets: 4, reps: "6-8" },
-          { name: "Pull-Ups", sets: 3, reps: "8-10" },
-          { name: "Seated Cable Row", sets: 3, reps: "10-12" },
-          { name: "Straight-Arm Pulldown", sets: 3, reps: "12-15" },
-        ],
-        totalSets: 17,
-        duration: 60,
-        kcal: 430,
-      },
-      {
-        day: "Wednesday",
-        type: "Legs",
-        badge: "legs",
-        exercises: [
-          { name: "Barbell Squat", sets: 4, reps: "6-8" },
-          { name: "Leg Press", sets: 4, reps: "10-12" },
-          { name: "Romanian Deadlift", sets: 3, reps: "8-10" },
-          { name: "Leg Extension", sets: 3, reps: "12-15" },
-          { name: "Leg Curl", sets: 3, reps: "12-15" },
-          { name: "Calf Raise", sets: 4, reps: "15-20" },
-        ],
-        totalSets: 21,
-        duration: 65,
-        kcal: 490,
-      },
-      {
-        day: "Thursday",
-        type: "Shoulders",
-        badge: "push",
-        exercises: [
-          { name: "Barbell Overhead Press", sets: 4, reps: "6-8" },
-          { name: "Dumbbell Lateral Raise", sets: 4, reps: "12-15" },
-          { name: "Rear Delt Fly", sets: 3, reps: "15-20" },
-          { name: "Face Pulls", sets: 3, reps: "15-20" },
-          { name: "Upright Row", sets: 3, reps: "10-12" },
-        ],
-        totalSets: 17,
-        duration: 50,
-        kcal: 320,
-      },
-      {
-        day: "Friday",
-        type: "Arms",
-        badge: "pull",
-        exercises: [
-          { name: "Barbell Curl", sets: 4, reps: "8-10" },
-          { name: "Skull Crushers", sets: 4, reps: "8-10" },
-          { name: "Incline Dumbbell Curl", sets: 3, reps: "10-12" },
-          { name: "Cable Pushdown", sets: 3, reps: "12-15" },
-          { name: "Concentration Curl", sets: 3, reps: "12-15" },
-          { name: "Overhead Extension", sets: 3, reps: "12-15" },
-        ],
-        totalSets: 20,
-        duration: 55,
-        kcal: 310,
-      },
-      {
-        day: "Saturday",
-        type: "Rest",
-        badge: "rest",
-        exercises: [],
-        totalSets: 0,
-        duration: 0,
-        kcal: 0,
-      },
-      {
-        day: "Sunday",
-        type: "Rest",
-        badge: "rest",
-        exercises: [],
-        totalSets: 0,
-        duration: 0,
-        kcal: 0,
-      },
-    ],
-  },
-];
 
 /* ─── Tips Data ──────────────────────────────────────────────── */
 const tips = [
@@ -529,8 +92,81 @@ const bulletColor: Record<string, string> = {
 
 /* ─── Component ──────────────────────────────────────────────── */
 function Plans() {
-  const [activeId, setActiveId] = useState<string>("ppl");
-  const plan = plans.find((p) => p.id === activeId)!;
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  useEffect(() => {
+    api.get("/api/plans")
+      .then(res => {
+        if (res.data.success) {
+          const formattedPlans = res.data.data.map((p: any) => {
+            const days: Day[] = [];
+            // Group exercises by day
+            const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+            
+            dayNames.forEach((dName, i) => {
+              const dayNum = i + 1;
+              const dayExercises = p.exercises.filter((ex: any) => ex.day === dayNum);
+              
+              if (dayExercises.length === 0) {
+                days.push({
+                  day: dName,
+                  type: "Rest",
+                  badge: "rest",
+                  exercises: [],
+                  totalSets: 0,
+                  duration: 0,
+                  kcal: 0
+                });
+              } else {
+                // Determine badge based on first exercise category
+                let badge: Day["badge"] = "full";
+                const cat = dayExercises[0].exercise.category.toLowerCase();
+                if (cat === "chest" || cat === "shoulders") badge = "push";
+                else if (cat === "back" || cat === "arms") badge = "pull";
+                else if (cat === "legs") badge = "legs";
+                else if (cat === "core") badge = "core";
+
+                days.push({
+                  day: dName,
+                  type: badge.charAt(0).toUpperCase() + badge.slice(1) + " Day",
+                  badge,
+                  exercises: dayExercises.map((ex: any) => ({
+                    name: ex.exercise.name,
+                    sets: ex.sets,
+                    reps: ex.reps.toString()
+                  })),
+                  totalSets: dayExercises.reduce((sum: number, ex: any) => sum + ex.sets, 0),
+                  duration: dayExercises.length * 10 + 10, // heuristic
+                  kcal: dayExercises.length * 50 + 50 // heuristic
+                });
+              }
+            });
+
+            return {
+              id: p.id.toString(),
+              label: p.label || "Program",
+              name: p.name,
+              description: p.description || "",
+              level: p.level || "Intermediate",
+              daysPerWeek: p.daysPerWeek,
+              weeks: p.weeks || 12,
+              goal: p.goal || "Fitness",
+              days
+            };
+          });
+          setPlans(formattedPlans);
+          if (formattedPlans.length > 0) setActiveId(formattedPlans[0].id);
+        }
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="plans-page"><p className="text-muted text-center py-5">Loading training plans...</p></div>;
+  if (plans.length === 0) return <div className="plans-page"><p className="text-muted text-center py-5">No plans found. Create one to get started!</p></div>;
+
+  const plan = plans.find((p) => p.id === activeId) || plans[0];
 
   const activeDays = plan.days.filter((d) => d.badge !== "rest");
   const totalKcal = activeDays.reduce((s, d) => s + d.kcal, 0);

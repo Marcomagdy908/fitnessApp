@@ -63,7 +63,7 @@ export const register = async (
     );
 
     const [newUsers] = await db.query<UserRow[] & { length: number }>(
-      "SELECT id, name, username, email, role, avatar, createdAt FROM User WHERE id = ?",
+      "SELECT id, name, username, email, role, avatar, targetCalories, targetProtein, targetCarbs, targetFat, createdAt FROM User WHERE id = ?",
       [result.insertId]
     );
     const user = newUsers[0];
@@ -112,7 +112,7 @@ export const getMe = async (
 ): Promise<void> => {
   try {
     const [rows] = await db.query<UserRow[] & { length: number }>(
-      "SELECT id, name, username, email, role, avatar, createdAt FROM User WHERE id = ?",
+      "SELECT id, name, username, email, role, avatar, targetCalories, targetProtein, targetCarbs, targetFat, createdAt FROM User WHERE id = ?",
       [req.user!.id]
     );
     const user = rows[0];

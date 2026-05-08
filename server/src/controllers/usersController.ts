@@ -1,14 +1,20 @@
 import { Response, NextFunction } from "express";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
 import { db } from "../services/db";
 import { AuthRequest } from "../middleware/auth";
 import { UserRow } from "../types/db";
 
 const updateProfileSchema = z.object({
   name: z.string().min(2).optional(),
-  username: z.string().min(3).optional(),
+  username: z.string().min(0).optional(),
   avatar: z.string().url().optional(),
   theme: z.enum(["light", "dark"]).optional(),
+});
+
+const updatePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(6),
 });
 
 const adminUpdateUserSchema = z.object({
@@ -233,6 +239,46 @@ export const updateUserBenefit = async (
       [id, benefitId, usedCount, maxCount, expiresAt]
     );
     res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updatePassword = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { currentPassword, newPassword } = updatePasswordSchema.parse(req.body);
+
+    // Get user's current password
+    const [rows] = await db.query<UserRow[] & { length: number }>(
+      "SELECT password FROM User WHERE id = ?",
+      [req.user!.id]
+    );
+
+    const user = rows[0];
+    if (!user || !user.password) {
+      res.status(404).json({ success: false, message: "User not found" });
+      return;
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      res.status(401).json({ success: false, message: "Incorrect current password" });
+      return;
+    }
+
+    // Hash and update new password
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await db.query(
+      "UPDATE User SET password = ? WHERE id = ?",
+      [hashed, req.user!.id]
+    );
+
+    res.json({ success: true, message: "Password updated successfully" });
   } catch (err) {
     next(err);
   }

@@ -12,10 +12,12 @@ import {
   faUser,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-import { fetchApi } from "../../utils/api";
+import { api } from "../../utils/api";
 import "../../css/trainer.css";
 import Avatar from "react-avatar";
 import { useAuth } from "../../context/AuthContext";
+import PaymentModal from "../../components/PaymentModal";
+import type { PaymentBooking as PaymentBookingType } from "../../components/PaymentModal";
 
 type Booking = {
   id: number;
@@ -51,16 +53,16 @@ export default function TrainerProfile() {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<Trainer | null>(null);
+  const [payingBooking, setPayingBooking] = useState<PaymentBookingType | null>(null);
 
-  const loadTrainer = async () => {
-    setLoading(true);
+  const loadTrainer = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
-      const res = await fetchApi(`/api/trainers/${id}`);
-      const json = await res.json();
-      setTrainer(json.data);
-      setEditData(json.data);
+      const res = await api.get(`/api/trainers/${id}`);
+      setTrainer(res.data.data);
+      setEditData(res.data.data);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
@@ -68,11 +70,7 @@ export default function TrainerProfile() {
     if (!editData) return;
     try {
       setLoading(true);
-      await fetchApi(`/api/trainers/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editData),
-      });
+      await api.put(`/api/trainers/${id}`, editData);
       setTrainer(editData);
       setIsEditing(false);
     } finally {
@@ -93,16 +91,29 @@ export default function TrainerProfile() {
     if (!trainer) return;
     try {
       setBookingLoading(true);
-      await fetchApi("/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ trainerId: trainer.id, userId: 1, totalPrice: trainer.pricePerSession }),
+      const res = await api.post("/api/trainer-bookings", {
+        trainerId: trainer.id,
+        scheduledAt: new Date(Date.now() + 86400000).toISOString(), // tomorrow
+        durationMins: 60,
       });
       setShowModal(false);
-      await loadTrainer();
-    } finally {
-      setBookingLoading(false);
-    }
+      
+      const newBooking = res.data.data;
+      setPayingBooking({
+        id: newBooking.id,
+        trainerName: trainer.name,
+        trainerAvatar: trainer.imageUrl || "",
+        trainerSpecialty: trainer.specialty,
+        scheduledAt: newBooking.scheduledAt,
+        durationMins: newBooking.durationMins,
+        totalPrice: newBooking.totalPrice,
+        paymentStatus: newBooking.paymentStatus,
+        status: newBooking.status,
+      });
+
+      await loadTrainer(true);
+    } catch {}
+    finally { setBookingLoading(false); }
   };
 
   const getCerts = (v: string | string[]) =>
@@ -378,6 +389,18 @@ export default function TrainerProfile() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── Payment Modal ── */}
+      {payingBooking && (
+        <PaymentModal
+          booking={payingBooking}
+          onClose={() => setPayingBooking(null)}
+          onPaid={() => {
+            setPayingBooking(null);
+            loadTrainer(true);
+          }}
+        />
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUsers,
@@ -15,7 +15,15 @@ import {
   faExclamationTriangle,
   faArrowTrendUp,
 } from "@fortawesome/free-solid-svg-icons";
+import { api } from "../../utils/api";
 import "../../css/trainer.css";
+
+const iconMap: any = {
+  faUsers,
+  faDumbbell,
+  faCalendarCheck,
+  faCrown,
+};
 
 export default function TrainerDashboard() {
   type ModalState = {
@@ -34,24 +42,25 @@ export default function TrainerDashboard() {
     data: null,
   });
 
-  const stats = [
-    { label: "Total Clients", value: 28, icon: faUsers, color: "cyan" },
-    { label: "Active Plans", value: 16, icon: faDumbbell, color: "purple" },
-    { label: "Today Sessions", value: 7, icon: faCalendarCheck, color: "green" },
-    { label: "Premium Members", value: 12, icon: faCrown, color: "gold" },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<any[]>([]);
+  const [clients, setClients] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [weeklyActivity, setWeeklyActivity] = useState<any[]>([]);
 
-  const clients = [
-    { name: "Ahmed Ali", plan: "Fat Loss", progress: 70, membership: "pro", initials: "AA" },
-    { name: "Sara Mohamed", plan: "Muscle Gain", progress: 45, membership: "basic", initials: "SM" },
-    { name: "Omar Khaled", plan: "Maintenance", progress: 90, membership: "elite", initials: "OK" },
-  ];
-
-  const alerts = [
-    { text: "Sara missed yesterday workout", type: "warning" },
-    { text: "2 subscriptions expire soon", type: "danger" },
-    { text: "Ahmed is close to goal", type: "success" },
-  ];
+  useEffect(() => {
+    api.get("/api/pt-clients/dashboard")
+      .then(res => {
+        if (res.data.success) {
+          setStats(res.data.data.stats);
+          setClients(res.data.data.clients);
+          setAlerts(res.data.data.alerts);
+          setWeeklyActivity(res.data.data.weeklyActivity);
+        }
+      })
+      .catch(err => console.error("Failed to fetch trainer dashboard data:", err))
+      .finally(() => setLoading(false));
+  }, []);
 
   const actions = [
     { label: "Add Exercise", icon: faDumbbell, description: "Create a new workout exercise" },
@@ -64,129 +73,151 @@ export default function TrainerDashboard() {
   };
 
   return (
-    <div className="dashboard-wrapper">
+    <div className="tr-dashboard-wrapper">
 
       {/* ── Header ── */}
-      <div className="dash-header">
+      <div className="tr-dash-header">
         <div>
-          <h1 className="dash-title">Trainer Dashboard</h1>
-          <p className="dash-subtitle">Welcome back, Coach! Here's today's overview.</p>
+          <h1 className="tr-dash-title">Trainer Dashboard</h1>
+          <p className="tr-dash-subtitle">Welcome back, Coach! Here's today's overview.</p>
         </div>
-        <div className="dash-header-badge">
+        <div className="tr-dash-header-badge">
           <FontAwesomeIcon icon={faArrowTrendUp} />
           <span>Performance: Excellent</span>
         </div>
       </div>
 
       {/* ── Stats Row ── */}
-      <div className="dash-stats-row">
-        {stats.map((s, i) => (
-          <div className={`dash-stat-card dash-stat-${s.color}`} key={i} style={{ animationDelay: `${i * 0.1}s` }}>
-            <div className="dash-stat-icon">
-              <FontAwesomeIcon icon={s.icon} />
+      <div className="tr-dash-stats-row">
+        {loading ? (
+          [...Array(4)].map((_, i) => (
+            <div className="tr-dash-stat-card tr-dash-stat-skeleton" key={i} />
+          ))
+        ) : (
+          stats.map((s, i) => (
+            <div className={`tr-dash-stat-card tr-dash-stat-${s.color}`} key={i} style={{ animationDelay: `${i * 0.1}s` }}>
+              <div className="tr-dash-stat-icon">
+                <FontAwesomeIcon icon={iconMap[s.icon] || faDumbbell} />
+              </div>
+              <div className="tr-dash-stat-value">{s.value}</div>
+              <div className="tr-dash-stat-label">{s.label}</div>
             </div>
-            <div className="dash-stat-value">{s.value}</div>
-            <div className="dash-stat-label">{s.label}</div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* ── Main Grid ── */}
-      <div className="dash-grid">
+      <div className="tr-dash-grid">
 
         {/* LEFT — Clients */}
-        <div className="dash-col dash-col-wide">
-          <div className="dash-card">
-            <div className="dash-card-title">
+        <div className="tr-dash-col tr-dash-col-wide">
+          <div className="tr-dash-card">
+            <div className="tr-dash-card-title">
               <FontAwesomeIcon icon={faUsers} /> Clients
             </div>
-            <div className="clients-table">
-              <div className="clients-table-header">
+            <div className="tr-clients-table">
+              <div className="tr-clients-table-header">
                 <span>Client</span>
                 <span>Plan</span>
                 <span>Progress</span>
                 <span>Tier</span>
               </div>
-              {clients.map((c, i) => (
-                <div className="client-row" key={i} style={{ animationDelay: `${0.2 + i * 0.1}s` }}>
-                  <div className="client-row-name">
-                    <div className="client-avatar">{c.initials}</div>
-                    <span>{c.name}</span>
-                  </div>
-                  <span className="client-plan-label">{c.plan}</span>
-                  <div className="client-progress-wrap">
-                    <div className="client-progress-bar">
-                      <div className="client-progress-fill" style={{ width: `${c.progress}%` }} />
+              {loading ? (
+                [...Array(3)].map((_, i) => (
+                  <div className="tr-client-row-skeleton" key={i} />
+                ))
+              ) : (
+                clients.map((c, i) => (
+                  <div className="tr-client-row" key={i} style={{ animationDelay: `${0.2 + i * 0.1}s` }}>
+                    <div className="tr-client-row-name">
+                      <div className="tr-client-avatar">{c.initials}</div>
+                      <span>{c.name}</span>
                     </div>
-                    <span className="client-progress-pct">{c.progress}%</span>
+                    <span className="tr-client-plan-label">{c.plan}</span>
+                    <div className="tr-client-progress-wrap">
+                      <div className="tr-client-progress-bar">
+                        <div className="tr-client-progress-fill" style={{ width: `${c.progress}%` }} />
+                      </div>
+                      <span className="tr-client-progress-pct">{c.progress}%</span>
+                    </div>
+                    <span className={`tr-client-tier tr-client-tier-${c.membership}`}>{c.membership}</span>
                   </div>
-                  <span className={`client-tier client-tier-${c.membership}`}>{c.membership}</span>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
           {/* Quick Stats card */}
-          <div className="dash-card dash-chart-card">
-            <div className="dash-card-title">
+          <div className="tr-dash-card tr-dash-chart-card">
+            <div className="tr-dash-card-title">
               <FontAwesomeIcon icon={faChartLine} /> Weekly Activity
             </div>
-            <div className="mini-chart">
-              {[40, 65, 50, 80, 70, 90, 55].map((h, i) => (
-                <div className="mini-chart-bar-wrap" key={i}>
-                  <div
-                    className="mini-chart-bar"
-                    style={{ height: `${h}%`, animationDelay: `${0.3 + i * 0.08}s` }}
-                  />
-                  <span className="mini-chart-label">
-                    {["M", "T", "W", "T", "F", "S", "S"][i]}
-                  </span>
-                </div>
-              ))}
+            <div className="tr-mini-chart">
+              {loading ? (
+                [...Array(7)].map((_, i) => (
+                  <div className="tr-mini-chart-bar-skeleton" key={i} />
+                ))
+              ) : (
+                weeklyActivity.map((a, i) => (
+                  <div className="tr-mini-chart-bar-wrap" key={i}>
+                    <div
+                      className="tr-mini-chart-bar"
+                      style={{ height: `${a.pct}%`, animationDelay: `${0.3 + i * 0.08}s` }}
+                    />
+                    <span className="tr-mini-chart-label">{a.label}</span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
 
         {/* RIGHT — Alerts + Actions */}
-        <div className="dash-col">
+        <div className="tr-dash-col">
 
           {/* Alerts */}
-          <div className="dash-card">
-            <div className="dash-card-title">
+          <div className="tr-dash-card">
+            <div className="tr-dash-card-title">
               <FontAwesomeIcon icon={faBell} /> Alerts
             </div>
-            <div className="alerts-list">
-              {alerts.map((a, i) => (
-                <div className={`alert-item alert-${a.type}`} key={i} style={{ animationDelay: `${0.2 + i * 0.1}s` }}>
-                  <FontAwesomeIcon
-                    icon={a.type === "success" ? faCheckCircle : faExclamationTriangle}
-                    className="alert-icon"
-                  />
-                  <span>{a.text}</span>
-                </div>
-              ))}
+            <div className="tr-alerts-list">
+              {loading ? (
+                [...Array(2)].map((_, i) => (
+                  <div className="tr-alert-skeleton" key={i} />
+                ))
+              ) : (
+                alerts.map((a, i) => (
+                  <div className={`tr-alert-item tr-alert-${a.type}`} key={i} style={{ animationDelay: `${0.2 + i * 0.1}s` }}>
+                    <FontAwesomeIcon
+                      icon={a.type === "success" ? faCheckCircle : faExclamationTriangle}
+                      className="tr-alert-icon"
+                    />
+                    <span>{a.text}</span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
           {/* Quick Actions */}
-          <div className="dash-card">
-            <div className="dash-card-title">
+          <div className="tr-dash-card">
+            <div className="tr-dash-card-title">
               <FontAwesomeIcon icon={faBullseye} /> Quick Actions
             </div>
-            <div className="actions-list">
+            <div className="tr-actions-list">
               {actions.map((a, i) => (
                 <button
                   key={i}
-                  className="action-btn"
+                  className="tr-action-btn"
                   style={{ animationDelay: `${0.3 + i * 0.1}s` }}
                   onClick={() => openModal(a)}
                 >
-                  <div className="action-btn-icon">
+                  <div className="tr-action-btn-icon">
                     <FontAwesomeIcon icon={a.icon} />
                   </div>
-                  <div className="action-btn-text">
-                    <span className="action-btn-label">{a.label}</span>
-                    <span className="action-btn-desc">{a.description}</span>
+                  <div className="tr-action-btn-text">
+                    <span className="tr-action-btn-label">{a.label}</span>
+                    <span className="tr-action-btn-desc">{a.description}</span>
                   </div>
                 </button>
               ))}
@@ -198,13 +229,13 @@ export default function TrainerDashboard() {
 
       {/* ── Modal ── */}
       {modal.open && (
-        <div className="modal-overlay" onClick={() => setModal({ open: false, type: "", data: null })}>
-          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+        <div className="tr-modal-overlay" onClick={() => setModal({ open: false, type: "", data: null })}>
+          <div className="tr-modal-box" onClick={(e) => e.stopPropagation()}>
             <h2>{modal.type}</h2>
             <p style={{ fontSize: "0.85rem", opacity: 0.6, marginBottom: "1rem" }}>
               {modal.data?.description}
             </p>
-            <div className="modal-form">
+            <div className="tr-modal-form">
               <label>Name</label>
               <input type="text" placeholder="Enter name" />
               <label>Description</label>
@@ -212,7 +243,7 @@ export default function TrainerDashboard() {
               <label>Category</label>
               <input type="text" placeholder="e.g Chest / Fat Loss" />
             </div>
-            <div className="modal-actions">
+            <div className="tr-modal-actions">
               <button onClick={() => setModal({ open: false, type: "", data: null })}>Cancel</button>
               <button onClick={() => { console.log("Saved:", modal); setModal({ open: false, type: "", data: null }); }}>
                 Save

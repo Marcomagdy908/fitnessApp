@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { fetchApi } from "../utils/api";
+import { api } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import "../css/auth.css";
 
@@ -49,25 +49,12 @@ export default function SignUp() {
     }
 
     try {
-      const response = await fetchApi("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password, avatar }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
-      }
+      const res = await api.post("/api/auth/register", { name, email, password, avatar });
       setSuccess(true);
-      login(data.user);
-      navigate("/"); // Automatically redirect to logged-in dashboard
-
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unexpected error occurred");
+      login(res.data.user);
+      navigate("/");
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Registration failed");
     }
   };
 

@@ -17,6 +17,11 @@ import dashboardRoutes from "./routes/dashboard";
 import trainerBookingsRoutes from "./routes/trainerBookings";
 import gymClassesRoutes from "./routes/gymClasses";
 import benefitsRoutes from "./routes/benefits";
+import ptClientsRoutes from "./routes/ptClients";
+import injuriesRoutes from "./routes/injuries";
+import bookingsRoutes from "./routes/bookings";
+import injuryRestrictionsRoutes from "./routes/injuryRestrictions";
+import workoutsRoutes from "./routes/workouts";
 
 const app = express();
 
@@ -57,6 +62,11 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/trainer-bookings", trainerBookingsRoutes);
 app.use("/api/gym-classes", gymClassesRoutes);
 app.use("/api/benefits", benefitsRoutes);
+app.use("/api/pt-clients", ptClientsRoutes);
+app.use("/api/injuries", injuriesRoutes);
+app.use("/api/bookings", bookingsRoutes);
+app.use("/api/injury-restrictions", injuryRestrictionsRoutes);
+app.use("/api/workouts", workoutsRoutes);
 
 // ── Error Handling ─────────────────────────────────────────────────────────────
 
