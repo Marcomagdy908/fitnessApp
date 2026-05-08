@@ -26,15 +26,17 @@ function generateToken(userId: number): string {
 }
 
 function setAuthCookies(res: Response, token: string) {
+  const isProduction = env.NODE_ENV === "production";
+  
   res.cookie("token", token, {
     httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, 
   });
   res.cookie("isLoggedIn", "true", {
-    secure: env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 }
@@ -123,7 +125,18 @@ export const getMe = async (
 };
 
 export const logout = (req: Request, res: Response) => {
-  res.cookie("token", "", { maxAge: 0, httpOnly: true });
-  res.cookie("isLoggedIn", "", { maxAge: 0 });
+  const isProduction = env.NODE_ENV === "production";
+  
+  res.cookie("token", "", { 
+    maxAge: 0, 
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax"
+  });
+  res.cookie("isLoggedIn", "", { 
+    maxAge: 0,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax"
+  });
   res.json({ success: true, message: "Logged out successfully" });
 };
