@@ -50,10 +50,18 @@ export const protect = async (
 
     req.user = user;
     next();
-  } catch {
+  } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
+      res
+        .status(401)
+        .json({ success: false, message: "Not authorized — invalid or expired token" });
+      return;
+    }
+
+    console.error("Auth middleware error:", error);
     res
-      .status(401)
-      .json({ success: false, message: "Not authorized — invalid token" });
+      .status(500)
+      .json({ success: false, message: "Internal server error during authentication" });
   }
 };
 
