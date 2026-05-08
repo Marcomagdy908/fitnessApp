@@ -25,6 +25,9 @@ import workoutsRoutes from "./routes/workouts";
 
 const app = express();
 
+// Tell Express it is behind a secure proxy (Fly.io)
+app.set("trust proxy", 1);
+
 // ── Core Middleware ────────────────────────────────────────────────────────────
 
 app.use(
