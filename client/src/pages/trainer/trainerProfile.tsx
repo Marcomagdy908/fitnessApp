@@ -136,14 +136,39 @@ export default function TrainerProfile() {
       </div>
     );
 
-  if (!trainer)
+  const { user, refreshUser } = useAuth();
+  const isTrainer = user?.role === "TRAINER";
+
+  const handleInitializeProfile = async () => {
+    try {
+      setLoading(true);
+      await api.post("/api/trainers/initialize");
+      await refreshUser();
+      // It will auto redirect since the ID changes, but let's reload just in case
+      window.location.reload();
+    } catch (e) {
+      console.error(e);
+      setLoading(false);
+    }
+  };
+
+  if (!trainer) {
+    if (isTrainer && (!id || id === 'undefined' || String(user?.trainerId) === id)) {
+      return (
+        <div className="tp-empty" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+          <h2>Profile Not Set Up</h2>
+          <p>You have been assigned the Trainer role, but your profile isn't fully initialized.</p>
+          <button className="tp-save-btn" onClick={handleInitializeProfile}>
+            Initialize My Profile
+          </button>
+        </div>
+      );
+    }
     return <div className="tp-empty">Trainer not found.</div>;
+  }
 
   const certs = getCerts(trainer.certifications);
   const tags  = getCerts(trainer.tags);
-
-  const { user } = useAuth();
-  const isTrainer = user?.role === "TRAINER";
 
   return (
     <div className="tp-wrapper">

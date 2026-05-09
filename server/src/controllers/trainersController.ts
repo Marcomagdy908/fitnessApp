@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { db } from "../services/db";
 import { TrainerRow } from "../types/db";
+import { AuthRequest } from "../middleware/auth";
 
 export const getTrainers = async (
   _req: Request,
@@ -87,6 +88,38 @@ export const getTrainer = async (
         bookings,
       },
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const initializeProfile = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    if (req.user?.role !== "TRAINER") {
+      res.status(403).json({ success: false, message: "Only trainers can initialize a profile" });
+      return;
+    }
+
+    const [existing] = await db.query<any[]>("SELECT id FROM Trainer WHERE userId = ?", [req.user.id]);
+    if (existing.length > 0) {
+      res.json({ success: true, trainerId: existing[0].id });
+      return;
+    }
+
+    const [uRows] = await db.query<any[]>("SELECT name FROM User WHERE id = ?", [req.user.id]);
+    const name = uRows[0]?.name || "New Trainer";
+
+    const [result] = await db.query<any>(
+      `INSERT INTO Trainer (userId, name, specialty, bio, certifications, tags) 
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [req.user.id, name, "General Fitness", "", "[]", "[]"]
+    );
+
+    res.json({ success: true, trainerId: result.insertId });
   } catch (err) {
     next(err);
   }

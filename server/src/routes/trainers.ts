@@ -1,7 +1,11 @@
 import { Router } from "express";
-import { getTrainers, getTrainer } from "../controllers/trainersController";
+import { getTrainers, getTrainer, initializeProfile } from "../controllers/trainersController";
+import { protect, trainerOnly } from "../middleware/auth";
 
 const router = Router();
+
+// Protected routes
+router.post("/initialize", protect, trainerOnly, initializeProfile);
 
 // Public routes
 router.get("/", getTrainers);

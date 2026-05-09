@@ -64,8 +64,11 @@ export const register = async (
       [body.name, body.email, hashed]
     );
 
-    const [newUsers] = await db.query<UserRow[] & { length: number }>(
-      "SELECT id, name, username, email, role, avatar, targetCalories, targetProtein, targetCarbs, targetFat, createdAt FROM User WHERE id = ?",
+    const [newUsers] = await db.query<any[] & { length: number }>(
+      `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.targetCalories, u.targetProtein, u.targetCarbs, u.targetFat, u.createdAt, t.id as trainerId 
+       FROM User u 
+       LEFT JOIN Trainer t ON u.id = t.userId 
+       WHERE u.id = ?`,
       [result.insertId]
     );
     const user = newUsers[0];
@@ -85,8 +88,11 @@ export const login = async (
 ): Promise<void> => {
   try {
     const body = loginSchema.parse(req.body);
-    const [rows] = await db.query<UserRow[] & { length: number }>(
-      "SELECT * FROM User WHERE email = ?",
+    const [rows] = await db.query<any[] & { length: number }>(
+      `SELECT u.*, t.id as trainerId 
+       FROM User u 
+       LEFT JOIN Trainer t ON u.id = t.userId 
+       WHERE u.email = ?`,
       [body.email]
     );
     
@@ -113,8 +119,11 @@ export const getMe = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const [rows] = await db.query<UserRow[] & { length: number }>(
-      "SELECT id, name, username, email, role, avatar, targetCalories, targetProtein, targetCarbs, targetFat, createdAt FROM User WHERE id = ?",
+    const [rows] = await db.query<any[] & { length: number }>(
+      `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.targetCalories, u.targetProtein, u.targetCarbs, u.targetFat, u.createdAt, t.id as trainerId 
+       FROM User u 
+       LEFT JOIN Trainer t ON u.id = t.userId 
+       WHERE u.id = ?`,
       [req.user!.id]
     );
     const user = rows[0];

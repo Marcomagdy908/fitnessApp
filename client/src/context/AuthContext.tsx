@@ -12,6 +12,7 @@ interface User {
   targetProtein?: number;
   targetCarbs?: number;
   targetFat?: number;
+  trainerId?: number;
 }
 
 interface AuthContextType {

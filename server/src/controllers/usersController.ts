@@ -34,8 +34,11 @@ export const getProfile = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const [rows] = await db.query<UserRow[] & { length: number }>(
-      "SELECT id, name, username, email, role, avatar, theme, createdAt FROM User WHERE id = ?",
+    const [rows] = await db.query<any[] & { length: number }>(
+      `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.theme, u.createdAt, t.id as trainerId 
+       FROM User u 
+       LEFT JOIN Trainer t ON u.id = t.userId 
+       WHERE u.id = ?`,
       [req.user!.id],
     );
     res.json({ success: true, user: rows[0] });
@@ -80,8 +83,11 @@ export const updateProfile = async (
       );
     }
 
-    const [rows] = await db.query<UserRow[] & { length: number }>(
-      "SELECT id, name, username, email, role, avatar, theme, updatedAt FROM User WHERE id = ?",
+    const [rows] = await db.query<any[] & { length: number }>(
+      `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.theme, u.updatedAt, t.id as trainerId 
+       FROM User u 
+       LEFT JOIN Trainer t ON u.id = t.userId 
+       WHERE u.id = ?`,
       [req.user!.id],
     );
     res.json({ success: true, user: rows[0] });
@@ -114,6 +120,8 @@ export const adminUpdateUser = async (
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
+  const connection = await db.getConnection();
+  await connection.beginTransaction();
   try {
     const { id } = req.params;
     const body = adminUpdateUserSchema.parse(req.body);
@@ -148,7 +156,7 @@ export const adminUpdateUser = async (
 
     if (fields.length > 0) {
       values.push(id);
-      await db.query(
+      await connection.query(
         `UPDATE User SET ${fields.join(", ")} WHERE id = ?`,
         values,
       );
@@ -167,13 +175,36 @@ export const adminUpdateUser = async (
         subValues.push(body.usedVisits);
       }
       subValues.push(id);
-      await db.query(
+      await connection.query(
         `UPDATE Subscription SET ${subFields.join(", ")} WHERE userId = ?`,
         subValues,
       );
     }
 
-    const [rows] = await db.query<UserRow[] & { length: number }>(
+    // Handle Trainer Profile Creation
+    if (body.role === "TRAINER") {
+      const [existing] = await connection.query<any[]>(
+        "SELECT id FROM Trainer WHERE userId = ?",
+        [id]
+      );
+      if (existing.length === 0) {
+        let trainerName = body.name;
+        if (!trainerName) {
+           const [uRows] = await connection.query<any[]>("SELECT name FROM User WHERE id = ?", [id]);
+           trainerName = uRows[0]?.name || "New Trainer";
+        }
+
+        await connection.query(
+          `INSERT INTO Trainer (userId, name, specialty, bio, certifications, tags) 
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [id, trainerName, "General Fitness", "", "[]", "[]"]
+        );
+      }
+    }
+
+    await connection.commit();
+
+    const [rows] = await connection.query<UserRow[] & { length: number }>(
       `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.subscriptionPlan, u.theme, u.updatedAt,
               s.maxVisits, s.usedVisits
        FROM User u
@@ -183,7 +214,10 @@ export const adminUpdateUser = async (
     );
     res.json({ success: true, user: rows[0] });
   } catch (err) {
+    await connection.rollback();
     next(err);
+  } finally {
+    connection.release();
   }
 };
 

@@ -32,7 +32,7 @@ function SidebarNavigation() {
     user?.role === "ADMIN"
       ? "/settings"
       : user?.role === "TRAINER"
-        ? `/trainer/${user?.id}`
+        ? `/trainer/${user?.trainerId}`
         : "/settings";
   const userMenu = [
     { name: "Dashboard", icon: faHome, path: "/" },
