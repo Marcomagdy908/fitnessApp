@@ -8,7 +8,7 @@ import {
   updateUserBenefit,
   updatePassword
 } from "../controllers/usersController";
-import { protect, adminOnly } from "../middleware/auth";
+import { protect, adminOnly, trainerOnly } from "../middleware/auth";
 
 const router = Router();
 
@@ -17,8 +17,8 @@ router.get("/profile", getProfile);
 router.put("/profile", updateProfile);
 router.put("/password", updatePassword);
 
-// Admin routes
-router.get("/", adminOnly, getAllUsers);
+// Admin + Trainer routes
+router.get("/", trainerOnly, getAllUsers);
 router.put("/:id", adminOnly, adminUpdateUser);
 router.get("/:id/benefits", adminOnly, getUserBenefits);
 router.put("/:id/benefits", adminOnly, updateUserBenefit);

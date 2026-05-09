@@ -20,7 +20,7 @@ export const getSubscriptionPlans = async (
   try {
     const [plans] = await db.query<any[]>("SELECT * FROM SubscriptionPlan");
     const [benefits] = await db.query<any[]>("SELECT * FROM SubscriptionBenefit");
-    
+
     const data = plans.map(p => ({
       ...p,
       id: p.planId, // Align with frontend expectations
@@ -58,7 +58,7 @@ export const subscribe = async (
 ): Promise<void> => {
   try {
     const { plan, billingCycle, paymentMethod, transactionRef, amount } = subscribeSchema.parse(req.body);
-    
+
     // Set expiresAt based on billing cycle
     const expiresAt = new Date();
     if (billingCycle === "annual") {
@@ -78,6 +78,11 @@ export const subscribe = async (
       [req.user!.id, plan, billingCycle, expiresAt]
     );
 
+    await db.query(
+      `UPDATE User SET subscriptionPlan = ? WHERE id = ?`,
+      [plan, req.user!.id]
+    );
+
     const [subRows] = await db.query<any[]>("SELECT id FROM Subscription WHERE userId = ?", [req.user!.id]);
     const subscriptionId = subRows[0]?.id;
 
@@ -94,7 +99,7 @@ export const subscribe = async (
       "SELECT * FROM Subscription WHERE userId = ?",
       [req.user!.id]
     );
-    
+
     res.json({ success: true, data: rows[0] });
   } catch (err) {
     next(err);

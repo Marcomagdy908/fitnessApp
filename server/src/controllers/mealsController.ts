@@ -114,7 +114,13 @@ export const getAlternativeMeals = async (
 };
 export const getDietPlans = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const [plans] = await db.query<DietPlanRow[]>("SELECT * FROM DietPlan");
+    // Trainers see plans they created + public plans. Admins see everything.
+    const [plans] = await db.query<DietPlanRow[]>(
+      req.user!.role === "ADMIN"
+        ? "SELECT * FROM DietPlan ORDER BY createdAt DESC"
+        : "SELECT * FROM DietPlan WHERE userId = ? OR userId IS NULL ORDER BY createdAt DESC",
+      req.user!.role === "ADMIN" ? [] : [req.user!.id]
+    );
     const plansWithMeals = await Promise.all(
       plans.map(async (plan) => {
         const [meals] = await db.query<DietPlanMealRow[]>(
@@ -128,6 +134,117 @@ export const getDietPlans = async (req: AuthRequest, res: Response, next: NextFu
       })
     );
     res.json({ success: true, data: plansWithMeals });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const createDietPlan = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { planId, label, labelColor, name, goal, goalIcon, description, calories, protein, carbs, fat,
+            accentColor, gradientFrom, gradientTo, meals, targetUserId, isPublic } = req.body;
+
+    const isTrainerOrAdmin = req.user!.role === "TRAINER" || req.user!.role === "ADMIN";
+    let assignedUserId: number | null;
+    if (isTrainerOrAdmin) {
+      assignedUserId = isPublic ? null : (targetUserId ?? req.user!.id);
+    } else {
+      assignedUserId = req.user!.id;
+    }
+
+    const [result] = await db.query<ResultSetHeader>(
+      `INSERT INTO DietPlan (userId, planId, label, labelColor, name, goal, goalIcon, description, calories, protein, carbs, fat, accentColor, gradientFrom, gradientTo)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [assignedUserId, planId, label || name.toLowerCase().replace(/\s+/g, '-'),
+       label || 'Custom', labelColor || '#7b61ff', name, goal || 'General',
+       goalIcon || 'faDumbbell', description || '', calories || 0,
+       protein || 0, carbs || 0, fat || 0,
+       accentColor || '#7b61ff', gradientFrom || 'rgba(123,97,255,0.15)', gradientTo || 'rgba(123,97,255,0.05)']
+    );
+
+    const dietPlanId = result.insertId;
+    if (meals && Array.isArray(meals)) {
+      for (const m of meals) {
+        await db.query(
+          `INSERT INTO DietPlanMeal (dietPlanId, time, name, foods, calories, protein, carbs, fat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [dietPlanId, m.time || '', m.name, JSON.stringify(Array.isArray(m.foods) ? m.foods : [m.name]), m.calories || 0, m.protein || 0, m.carbs || 0, m.fat || 0]
+        );
+      }
+    }
+
+    const [rows] = await db.query<DietPlanRow[]>("SELECT * FROM DietPlan WHERE id = ?", [dietPlanId]);
+    const [mealRows] = await db.query<DietPlanMealRow[]>("SELECT * FROM DietPlanMeal WHERE dietPlanId = ? ORDER BY id ASC", [dietPlanId]);
+    res.status(201).json({ success: true, data: { ...rows[0], meals: mealRows.map(m => ({ ...m, foods: JSON.parse(m.foods) })) } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateDietPlan = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const { label, labelColor, name, goal, goalIcon, description, calories, protein, carbs, fat,
+            accentColor, gradientFrom, gradientTo, meals, targetUserId, isPublic } = req.body;
+
+    const isTrainerOrAdmin = req.user!.role === "TRAINER" || req.user!.role === "ADMIN";
+    
+    const fields: string[] = [];
+    const values: any[] = [];
+    if (name !== undefined) { fields.push("name = ?"); values.push(name); }
+    if (label !== undefined) { fields.push("label = ?"); values.push(label); }
+    if (labelColor !== undefined) { fields.push("labelColor = ?"); values.push(labelColor); }
+    if (goal !== undefined) { fields.push("goal = ?"); values.push(goal); }
+    if (goalIcon !== undefined) { fields.push("goalIcon = ?"); values.push(goalIcon); }
+    if (description !== undefined) { fields.push("description = ?"); values.push(description); }
+    if (calories !== undefined) { fields.push("calories = ?"); values.push(calories); }
+    if (protein !== undefined) { fields.push("protein = ?"); values.push(protein); }
+    if (carbs !== undefined) { fields.push("carbs = ?"); values.push(carbs); }
+    if (fat !== undefined) { fields.push("fat = ?"); values.push(fat); }
+    if (accentColor !== undefined) { fields.push("accentColor = ?"); values.push(accentColor); }
+    if (gradientFrom !== undefined) { fields.push("gradientFrom = ?"); values.push(gradientFrom); }
+    if (gradientTo !== undefined) { fields.push("gradientTo = ?"); values.push(gradientTo); }
+    if (isTrainerOrAdmin && isPublic !== undefined) {
+      if (isPublic) { fields.push("userId = NULL"); }
+      else if (targetUserId !== undefined) { fields.push("userId = ?"); values.push(targetUserId); }
+    }
+
+    if (fields.length > 0) {
+      values.push(id);
+      await db.query(`UPDATE DietPlan SET ${fields.join(", ")} WHERE id = ?`, values);
+    }
+
+    // Replace meals if provided
+    if (meals && Array.isArray(meals)) {
+      await db.query("DELETE FROM DietPlanMeal WHERE dietPlanId = ?", [id]);
+      for (const m of meals) {
+        await db.query(
+          `INSERT INTO DietPlanMeal (dietPlanId, time, name, foods, calories, protein, carbs, fat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [id, m.time || '', m.name, JSON.stringify(Array.isArray(m.foods) ? m.foods : [m.name]), m.calories || 0, m.protein || 0, m.carbs || 0, m.fat || 0]
+        );
+      }
+    }
+
+    res.json({ success: true, message: "Diet plan updated" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteDietPlan = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const isTrainerOrAdmin = req.user!.role === "TRAINER" || req.user!.role === "ADMIN";
+    const [result] = await db.query<ResultSetHeader>(
+      isTrainerOrAdmin
+        ? "DELETE FROM DietPlan WHERE id = ?"
+        : "DELETE FROM DietPlan WHERE id = ? AND userId = ?",
+      isTrainerOrAdmin ? [id] : [id, req.user!.id]
+    );
+    if ((result as ResultSetHeader).affectedRows === 0) {
+      res.status(404).json({ success: false, message: "Diet plan not found" });
+      return;
+    }
+    res.json({ success: true, message: "Diet plan deleted" });
   } catch (err) {
     next(err);
   }

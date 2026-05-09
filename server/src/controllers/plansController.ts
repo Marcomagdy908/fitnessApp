@@ -9,6 +9,12 @@ const createPlanSchema = z.object({
   name: z.string().min(2),
   description: z.string().optional(),
   daysPerWeek: z.number().int().min(1).max(7).optional(),
+  level: z.string().optional(),
+  weeks: z.number().int().min(1).optional(),
+  goal: z.string().optional(),
+  label: z.string().optional(),
+  targetUserId: z.number().int().nullable().optional(), // null = public
+  isPublic: z.boolean().optional(),
 });
 
 const addExerciseSchema = z.object({
@@ -26,9 +32,13 @@ export const getPlans = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
+    const isTrainerOrAdmin = req.user!.role === "TRAINER" || req.user!.role === "ADMIN";
+    // Trainers see plans they created + public plans. Admins see everything.
     const [plans] = await db.query<WorkoutPlanRow[] & { length: number }>(
-      "SELECT id, userId, name, description, daysPerWeek, level, weeks, goal, label, isActive, createdAt, updatedAt FROM WorkoutPlan WHERE userId = ? ORDER BY createdAt DESC",
-      [req.user!.id]
+      req.user!.role === "ADMIN"
+        ? "SELECT id, userId, name, description, daysPerWeek, level, weeks, goal, label, isActive, createdAt, updatedAt FROM WorkoutPlan ORDER BY createdAt DESC"
+        : "SELECT id, userId, name, description, daysPerWeek, level, weeks, goal, label, isActive, createdAt, updatedAt FROM WorkoutPlan WHERE userId = ? OR userId IS NULL ORDER BY createdAt DESC",
+      req.user!.role === "ADMIN" ? [] : [req.user!.id]
     );
 
     if (plans.length > 0) {
@@ -93,7 +103,7 @@ export const getPlan = async (
 ): Promise<void> => {
   try {
     const [plans] = await db.query<WorkoutPlanRow[] & { length: number }>(
-      "SELECT id, userId, name, description, daysPerWeek, level, weeks, goal, label, isActive, createdAt, updatedAt FROM WorkoutPlan WHERE id = ? AND userId = ?",
+      "SELECT id, userId, name, description, daysPerWeek, level, weeks, goal, label, isActive, createdAt, updatedAt FROM WorkoutPlan WHERE id = ? AND (userId = ? OR userId IS NULL)",
       [parseInt(req.params.id), req.user!.id]
     );
 
@@ -151,10 +161,34 @@ export const createPlan = async (
 ): Promise<void> => {
   try {
     const body = createPlanSchema.parse(req.body);
+    const isTrainerOrAdmin = req.user!.role === "TRAINER" || req.user!.role === "ADMIN";
+
+    // Trainers/admins can assign to a specific user or make public (null userId)
+    // Regular users always get the plan assigned to themselves
+    let assignedUserId: number | null;
+    if (isTrainerOrAdmin) {
+      if (body.isPublic) {
+        assignedUserId = null;
+      } else {
+        assignedUserId = body.targetUserId !== undefined ? body.targetUserId : req.user!.id;
+      }
+    } else {
+      assignedUserId = req.user!.id;
+    }
+
     const [result] = await db.query<ResultSetHeader>(
-      `INSERT INTO WorkoutPlan (userId, name, description, daysPerWeek) 
-       VALUES (?, ?, ?, ?)`,
-      [req.user!.id, body.name, body.description ?? null, body.daysPerWeek ?? 3]
+      `INSERT INTO WorkoutPlan (userId, name, description, daysPerWeek, level, weeks, goal, label) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        assignedUserId,
+        body.name,
+        body.description ?? null,
+        body.daysPerWeek ?? 3,
+        body.level ?? "Intermediate",
+        body.weeks ?? 12,
+        body.goal ?? "Fitness",
+        body.label ?? null,
+      ]
     );
     
     const [rows] = await db.query<WorkoutPlanRow[] & { length: number }>(
@@ -185,18 +219,46 @@ export const updatePlan = async (
     if (body.name !== undefined) { fields.push("name = ?"); values.push(body.name); }
     if (body.description !== undefined) { fields.push("description = ?"); values.push(body.description); }
     if (body.daysPerWeek !== undefined) { fields.push("daysPerWeek = ?"); values.push(body.daysPerWeek); }
+    if (body.level !== undefined) { fields.push("level = ?"); values.push(body.level); }
+    if (body.weeks !== undefined) { fields.push("weeks = ?"); values.push(body.weeks); }
+    if (body.goal !== undefined) { fields.push("goal = ?"); values.push(body.goal); }
+    if (body.label !== undefined) { fields.push("label = ?"); values.push(body.label); }
     if (body.isActive !== undefined) { fields.push("isActive = ?"); values.push(body.isActive ? 1 : 0); }
 
+    // Trainers/admins can reassign or change visibility
+    const isTrainerOrAdmin = req.user!.role === "TRAINER" || req.user!.role === "ADMIN";
+    if (isTrainerOrAdmin && body.isPublic !== undefined) {
+      if (body.isPublic) {
+        fields.push("userId = NULL");
+      } else if (body.targetUserId !== undefined) {
+        fields.push("userId = ?");
+        values.push(body.targetUserId);
+      }
+    }
+
     if (fields.length > 0) {
-      values.push(parseInt(req.params.id), req.user!.id);
-      const [result] = await db.query<ResultSetHeader>(
-        `UPDATE WorkoutPlan SET ${fields.join(', ')} WHERE id = ? AND userId = ?`,
-        values
-      );
-      
-      if (result.affectedRows === 0) {
-        res.status(404).json({ success: false, message: "Plan not found" });
-        return;
+      const planId = parseInt(req.params.id);
+      // Trainers/admins can update any plan; users can only update their own
+      if (isTrainerOrAdmin) {
+        values.push(planId);
+        const [result] = await db.query<ResultSetHeader>(
+          `UPDATE WorkoutPlan SET ${fields.join(', ')} WHERE id = ?`,
+          values
+        );
+        if (result.affectedRows === 0) {
+          res.status(404).json({ success: false, message: "Plan not found" });
+          return;
+        }
+      } else {
+        values.push(planId, req.user!.id);
+        const [result] = await db.query<ResultSetHeader>(
+          `UPDATE WorkoutPlan SET ${fields.join(', ')} WHERE id = ? AND userId = ?`,
+          values
+        );
+        if (result.affectedRows === 0) {
+          res.status(404).json({ success: false, message: "Plan not found" });
+          return;
+        }
       }
     }
     
@@ -212,11 +274,20 @@ export const deletePlan = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const [result] = await db.query<ResultSetHeader>(
-      "DELETE FROM WorkoutPlan WHERE id = ? AND userId = ?",
-      [parseInt(req.params.id), req.user!.id]
-    );
-    if (result.affectedRows === 0) {
+    const isTrainerOrAdmin = req.user!.role === "TRAINER" || req.user!.role === "ADMIN";
+    let result;
+    if (isTrainerOrAdmin) {
+      [result] = await db.query<ResultSetHeader>(
+        "DELETE FROM WorkoutPlan WHERE id = ?",
+        [parseInt(req.params.id)]
+      );
+    } else {
+      [result] = await db.query<ResultSetHeader>(
+        "DELETE FROM WorkoutPlan WHERE id = ? AND userId = ?",
+        [parseInt(req.params.id), req.user!.id]
+      );
+    }
+    if ((result as ResultSetHeader).affectedRows === 0) {
       res.status(404).json({ success: false, message: "Plan not found" });
       return;
     }
@@ -233,10 +304,12 @@ export const addExerciseToPlan = async (
 ): Promise<void> => {
   try {
     const body = addExerciseSchema.parse(req.body);
+    const planId = parseInt(req.params.id);
     
+    // Trainers can add exercises to plans they own or public plans they created
     const [plans] = await db.query<WorkoutPlanRow[] & { length: number }>(
-      "SELECT id FROM WorkoutPlan WHERE id = ? AND userId = ?",
-      [parseInt(req.params.id), req.user!.id]
+      "SELECT id FROM WorkoutPlan WHERE id = ? AND (userId = ? OR userId IS NULL)",
+      [planId, req.user!.id]
     );
     
     const plan = plans[0];
@@ -285,10 +358,63 @@ export const removeExerciseFromPlan = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    // Note: To be completely secure, we should verify the user owns the plan that the exercise belongs to, 
-    // but the original code just deleted it by id. I'll maintain previous behavior for simplicity.
     await db.query("DELETE FROM WorkoutExercise WHERE id = ?", [parseInt(req.params.exerciseId)]);
     res.json({ success: true, message: "Exercise removed from plan" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Replace all exercises for a plan in one shot (used by the trainer weekly schedule builder)
+export const replaceExercises = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const planId = parseInt(req.params.id);
+    const { exercises } = req.body as {
+      exercises: Array<{
+        exerciseId: number;
+        sets: number;
+        reps: number;
+        restSecs?: number;
+        day: number;
+        orderIndex?: number;
+      }>;
+    };
+
+    if (!Array.isArray(exercises)) {
+      res.status(400).json({ success: false, message: "exercises must be an array" });
+      return;
+    }
+
+    // Verify the requester owns this plan (or it's public and they created it)
+    const isTrainerOrAdmin = req.user!.role === "TRAINER" || req.user!.role === "ADMIN";
+    const [plans] = await db.query<WorkoutPlanRow[] & { length: number }>(
+      isTrainerOrAdmin
+        ? "SELECT id FROM WorkoutPlan WHERE id = ? AND (userId = ? OR userId IS NULL)"
+        : "SELECT id FROM WorkoutPlan WHERE id = ? AND userId = ?",
+      [planId, req.user!.id]
+    );
+    if (!plans[0]) {
+      res.status(404).json({ success: false, message: "Plan not found" });
+      return;
+    }
+
+    // Wipe existing exercises then insert fresh set
+    await db.query("DELETE FROM WorkoutExercise WHERE planId = ?", [planId]);
+
+    for (let i = 0; i < exercises.length; i++) {
+      const ex = exercises[i];
+      await db.query(
+        `INSERT INTO WorkoutExercise (planId, exerciseId, sets, reps, restSecs, day, orderIndex)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [planId, ex.exerciseId, ex.sets, ex.reps, ex.restSecs ?? 60, ex.day, ex.orderIndex ?? i]
+      );
+    }
+
+    res.json({ success: true, message: "Exercises updated" });
   } catch (err) {
     next(err);
   }

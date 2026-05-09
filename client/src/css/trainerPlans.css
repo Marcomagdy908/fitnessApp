@@ -52,7 +52,7 @@
 }
 
 .tr-plans-search {
-  background: var(--bg-surface);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 999px;
   padding: 0.55rem 1rem 0.55rem 2.2rem;
@@ -391,7 +391,7 @@
 }
 
 .tr-modal-form-input {
-  background: var(--bg-surface);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 0.8rem;
@@ -402,6 +402,11 @@
   font-family: inherit;
   width: 100%;
   box-sizing: border-box;
+}
+
+.tr-modal-form-input option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .tr-modal-form-input:focus {

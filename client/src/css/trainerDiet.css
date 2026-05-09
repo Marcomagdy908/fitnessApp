@@ -312,7 +312,7 @@
 }
 
 .tr-modal-input {
-  background: var(--bg-surface);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 0.8rem;
@@ -323,6 +323,11 @@
   font-family: inherit;
   width: 100%;
   box-sizing: border-box;
+}
+
+.tr-modal-input option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .tr-modal-input:focus {
@@ -377,7 +382,7 @@
 }
 
 .tr-meal-edit-input {
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0.5rem 0.7rem;
@@ -407,7 +412,7 @@
 }
 
 .tr-meal-macro-field input {
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0.4rem 0.5rem;

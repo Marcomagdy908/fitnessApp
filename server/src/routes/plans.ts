@@ -7,6 +7,7 @@ import {
   deletePlan,
   addExerciseToPlan,
   removeExerciseFromPlan,
+  replaceExercises,
 } from "../controllers/plansController";
 import { protect } from "../middleware/auth";
 
@@ -20,6 +21,7 @@ router.post("/", createPlan);
 router.put("/:id", updatePlan);
 router.delete("/:id", deletePlan);
 router.post("/:id/exercises", addExerciseToPlan);
+router.put("/:id/exercises", replaceExercises);
 router.delete("/:id/exercises/:exerciseId", removeExerciseFromPlan);
 
 export default router;

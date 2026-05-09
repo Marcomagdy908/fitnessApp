@@ -161,7 +161,7 @@ async function main() {
   await db.query('DELETE FROM GymClass');
 
   const now = new Date();
-  
+
   // Classes for the next 3 days
   const classes = [
     { name: "HIIT Blast", trainerIdx: 2, duration: 45, maxSpots: 20, booked: 18, color: "#ffc832", desc: "High intensity interval training to maximize calorie burn.", required: "pro", offsetHours: 2 },
@@ -185,13 +185,13 @@ async function main() {
 
   /* ─── Bookings ──────────────────────────────────────────── */
   await db.query('DELETE FROM TrainerBooking');
-  
+
   // Book one class
   await db.query(
     `INSERT INTO GymClassBooking (userId, classId, status) VALUES (?, ?, 'confirmed')`,
     [userId, classIds[1]]
   );
-  
+
   // Book one trainer session
   const trainerSessDate = new Date(now.getTime() + 48 * 60 * 60 * 1000); // 2 days from now
   await db.query(
@@ -243,20 +243,20 @@ async function main() {
   await db.query('DELETE FROM WorkoutPlan');
   await db.query('DELETE FROM Exercise');
   const exercises = [
-    { name:'Barbell Bench Press', category:'chest', difficulty:'intermediate', target:'chest, front deltoids, triceps', equipment:'barbell', sets:4, reps:8, timeSecs:null, image:'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&fit=crop&q=80', instructions:'Lie flat on a bench. Grip the bar just outside shoulder-width. Lower to your chest, pause, then press back up explosively.' },
-    { name:'Push-Ups', category:'chest', difficulty:'beginner', target:'chest, shoulders, triceps', equipment:'bodyweight', sets:3, reps:15, timeSecs:null, image:'https://images.unsplash.com/photo-1598971639058-fab3c3109a3d?w=600&fit=crop&q=80', instructions:'Start in a plank position with hands slightly wider than shoulder-width. Lower your chest to the floor, then push back up.' },
-    { name:'Incline DB Press', category:'chest', difficulty:'intermediate', target:'upper chest, shoulders, triceps', equipment:'dumbbells', sets:3, reps:10, timeSecs:null, image:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&fit=crop&q=80', instructions:'Set bench to 30-45 degrees. Press dumbbells from shoulders until arms are straight.' },
-    { name:'Deadlift', category:'back', difficulty:'intermediate', target:'lower back, hamstrings, glutes, traps', equipment:'barbell', sets:4, reps:5, timeSecs:null, image:'https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=600&fit=crop&q=80', instructions:'Stand with feet hip-width, bar over mid-foot. Hinge at hips, grip bar, brace core. Drive through the floor to stand tall.' },
-    { name:'Pull-up', category:'back', difficulty:'advanced', target:'lats, biceps, upper back', equipment:'pull-up bar', sets:3, reps:8, timeSecs:null, image:'https://images.unsplash.com/photo-1598971639058-fab3c3109a3d?w=600&fit=crop&q=80', instructions:'Grip bar slightly wider than shoulders. Pull yourself up until chin clears the bar.' },
-    { name:'Barbell Row', category:'back', difficulty:'intermediate', target:'mid-back, lats, biceps', equipment:'barbell', sets:3, reps:10, timeSecs:null, image:'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=600&fit=crop&q=80', instructions:'Hinge at 45 degrees, pull bar to your lower ribs while keeping back straight.' },
-    { name:'Barbell Squat', category:'legs', difficulty:'intermediate', target:'quadriceps, glutes, hamstrings', equipment:'barbell', sets:4, reps:8, timeSecs:null, image:'https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?w=600&fit=crop&q=80', instructions:'Bar on upper traps, feet shoulder-width. Break at the hips and knees, descend until thighs are parallel, drive back up.' },
-    { name:'Leg Press', category:'legs', difficulty:'beginner', target:'quads, glutes, hamstrings', equipment:'machine', sets:3, reps:12, timeSecs:null, image:'https://images.unsplash.com/photo-1583454110551-21f2fa2ec617?w=600&fit=crop&q=80', instructions:'Place feet hip-width on platform. Lower until knees are at 90 degrees, then press back up.' },
-    { name:'Overhead Press', category:'shoulders', difficulty:'intermediate', target:'front deltoids, lateral deltoids, triceps', equipment:'barbell', sets:4, reps:8, timeSecs:null, image:'https://images.unsplash.com/photo-1532384748853-8f54a8f476e2?w=600&fit=crop&q=80', instructions:'Hold the bar at shoulder height. Press straight up overhead, locking out elbows at the top.' },
-    { name:'Lateral Raise', category:'shoulders', difficulty:'beginner', target:'lateral deltoids', equipment:'dumbbells', sets:3, reps:15, timeSecs:null, image:'https://images.unsplash.com/photo-1581009146145-b5ef03a196ce?w=600&fit=crop&q=80', instructions:'Raise dumbbells out to your sides until arms are parallel with the floor.' },
-    { name:'Barbell Curl', category:'arms', difficulty:'beginner', target:'biceps', equipment:'barbell', sets:3, reps:12, timeSecs:null, image:'https://images.unsplash.com/photo-1581009146145-b5ef03a196ce?w=600&fit=crop&q=80', instructions:'Curl the bar towards your shoulders, keeping elbows pinned to your sides.' },
-    { name:'Tricep Pushdown', category:'arms', difficulty:'beginner', target:'triceps', equipment:'cable', sets:3, reps:12, timeSecs:null, image:'https://images.unsplash.com/photo-1591940742878-13aba4b7a35e?w=600&fit=crop&q=80', instructions:'Push cable attachment down until arms are fully locked out.' },
-    { name:'Plank', category:'core', difficulty:'beginner', target:'abs, obliques, lower back', equipment:'bodyweight', sets:3, reps:0, timeSecs:60, image:'https://images.unsplash.com/photo-1566241142559-40e1dab266c6?w=600&fit=crop&q=80', instructions:'Hold a straight-body position supported by forearms and toes.' },
-    { name:'Hanging Leg Raise', category:'core', difficulty:'advanced', target:'lower abs', equipment:'pull-up bar', sets:3, reps:12, timeSecs:null, image:'https://images.unsplash.com/photo-1598971639058-fab3c3109a3d?w=600&fit=crop&q=80', instructions:'Hang from a bar and raise your legs until they are parallel to the floor.' },
+    { name: 'Barbell Bench Press', category: 'chest', difficulty: 'intermediate', target: 'chest, front deltoids, triceps', equipment: 'barbell', sets: 4, reps: 8, timeSecs: null, image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&fit=crop&q=80', instructions: 'Lie flat on a bench. Grip the bar just outside shoulder-width. Lower to your chest, pause, then press back up explosively.' },
+    { name: 'Push-Ups', category: 'chest', difficulty: 'beginner', target: 'chest, shoulders, triceps', equipment: 'bodyweight', sets: 3, reps: 15, timeSecs: null, image: 'https://images.unsplash.com/photo-1598971639058-fab3c3109a3d?w=600&fit=crop&q=80', instructions: 'Start in a plank position with hands slightly wider than shoulder-width. Lower your chest to the floor, then push back up.' },
+    { name: 'Incline DB Press', category: 'chest', difficulty: 'intermediate', target: 'upper chest, shoulders, triceps', equipment: 'dumbbells', sets: 3, reps: 10, timeSecs: null, image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&fit=crop&q=80', instructions: 'Set bench to 30-45 degrees. Press dumbbells from shoulders until arms are straight.' },
+    { name: 'Deadlift', category: 'back', difficulty: 'intermediate', target: 'lower back, hamstrings, glutes, traps', equipment: 'barbell', sets: 4, reps: 5, timeSecs: null, image: 'https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=600&fit=crop&q=80', instructions: 'Stand with feet hip-width, bar over mid-foot. Hinge at hips, grip bar, brace core. Drive through the floor to stand tall.' },
+    { name: 'Pull-up', category: 'back', difficulty: 'advanced', target: 'lats, biceps, upper back', equipment: 'pull-up bar', sets: 3, reps: 8, timeSecs: null, image: 'https://images.unsplash.com/photo-1598971639058-fab3c3109a3d?w=600&fit=crop&q=80', instructions: 'Grip bar slightly wider than shoulders. Pull yourself up until chin clears the bar.' },
+    { name: 'Barbell Row', category: 'back', difficulty: 'intermediate', target: 'mid-back, lats, biceps', equipment: 'barbell', sets: 3, reps: 10, timeSecs: null, image: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=600&fit=crop&q=80', instructions: 'Hinge at 45 degrees, pull bar to your lower ribs while keeping back straight.' },
+    { name: 'Barbell Squat', category: 'legs', difficulty: 'intermediate', target: 'quadriceps, glutes, hamstrings', equipment: 'barbell', sets: 4, reps: 8, timeSecs: null, image: 'https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?w=600&fit=crop&q=80', instructions: 'Bar on upper traps, feet shoulder-width. Break at the hips and knees, descend until thighs are parallel, drive back up.' },
+    { name: 'Leg Press', category: 'legs', difficulty: 'beginner', target: 'quads, glutes, hamstrings', equipment: 'machine', sets: 3, reps: 12, timeSecs: null, image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2ec617?w=600&fit=crop&q=80', instructions: 'Place feet hip-width on platform. Lower until knees are at 90 degrees, then press back up.' },
+    { name: 'Overhead Press', category: 'shoulders', difficulty: 'intermediate', target: 'front deltoids, lateral deltoids, triceps', equipment: 'barbell', sets: 4, reps: 8, timeSecs: null, image: 'https://images.unsplash.com/photo-1532384748853-8f54a8f476e2?w=600&fit=crop&q=80', instructions: 'Hold the bar at shoulder height. Press straight up overhead, locking out elbows at the top.' },
+    { name: 'Lateral Raise', category: 'shoulders', difficulty: 'beginner', target: 'lateral deltoids', equipment: 'dumbbells', sets: 3, reps: 15, timeSecs: null, image: 'https://images.unsplash.com/photo-1581009146145-b5ef03a196ce?w=600&fit=crop&q=80', instructions: 'Raise dumbbells out to your sides until arms are parallel with the floor.' },
+    { name: 'Barbell Curl', category: 'arms', difficulty: 'beginner', target: 'biceps', equipment: 'barbell', sets: 3, reps: 12, timeSecs: null, image: 'https://images.unsplash.com/photo-1581009146145-b5ef03a196ce?w=600&fit=crop&q=80', instructions: 'Curl the bar towards your shoulders, keeping elbows pinned to your sides.' },
+    { name: 'Tricep Pushdown', category: 'arms', difficulty: 'beginner', target: 'triceps', equipment: 'cable', sets: 3, reps: 12, timeSecs: null, image: 'https://images.unsplash.com/photo-1591940742878-13aba4b7a35e?w=600&fit=crop&q=80', instructions: 'Push cable attachment down until arms are fully locked out.' },
+    { name: 'Plank', category: 'core', difficulty: 'beginner', target: 'abs, obliques, lower back', equipment: 'bodyweight', sets: 3, reps: 0, timeSecs: 60, image: 'https://images.unsplash.com/photo-1566241142559-40e1dab266c6?w=600&fit=crop&q=80', instructions: 'Hold a straight-body position supported by forearms and toes.' },
+    { name: 'Hanging Leg Raise', category: 'core', difficulty: 'advanced', target: 'lower abs', equipment: 'pull-up bar', sets: 3, reps: 12, timeSecs: null, image: 'https://images.unsplash.com/photo-1598971639058-fab3c3109a3d?w=600&fit=crop&q=80', instructions: 'Hang from a bar and raise your legs until they are parallel to the floor.' },
   ];
 
   const exerciseIds: number[] = [];
@@ -274,7 +274,7 @@ async function main() {
   const [planResult] = await db.query<ResultSetHeader>(
     `INSERT INTO WorkoutPlan (userId, name, description, daysPerWeek, level, weeks, goal, label, isActive) 
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [userId, 'Hypertrophy Block', 'Strength Phase — Next: Deload Week', 4, 'Intermediate', 12, 'Hypertrophy', 'Most Popular', true]
+    [null, 'Hypertrophy Block', 'Strength Phase — Next: Deload Week', 4, 'Intermediate', 12, 'Hypertrophy', 'Most Popular', true]
   );
   const planId = planResult.insertId;
 
@@ -308,9 +308,9 @@ async function main() {
   /* ─── Meals ─────────────────────────────────────────────── */
   await db.query('DELETE FROM MealLog');
   const mealData = [
-    { name:'Oatmeal + Protein Shake', type:'breakfast', cal:480, p:42, c:62, f:8 },
-    { name:'Chicken & Rice Bowl', type:'lunch', cal:660, p:52, c:80, f:12 },
-    { name:'Greek Yogurt & Berries', type:'snack', cal:220, p:18, c:24, f:4 },
+    { name: 'Oatmeal + Protein Shake', type: 'breakfast', cal: 480, p: 42, c: 62, f: 8 },
+    { name: 'Chicken & Rice Bowl', type: 'lunch', cal: 660, p: 52, c: 80, f: 12 },
+    { name: 'Greek Yogurt & Berries', type: 'snack', cal: 220, p: 18, c: 24, f: 4 },
   ];
   const weeklyCalories = [420, 510, 0, 610, 480, 540, 390];
   for (let dayOffset = 6; dayOffset >= 0; dayOffset--) {
@@ -332,17 +332,17 @@ async function main() {
   /* ─── Workout Sessions ──────────────────────────────────── */
   const sessionDays = [21, 19, 17, 14, 12, 10, 9, 7, 5, 3, 1];
   const sessionNames = [
-    { name:'Push Day A', kcal:420, exId:benchId },
-    { name:'Leg Day A', kcal:510, exId:squatId },
-    { name:'Pull Day A', kcal:480, exId:deadliftId },
-    { name:'Shoulder Day', kcal:380, exId:ohpId },
-    { name:'Push Day B', kcal:440, exId:benchId },
-    { name:'Leg Day B', kcal:590, exId:squatId },
-    { name:'Pull Day B', kcal:500, exId:deadliftId },
-    { name:'Full Body A', kcal:460, exId:benchId },
-    { name:'Full Body B', kcal:520, exId:squatId },
-    { name:'Strength Peak', kcal:610, exId:deadliftId },
-    { name:'Hypertrophy Day', kcal:480, exId:ohpId },
+    { name: 'Push Day A', kcal: 420, exId: benchId },
+    { name: 'Leg Day A', kcal: 510, exId: squatId },
+    { name: 'Pull Day A', kcal: 480, exId: deadliftId },
+    { name: 'Shoulder Day', kcal: 380, exId: ohpId },
+    { name: 'Push Day B', kcal: 440, exId: benchId },
+    { name: 'Leg Day B', kcal: 590, exId: squatId },
+    { name: 'Pull Day B', kcal: 500, exId: deadliftId },
+    { name: 'Full Body A', kcal: 460, exId: benchId },
+    { name: 'Full Body B', kcal: 520, exId: squatId },
+    { name: 'Strength Peak', kcal: 610, exId: deadliftId },
+    { name: 'Hypertrophy Day', kcal: 480, exId: ohpId },
   ];
 
   for (let i = 0; i < sessionDays.length; i++) {

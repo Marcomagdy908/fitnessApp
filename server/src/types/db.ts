@@ -2,6 +2,7 @@ import { RowDataPacket } from 'mysql2';
 
 export interface DietPlanRow extends RowDataPacket {
   id: number;
+  userId: number | null;
   planId: string;
   label: string;
   labelColor: string;
@@ -106,7 +107,7 @@ export interface WorkoutSessionSetRow extends RowDataPacket {
 
 export interface WorkoutPlanRow extends RowDataPacket {
   id: number;
-  userId: number;
+  userId: number | null;
   name: string;
   description: string | null;
   daysPerWeek: number;
