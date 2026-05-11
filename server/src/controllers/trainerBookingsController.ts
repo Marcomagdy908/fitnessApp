@@ -10,18 +10,20 @@ const ensurePaymentTable = async () => {
   await db.query(`
     CREATE TABLE IF NOT EXISTS Payment (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      bookingId INT NOT NULL,
-      bookingType VARCHAR(50) NOT NULL DEFAULT 'trainer',
-      userId INT NOT NULL,
+      trainerBookingId INT DEFAULT NULL,
+      classBookingId INT DEFAULT NULL,
+      subscriptionId INT DEFAULT NULL,
       amount FLOAT NOT NULL DEFAULT 0,
       currency VARCHAR(10) NOT NULL DEFAULT 'USD',
-      status VARCHAR(50) NOT NULL DEFAULT 'pending',
+      status ENUM('pending', 'completed', 'failed', 'refunded') NOT NULL DEFAULT 'pending',
       method VARCHAR(50) DEFAULT NULL,
       transactionRef VARCHAR(255) DEFAULT NULL,
       paidAt DATETIME DEFAULT NULL,
       createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+      FOREIGN KEY (trainerBookingId) REFERENCES TrainerBooking(id) ON DELETE CASCADE,
+      FOREIGN KEY (classBookingId) REFERENCES GymClassBooking(id) ON DELETE CASCADE,
+      FOREIGN KEY (subscriptionId) REFERENCES Subscription(id) ON DELETE CASCADE
     )
   `);
 };
@@ -53,11 +55,11 @@ export const getMyBookings = async (
          t.name as trainerName, t.avatar as trainerAvatar,
          t.specialty as trainerSpecialty, t.specialtyColor as trainerSpecialtyColor,
          t.imageUrl as trainerImageUrl,
-         p.id as paymentId, p.status as paymentStatusDetail, p.method as paymentMethod,
+         p.id as paymentId, p.status as paymentStatus, p.method as paymentMethod,
          p.amount as paymentAmount, p.paidAt
        FROM TrainerBooking tb
        JOIN Trainer t ON tb.trainerId = t.id
-       LEFT JOIN Payment p ON p.bookingId = tb.id AND p.bookingType = 'trainer'
+       LEFT JOIN Payment p ON p.trainerBookingId = tb.id
        WHERE tb.userId = ?
        ORDER BY tb.scheduledAt DESC`,
       [req.user!.id]
@@ -78,12 +80,13 @@ export const createBooking = async (
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
+  const conn = await db.getConnection();
   try {
     const { trainerId, scheduledAt, durationMins, notes, paymentMethod } =
       bookingSchema.parse(req.body);
 
     // Fetch trainer to get price
-    const [trainers] = await db.query<TrainerRow[] & { length: number }>(
+    const [trainers] = await conn.query<TrainerRow[] & { length: number }>(
       "SELECT * FROM Trainer WHERE id = ?",
       [trainerId]
     );
@@ -96,22 +99,26 @@ export const createBooking = async (
     const trainer = trainers[0];
     const totalPrice = (trainer.pricePerSession / 60) * durationMins;
 
+    await conn.beginTransaction();
+
     // Create the booking
-    const [bookingResult] = await db.query<ResultSetHeader>(
+    const [bookingResult] = await conn.query<ResultSetHeader>(
       `INSERT INTO TrainerBooking
-         (userId, trainerId, scheduledAt, durationMins, status, paymentStatus, notes, totalPrice)
-       VALUES (?, ?, ?, ?, 'pending', 'unpaid', ?, ?)`,
+         (userId, trainerId, scheduledAt, durationMins, status, notes, totalPrice)
+       VALUES (?, ?, ?, ?, 'pending', ?, ?)`,
       [req.user!.id, trainerId, scheduledAt, durationMins, notes || null, totalPrice]
     );
 
     const bookingId = bookingResult.insertId;
 
     // Create a linked payment record (pending — awaiting trainer confirmation)
-    const [paymentResult] = await db.query<ResultSetHeader>(
-      `INSERT INTO Payment (bookingId, bookingType, userId, amount, currency, status, method)
-       VALUES (?, 'trainer', ?, ?, 'USD', 'pending', ?)`,
-      [bookingId, req.user!.id, totalPrice, paymentMethod || "card"]
+    const [paymentResult] = await conn.query<ResultSetHeader>(
+      `INSERT INTO Payment (trainerBookingId, amount, currency, status, method)
+       VALUES (?, ?, 'USD', 'pending', ?)`,
+      [bookingId, totalPrice, paymentMethod || "card"]
     );
+
+    await conn.commit();
 
     res.json({
       success: true,
@@ -123,7 +130,7 @@ export const createBooking = async (
         scheduledAt,
         durationMins,
         status: "pending",
-        paymentStatus: "unpaid",
+        paymentStatus: "pending",
         notes,
         totalPrice,
         payment: {
@@ -135,7 +142,10 @@ export const createBooking = async (
       },
     });
   } catch (err) {
+    await conn.rollback();
     next(err);
+  } finally {
+    conn.release();
   }
 };
 
@@ -148,11 +158,12 @@ export const cancelBooking = async (
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
+  const conn = await db.getConnection();
   try {
     const { id } = req.params;
 
     // Fetch booking to check ownership & payment
-    const [rows] = await db.query<TrainerBookingRow[] & { length: number }>(
+    const [rows] = await conn.query<TrainerBookingRow[] & { length: number }>(
       "SELECT * FROM TrainerBooking WHERE id = ? AND userId = ?",
       [id, req.user!.id]
     );
@@ -169,21 +180,28 @@ export const cancelBooking = async (
       return;
     }
 
+    await conn.beginTransaction();
+
     // Cancel the booking
-    await db.query(
-      "UPDATE TrainerBooking SET status = 'cancelled', paymentStatus = 'refunded' WHERE id = ?",
+    await conn.query(
+      "UPDATE TrainerBooking SET status = 'cancelled' WHERE id = ?",
       [id]
     );
 
     // Mark any payment as refunded
-    await db.query(
-      "UPDATE Payment SET status = 'refunded' WHERE bookingId = ? AND bookingType = 'trainer'",
+    await conn.query(
+      "UPDATE Payment SET status = 'refunded' WHERE trainerBookingId = ?",
       [id]
     );
 
+    await conn.commit();
+
     res.json({ success: true, message: "Booking cancelled and payment refunded" });
   } catch (err) {
+    await conn.rollback();
     next(err);
+  } finally {
+    conn.release();
   }
 };
 
@@ -212,11 +230,11 @@ export const getTrainerIncomingBookings = async (
     const [rows] = await db.query<any[] & { length: number }>(
       `SELECT tb.*,
          u.name as clientName, u.email as clientEmail, u.avatar as clientAvatar,
-         p.id as paymentId, p.status as paymentStatusDetail,
+         p.id as paymentId, p.status as paymentStatus,
          p.amount as paymentAmount, p.method as paymentMethod, p.paidAt
        FROM TrainerBooking tb
        JOIN User u ON tb.userId = u.id
-       LEFT JOIN Payment p ON p.bookingId = tb.id AND p.bookingType = 'trainer'
+       LEFT JOIN Payment p ON p.trainerBookingId = tb.id
        WHERE tb.trainerId = ?
        ORDER BY tb.scheduledAt ASC`,
       [trainerId]
@@ -239,6 +257,7 @@ export const updateBookingStatus = async (
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
+  const conn = await db.getConnection();
   try {
     const { id } = req.params;
     const { status } = req.body as { status: string };
@@ -249,7 +268,7 @@ export const updateBookingStatus = async (
       return;
     }
 
-    const [trainerRows] = await db.query<any[] & { length: number }>(
+    const [trainerRows] = await conn.query<any[] & { length: number }>(
       "SELECT id FROM Trainer WHERE userId = ?",
       [req.user!.id]
     );
@@ -259,20 +278,22 @@ export const updateBookingStatus = async (
     }
     const trainerId = trainerRows[0].id;
 
-    // Resolve payment status based on booking status
     const paymentStatusMap: Record<string, string> = {
-      confirmed: "awaiting_payment",
+      confirmed: "pending",
       cancelled: "refunded",
-      completed: "paid",
+      completed: "completed",
     };
     const newPaymentStatus = paymentStatusMap[status];
 
-    const [result] = await db.query<ResultSetHeader>(
-      "UPDATE TrainerBooking SET status = ?, paymentStatus = ? WHERE id = ? AND trainerId = ?",
-      [status, newPaymentStatus, id, trainerId]
+    await conn.beginTransaction();
+
+    const [result] = await conn.query<ResultSetHeader>(
+      "UPDATE TrainerBooking SET status = ? WHERE id = ? AND trainerId = ?",
+      [status, id, trainerId]
     );
 
     if (result.affectedRows === 0) {
+      await conn.rollback();
       res.status(404).json({ success: false, message: "Booking not found" });
       return;
     }
@@ -285,14 +306,19 @@ export const updateBookingStatus = async (
       paymentFields.push("paidAt = NOW()");
     }
 
-    await db.query(
-      `UPDATE Payment SET ${paymentFields.join(", ")} WHERE bookingId = ? AND bookingType = 'trainer'`,
+    await conn.query(
+      `UPDATE Payment SET ${paymentFields.join(", ")} WHERE trainerBookingId = ?`,
       [...paymentValues, id]
     );
 
+    await conn.commit();
+
     res.json({ success: true, message: `Booking ${status}`, paymentStatus: newPaymentStatus });
   } catch (err) {
+    await conn.rollback();
     next(err);
+  } finally {
+    conn.release();
   }
 };
 
@@ -326,7 +352,7 @@ export const getBookingPayment = async (
     }
 
     const [payments] = await db.query<PaymentRow[] & { length: number }>(
-      "SELECT * FROM Payment WHERE bookingId = ? AND bookingType = 'trainer'",
+      "SELECT * FROM Payment WHERE trainerBookingId = ?",
       [id]
     );
 
@@ -352,12 +378,13 @@ export const markBookingPaid = async (
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
+  const conn = await db.getConnection();
   try {
     const { id } = req.params;
     const { transactionRef } = req.body as { transactionRef?: string };
 
     // Verify the user owns this booking
-    const [rows] = await db.query<TrainerBookingRow[] & { length: number }>(
+    const [rows] = await conn.query<TrainerBookingRow[] & { length: number }>(
       "SELECT * FROM TrainerBooking WHERE id = ? AND userId = ?",
       [id, req.user!.id]
     );
@@ -374,22 +401,28 @@ export const markBookingPaid = async (
       return;
     }
 
-    // Update booking paymentStatus
-    await db.query(
-      "UPDATE TrainerBooking SET paymentStatus = 'paid' WHERE id = ?",
-      [id]
-    );
+    await conn.beginTransaction();
+
+    // Mark booking as cancelled if needed? No, user just said remove paymentStatus.
+    // The previous code updated TrainerBooking.paymentStatus to 'paid'.
+    // Now we just update the Payment record.
+    // So I can just remove the whole TrainerBooking update here.
 
     // Update payment record
-    await db.query(
+    await conn.query(
       `UPDATE Payment
        SET status = 'completed', paidAt = NOW(), transactionRef = ?
-       WHERE bookingId = ? AND bookingType = 'trainer'`,
+       WHERE trainerBookingId = ?`,
       [transactionRef || `TXN-${Date.now()}`, id]
     );
 
+    await conn.commit();
+
     res.json({ success: true, message: "Payment recorded successfully" });
   } catch (err) {
+    await conn.rollback();
     next(err);
+  } finally {
+    conn.release();
   }
 };

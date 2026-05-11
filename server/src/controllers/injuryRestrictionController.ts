@@ -3,23 +3,18 @@ import { db } from '../services/db';
 
 export const getInjuryRestrictions = async (req: Request, res: Response) => {
   try {
-    const [rows] = await db.query('SELECT * FROM InjuryRestriction');
+    const [rows] = await db.query(`
+      SELECT ir.*, GROUP_CONCAT(e.name) as avoidExercises
+      FROM InjuryRestriction ir
+      LEFT JOIN InjuryExcludedExercise iee ON ir.id = iee.restrictionId
+      LEFT JOIN Exercise e ON iee.exerciseId = e.id
+      GROUP BY ir.id
+    `);
     
-    const data = (rows as any[]).map(row => {
-      let avoidExercises = [];
-      try {
-        avoidExercises = typeof row.avoidExercises === 'string' 
-          ? JSON.parse(row.avoidExercises) 
-          : (Array.isArray(row.avoidExercises) ? row.avoidExercises : []);
-      } catch (e) {
-        console.error(`Error parsing avoidExercises for injury ${row.injuryType}:`, e);
-      }
-      
-      return {
-        ...row,
-        avoidExercises
-      };
-    });
+    const data = (rows as any[]).map(row => ({
+      ...row,
+      avoidExercises: row.avoidExercises ? row.avoidExercises.split(',') : []
+    }));
 
     res.json({ success: true, data });
   } catch (error) {
@@ -31,27 +26,26 @@ export const getInjuryRestrictions = async (req: Request, res: Response) => {
 export const getInjuryRestrictionByType = async (req: Request, res: Response) => {
   const { type } = req.params;
   try {
-    const [rows] = await db.query('SELECT * FROM InjuryRestriction WHERE injuryType = ?', [type]);
+    const [rows] = await db.query(`
+      SELECT ir.*, GROUP_CONCAT(e.name) as avoidExercises
+      FROM InjuryRestriction ir
+      LEFT JOIN InjuryExcludedExercise iee ON ir.id = iee.restrictionId
+      LEFT JOIN Exercise e ON iee.exerciseId = e.id
+      WHERE ir.injuryType = ?
+      GROUP BY ir.id
+    `, [type]);
+    
     const row = (rows as any[])[0];
     
     if (!row) {
       return res.status(404).json({ success: false, message: 'Restriction not found' });
     }
 
-    let avoidExercises = [];
-    try {
-      avoidExercises = typeof row.avoidExercises === 'string' 
-        ? JSON.parse(row.avoidExercises) 
-        : (Array.isArray(row.avoidExercises) ? row.avoidExercises : []);
-    } catch (e) {
-      console.error(`Error parsing avoidExercises for injury ${type}:`, e);
-    }
-
     res.json({ 
       success: true, 
       data: {
         ...row,
-        avoidExercises
+        avoidExercises: row.avoidExercises ? row.avoidExercises.split(',') : []
       } 
     });
   } catch (error) {

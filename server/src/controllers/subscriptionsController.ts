@@ -78,11 +78,6 @@ export const subscribe = async (
       [req.user!.id, plan, billingCycle, expiresAt]
     );
 
-    await db.query(
-      `UPDATE User SET subscriptionPlan = ? WHERE id = ?`,
-      [plan, req.user!.id]
-    );
-
     const [subRows] = await db.query<any[]>("SELECT id FROM Subscription WHERE userId = ?", [req.user!.id]);
     const subscriptionId = subRows[0]?.id;
 

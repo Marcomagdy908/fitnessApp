@@ -22,6 +22,7 @@ import {
   faChartPie,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/diet.css";
+import { DIET_PLAN_STYLES, NUTRITION_TIP_STYLES } from "../utils/styleMappings";
 
 /* ─── Types ─────────────────────────────────────────────────── */
 interface Meal {
@@ -60,20 +61,14 @@ interface AltMeal {
 interface DietPlan {
   id: number;
   planId: string;
-  label: string;
-  labelColor: string;
   name: string;
-  goal: string;
-  goalIcon: string;
   description: string;
+  goal: string;
   calories: number;
   protein: number;
   carbs: number;
   fat: number;
   meals: Meal[];
-  accentColor: string;
-  gradientFrom: string;
-  gradientTo: string;
 }
 
 
@@ -146,12 +141,15 @@ function Diet() {
 
     api.get("/api/meals/tips").then((res) => {
       if (res.data.success) {
-        setNutritionTips(res.data.data.map((t: any) => ({
-          icon: t.icon,
-          color: t.color,
-          title: t.title,
-          desc: t.description
-        })));
+        setNutritionTips(res.data.data.map((t: any) => {
+          const style = NUTRITION_TIP_STYLES[t.title] || { icon: t.icon, color: t.color };
+          return {
+            icon: style.icon,
+            color: style.color,
+            title: t.title,
+            desc: t.description
+          };
+        }));
       }
     });
 
@@ -163,12 +161,6 @@ function Diet() {
   }, []);
   const [activePlanId, setActivePlanId] = useState<string>("bulk");
 
-  /* Icon Mapping */
-  const iconMap: Record<string, any> = {
-    faArrowTrendUp: faArrowTrendUp,
-    faArrowTrendDown: faArrowTrendDown,
-    faScaleBalanced: faScaleBalanced,
-  };
 
   /* Tracker State */
   const [loggedMeals, setLoggedMeals] = useState<LoggedMeal[]>([]);
@@ -231,6 +223,7 @@ function Diet() {
   if (dietPlans.length === 0) return <div className="diet-page" style={{ color: "var(--text-secondary)", padding: "2rem" }}>Loading Nutrition Programs...</div>;
 
   const plan = dietPlans.find((p) => p.planId === activePlanId) || dietPlans[0];
+  const planStyle = DIET_PLAN_STYLES[plan?.planId] || DIET_PLAN_STYLES.default;
 
   const totals = loggedMeals.reduce(
     (acc, m) => ({ calories: acc.calories + m.calories, protein: acc.protein + m.protein, carbs: acc.carbs + m.carbs, fat: acc.fat + m.fat }),
@@ -334,45 +327,48 @@ function Diet() {
         <div className="programs-view">
           {/* ── Tabs ── */}
           <div className="diet-tabs">
-            {dietPlans.map((p: any) => (
-              <button
-                key={p.planId}
-                className={`diet-tab-btn${activePlanId === p.planId ? " active" : ""}`}
-                style={
-                  activePlanId === p.planId
-                    ? { borderColor: p.accentColor, color: p.accentColor, background: `${p.gradientFrom}` }
-                    : {}
-                }
-                onClick={() => setActivePlanId(p.planId)}
-              >
-                {p.name}
-              </button>
-            ))}
+            {dietPlans.map((p: any) => {
+              const style = DIET_PLAN_STYLES[p.planId] || DIET_PLAN_STYLES.default;
+              return (
+                <button
+                  key={p.planId}
+                  className={`diet-tab-btn${activePlanId === p.planId ? " active" : ""}`}
+                  style={
+                    activePlanId === p.planId
+                      ? { borderColor: style.accentColor, color: style.accentColor, background: `${style.gradientFrom}` }
+                      : {}
+                  }
+                  onClick={() => setActivePlanId(p.planId)}
+                >
+                  {p.name}
+                </button>
+              );
+            })}
           </div>
 
           {/* ── Hero Banner ── */}
           <div
             className="diet-hero"
-            style={{ background: `linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-primary) 100%)`, borderColor: `${plan.accentColor}33` }}
+            style={{ background: `linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-primary) 100%)`, borderColor: `${planStyle.accentColor}33` }}
           >
             <div
               className="diet-hero-glow"
-              style={{ background: `radial-gradient(ellipse at top right, ${plan.gradientFrom} 0%, transparent 60%)` }}
+              style={{ background: `radial-gradient(ellipse at top right, ${planStyle.gradientFrom} 0%, transparent 60%)` }}
             />
             <div className="diet-hero-inner">
               <div className="diet-hero-left">
-                <div className="diet-plan-tag" style={{ color: plan.labelColor, borderColor: `${plan.labelColor}55`, background: `${plan.labelColor}18` }}>
-                  {plan.label}
+                <div className="diet-plan-tag" style={{ color: planStyle.labelColor, borderColor: `${planStyle.labelColor}55`, background: `${planStyle.labelColor}18` }}>
+                  {planStyle.label}
                 </div>
                 <div className="diet-hero-title">{plan.name}</div>
                 <p className="diet-hero-desc">{plan.description}</p>
                 <div className="diet-chips">
-                  <span className="diet-chip" style={{ color: plan.accentColor }}>
+                  <span className="diet-chip" style={{ color: planStyle.accentColor }}>
                     <FontAwesomeIcon icon={faFire} />
                     {plan.calories.toLocaleString()} kcal / day
                   </span>
                   <span className="diet-chip">
-                    <FontAwesomeIcon icon={iconMap[plan.goalIcon] || faFire} />
+                    <FontAwesomeIcon icon={planStyle.goalIcon || faFire} />
                     {plan.goal}
                   </span>
                 </div>
@@ -417,13 +413,13 @@ function Diet() {
 
           <div className="diet-meals-grid">
             {plan.meals.map((meal, i) => (
-              <div key={i} className="meal-card" style={{ borderColor: `${plan.accentColor}18` }}>
+              <div key={i} className="meal-card" style={{ borderColor: `${planStyle.accentColor}18` }}>
                 <div className="meal-card-top">
                   <div className="meal-time-badge">
                     <FontAwesomeIcon icon={faClock} style={{ marginRight: 4, opacity: 0.6 }} />
                     {meal.time}
                   </div>
-                  <div className="meal-kcal-pill" style={{ color: plan.accentColor, borderColor: `${plan.accentColor}30`, background: `${plan.accentColor}10` }}>
+                  <div className="meal-kcal-pill" style={{ color: planStyle.accentColor, borderColor: `${planStyle.accentColor}30`, background: `${planStyle.accentColor}10` }}>
                     {meal.calories} kcal
                   </div>
                 </div>
@@ -431,7 +427,7 @@ function Diet() {
                 <ul className="meal-foods">
                   {meal.foods.map((food, j) => (
                     <li key={j} className="meal-food-item">
-                      <span className="meal-food-dot" style={{ background: plan.accentColor }} />
+                      <span className="meal-food-dot" style={{ background: planStyle.accentColor }} />
                       {food}
                     </li>
                   ))}

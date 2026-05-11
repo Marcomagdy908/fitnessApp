@@ -141,8 +141,8 @@ export const getDietPlans = async (req: AuthRequest, res: Response, next: NextFu
 
 export const createDietPlan = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { planId, label, labelColor, name, goal, goalIcon, description, calories, protein, carbs, fat,
-            accentColor, gradientFrom, gradientTo, meals, targetUserId, isPublic } = req.body;
+    const { planId, name, goal, description, calories, protein, carbs, fat,
+            meals, targetUserId, isPublic } = req.body;
 
     const isTrainerOrAdmin = req.user!.role === "TRAINER" || req.user!.role === "ADMIN";
     let assignedUserId: number | null;
@@ -153,13 +153,10 @@ export const createDietPlan = async (req: AuthRequest, res: Response, next: Next
     }
 
     const [result] = await db.query<ResultSetHeader>(
-      `INSERT INTO DietPlan (userId, planId, label, labelColor, name, goal, goalIcon, description, calories, protein, carbs, fat, accentColor, gradientFrom, gradientTo)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [assignedUserId, planId, label || name.toLowerCase().replace(/\s+/g, '-'),
-       label || 'Custom', labelColor || '#7b61ff', name, goal || 'General',
-       goalIcon || 'faDumbbell', description || '', calories || 0,
-       protein || 0, carbs || 0, fat || 0,
-       accentColor || '#7b61ff', gradientFrom || 'rgba(123,97,255,0.15)', gradientTo || 'rgba(123,97,255,0.05)']
+      `INSERT INTO DietPlan (userId, planId, name, goal, description, calories, protein, carbs, fat)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [assignedUserId, planId || name.toLowerCase().replace(/\s+/g, '-'), name, goal || 'General',
+       description || '', calories || 0, protein || 0, carbs || 0, fat || 0]
     );
 
     const dietPlanId = result.insertId;
@@ -183,26 +180,20 @@ export const createDietPlan = async (req: AuthRequest, res: Response, next: Next
 export const updateDietPlan = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const { label, labelColor, name, goal, goalIcon, description, calories, protein, carbs, fat,
-            accentColor, gradientFrom, gradientTo, meals, targetUserId, isPublic } = req.body;
+    const { name, goal, description, calories, protein, carbs, fat,
+            meals, targetUserId, isPublic } = req.body;
 
     const isTrainerOrAdmin = req.user!.role === "TRAINER" || req.user!.role === "ADMIN";
     
     const fields: string[] = [];
     const values: any[] = [];
     if (name !== undefined) { fields.push("name = ?"); values.push(name); }
-    if (label !== undefined) { fields.push("label = ?"); values.push(label); }
-    if (labelColor !== undefined) { fields.push("labelColor = ?"); values.push(labelColor); }
     if (goal !== undefined) { fields.push("goal = ?"); values.push(goal); }
-    if (goalIcon !== undefined) { fields.push("goalIcon = ?"); values.push(goalIcon); }
     if (description !== undefined) { fields.push("description = ?"); values.push(description); }
     if (calories !== undefined) { fields.push("calories = ?"); values.push(calories); }
     if (protein !== undefined) { fields.push("protein = ?"); values.push(protein); }
     if (carbs !== undefined) { fields.push("carbs = ?"); values.push(carbs); }
     if (fat !== undefined) { fields.push("fat = ?"); values.push(fat); }
-    if (accentColor !== undefined) { fields.push("accentColor = ?"); values.push(accentColor); }
-    if (gradientFrom !== undefined) { fields.push("gradientFrom = ?"); values.push(gradientFrom); }
-    if (gradientTo !== undefined) { fields.push("gradientTo = ?"); values.push(gradientTo); }
     if (isTrainerOrAdmin && isPublic !== undefined) {
       if (isPublic) { fields.push("userId = NULL"); }
       else if (targetUserId !== undefined) { fields.push("userId = ?"); values.push(targetUserId); }

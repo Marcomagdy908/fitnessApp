@@ -4,19 +4,13 @@ export interface DietPlanRow extends RowDataPacket {
   id: number;
   userId: number | null;
   planId: string;
-  label: string;
-  labelColor: string;
   name: string;
   goal: string;
-  goalIcon: string;
   description: string;
   calories: number;
   protein: number;
   carbs: number;
   fat: number;
-  accentColor: string;
-  gradientFrom: string;
-  gradientTo: string;
   createdAt: Date;
 }
 
@@ -41,7 +35,6 @@ export interface UserRow extends RowDataPacket {
   username: string | null;
   avatar: string | null;
   role: string;
-  subscriptionPlan: string;
   targetCalories: number;
   targetProtein: number;
   targetCarbs: number;
@@ -157,8 +150,6 @@ export interface TrainerRow extends RowDataPacket {
   name: string;
   title: string;
   specialty: string;
-  specialtyIcon: string;
-  specialtyColor: string;
   avatar: string;
   bio: string;
   certifications: string; // JSON string
@@ -195,7 +186,6 @@ export interface GymClassRow extends RowDataPacket {
   durationMins: number;
   maxSpots: number;
   spotsBooked: number;
-  color: string;
   description: string | null;
   requiredPlan: string;
   createdAt: Date;
@@ -216,7 +206,6 @@ export interface GymClassBookingRow extends RowDataPacket {
   className?: string;
   scheduledAt?: Date;
   durationMins?: number;
-  color?: string;
   trainerName?: string;
 }
 
@@ -227,7 +216,6 @@ export interface TrainerBookingRow extends RowDataPacket {
   scheduledAt: Date;
   durationMins: number;
   status: string;
-  paymentStatus: string;
   notes: string | null;
   totalPrice: number;
   createdAt: Date;
@@ -236,7 +224,6 @@ export interface TrainerBookingRow extends RowDataPacket {
   trainerName?: string;
   trainerAvatar?: string;
   trainerSpecialty?: string;
-  trainerSpecialtyColor?: string;
   // Client fields (trainer-side)
   clientName?: string;
   clientEmail?: string;
@@ -244,9 +231,9 @@ export interface TrainerBookingRow extends RowDataPacket {
 
 export interface PaymentRow extends RowDataPacket {
   id: number;
-  bookingId: number;
-  bookingType: string;
-  userId: number;
+  trainerBookingId: number | null;
+  classBookingId: number | null;
+  subscriptionId: number | null;
   amount: number;
   currency: string;
   status: string;
@@ -255,4 +242,37 @@ export interface PaymentRow extends RowDataPacket {
   paidAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface SubscriptionPlanRow extends RowDataPacket {
+  id: number;
+  planId: string;
+  name: string;
+  price: number;
+  annualPrice: number;
+  description: string;
+  popular: boolean | number;
+  createdAt: Date;
+}
+
+export interface NutritionTipRow extends RowDataPacket {
+  id: number;
+  title: string;
+  description: string;
+  createdAt: Date;
+}
+
+export interface InjuryRestrictionRow extends RowDataPacket {
+  id: number;
+  injuryType: string;
+  tip: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface InjuryExcludedExerciseRow extends RowDataPacket {
+  id: number;
+  restrictionId: number;
+  exerciseId: number;
+  createdAt: Date;
 }

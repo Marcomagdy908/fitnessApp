@@ -65,9 +65,12 @@ export const register = async (
     );
 
     const [newUsers] = await db.query<any[] & { length: number }>(
-      `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.targetCalories, u.targetProtein, u.targetCarbs, u.targetFat, u.createdAt, t.id as trainerId 
+      `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.targetCalories, u.targetProtein, u.targetCarbs, u.targetFat, u.createdAt, 
+              COALESCE(s.plan, 'free') as subscriptionPlan,
+              t.id as trainerId 
        FROM User u 
        LEFT JOIN Trainer t ON u.id = t.userId 
+       LEFT JOIN Subscription s ON u.id = s.userId
        WHERE u.id = ?`,
       [result.insertId]
     );
@@ -89,9 +92,10 @@ export const login = async (
   try {
     const body = loginSchema.parse(req.body);
     const [rows] = await db.query<any[] & { length: number }>(
-      `SELECT u.*, t.id as trainerId 
+      `SELECT u.*, COALESCE(s.plan, 'free') as subscriptionPlan, t.id as trainerId 
        FROM User u 
        LEFT JOIN Trainer t ON u.id = t.userId 
+       LEFT JOIN Subscription s ON u.id = s.userId
        WHERE u.email = ?`,
       [body.email]
     );
@@ -120,9 +124,12 @@ export const getMe = async (
 ): Promise<void> => {
   try {
     const [rows] = await db.query<any[] & { length: number }>(
-      `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.targetCalories, u.targetProtein, u.targetCarbs, u.targetFat, u.createdAt, t.id as trainerId 
+      `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.targetCalories, u.targetProtein, u.targetCarbs, u.targetFat, u.createdAt, 
+              COALESCE(s.plan, 'free') as subscriptionPlan,
+              t.id as trainerId 
        FROM User u 
        LEFT JOIN Trainer t ON u.id = t.userId 
+       LEFT JOIN Subscription s ON u.id = s.userId
        WHERE u.id = ?`,
       [req.user!.id]
     );

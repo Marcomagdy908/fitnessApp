@@ -11,6 +11,7 @@ import {
   faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/plans.css";
+import { DIET_PLAN_STYLES, NUTRITION_TIP_STYLES } from "../utils/styleMappings";
 
 /* ─── Types ─────────────────────────────────────────────────── */
 interface Exercise {
@@ -44,31 +45,11 @@ interface Plan {
 /* ─── Plan Data ──────────────────────────────────────────────── */
 
 /* ─── Tips Data ──────────────────────────────────────────────── */
-const tips = [
-  {
-    icon: "💧",
-    color: "rgba(61,255,255,0.12)",
-    title: "Hydration",
-    desc: "Drink 0.5–1 L of water before training and sip throughout your session.",
-  },
-  {
-    icon: "😴",
-    color: "rgba(123,97,255,0.12)",
-    title: "Sleep 7–9 hrs",
-    desc: "Muscle is built during rest. Prioritise sleep over extra training volume.",
-  },
-  {
-    icon: "🥩",
-    color: "rgba(255,107,107,0.12)",
-    title: "Protein Intake",
-    desc: "Target 1.6–2.2 g of protein per kg of bodyweight every day.",
-  },
-  {
-    icon: "📈",
-    color: "rgba(80,230,120,0.12)",
-    title: "Progressive Overload",
-    desc: "Add weight or reps every 1–2 weeks to keep gaining strength.",
-  },
+const trainingTips = [
+  { title: "Stay Hydrated", desc: "Drink 0.5–1 L of water before training and sip throughout your session." },
+  { title: "Sleep 7–9 hrs", desc: "Muscle is built during rest. Prioritise sleep over extra training volume.", customStyle: { icon: "😴", color: "rgba(123,97,255,0.12)" } },
+  { title: "Protein Intake", desc: "Target 1.6–2.2 g of protein per kg of bodyweight every day.", customStyle: { icon: "🥩", color: "rgba(255,107,107,0.12)" } },
+  { title: "Track Everything", desc: "Add weight or reps every 1–2 weeks to keep gaining strength." },
 ];
 
 /* ─── Badge colour map ────────────────────────────────────────── */
@@ -167,6 +148,7 @@ function Plans() {
   if (plans.length === 0) return <div className="plans-page"><p className="text-muted text-center py-5">No plans found. Create one to get started!</p></div>;
 
   const plan = plans.find((p) => p.id === activeId) || plans[0];
+  const planStyle = DIET_PLAN_STYLES[plan?.goal.toLowerCase()] || DIET_PLAN_STYLES.default;
 
   const activeDays = plan.days.filter((d) => d.badge !== "rest");
   const totalKcal = activeDays.reduce((s, d) => s + d.kcal, 0);
@@ -199,10 +181,12 @@ function Plans() {
       </div>
 
       {/* ── Hero ── */}
-      <div className="plan-hero">
+      <div className="plan-hero" style={{ borderColor: `${planStyle.accentColor}33` }}>
         <div className="plan-hero-inner">
           <div className="plan-hero-left">
-            <div className="plan-tag">{plan.label}</div>
+            <div className="plan-tag" style={{ color: planStyle.labelColor, borderColor: `${planStyle.labelColor}55`, background: `${planStyle.labelColor}18` }}>
+              {planStyle.label}
+            </div>
             <div className="plan-hero-title">{plan.name}</div>
             <p className="plan-hero-desc">{plan.description}</p>
             <div className="plan-meta-chips">
@@ -337,17 +321,20 @@ function Plans() {
         Training Tips
       </div>
       <div className="plan-tips">
-        {tips.map((tip, i) => (
-          <div key={i} className="tip-card">
-            <div className="tip-icon-wrap" style={{ background: tip.color }}>
-              {tip.icon}
+        {trainingTips.map((tip, i) => {
+          const style = tip.customStyle || NUTRITION_TIP_STYLES[tip.title] || { icon: "💡", color: "rgba(255,255,255,0.05)" };
+          return (
+            <div key={i} className="tip-card">
+              <div className="tip-icon-wrap" style={{ background: style.color }}>
+                {style.icon}
+              </div>
+              <div className="tip-text-wrap">
+                <div className="tip-title">{tip.title}</div>
+                <div className="tip-desc">{tip.desc}</div>
+              </div>
             </div>
-            <div className="tip-text-wrap">
-              <div className="tip-title">{tip.title}</div>
-              <div className="tip-desc">{tip.desc}</div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

@@ -102,8 +102,9 @@ export const getAllUsers = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const [rows] = await db.query<UserRow[] & { length: number }>(
-      `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.subscriptionPlan, u.theme, u.createdAt,
+    const [rows] = await db.query<any[] & { length: number }>(
+      `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.theme, u.createdAt,
+              COALESCE(s.plan, 'free') as subscriptionPlan,
               s.maxVisits, s.usedVisits
        FROM User u
        LEFT JOIN Subscription s ON u.id = s.userId
@@ -145,10 +146,7 @@ export const adminUpdateUser = async (
       fields.push("avatar = ?");
       values.push(body.avatar);
     }
-    if (body.subscriptionPlan !== undefined) {
-      fields.push("subscriptionPlan = ?");
-      values.push(body.subscriptionPlan);
-    }
+    // subscriptionPlan update is handled separately below via the Subscription table
     if (body.theme !== undefined) {
       fields.push("theme = ?");
       values.push(body.theme);
@@ -162,10 +160,14 @@ export const adminUpdateUser = async (
       );
     }
 
-    // Update Subscription visits if provided
-    if (body.maxVisits !== undefined || body.usedVisits !== undefined) {
+    // Update Subscription plan/visits if provided
+    if (body.subscriptionPlan !== undefined || body.maxVisits !== undefined || body.usedVisits !== undefined) {
       const subFields: string[] = [];
       const subValues: any[] = [];
+      if (body.subscriptionPlan !== undefined) {
+        subFields.push("plan = ?");
+        subValues.push(body.subscriptionPlan);
+      }
       if (body.maxVisits !== undefined) {
         subFields.push("maxVisits = ?");
         subValues.push(body.maxVisits);
@@ -175,9 +177,12 @@ export const adminUpdateUser = async (
         subValues.push(body.usedVisits);
       }
       subValues.push(id);
+      
       await connection.query(
-        `UPDATE Subscription SET ${subFields.join(", ")} WHERE userId = ?`,
-        subValues,
+        `INSERT INTO Subscription (userId, plan, maxVisits, usedVisits, status) 
+         VALUES (?, ?, ?, ?, 'active')
+         ON DUPLICATE KEY UPDATE ${subFields.join(", ")}`,
+        [id, body.subscriptionPlan || 'free', body.maxVisits || 0, body.usedVisits || 0, ...subValues.slice(0, -1)]
       );
     }
 
@@ -204,8 +209,9 @@ export const adminUpdateUser = async (
 
     await connection.commit();
 
-    const [rows] = await connection.query<UserRow[] & { length: number }>(
-      `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.subscriptionPlan, u.theme, u.updatedAt,
+    const [rows] = await connection.query<any[] & { length: number }>(
+      `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.theme, u.updatedAt,
+              COALESCE(s.plan, 'free') as subscriptionPlan,
               s.maxVisits, s.usedVisits
        FROM User u
        LEFT JOIN Subscription s ON u.id = s.userId
@@ -229,8 +235,8 @@ export const getUserBenefits = async (
   try {
     const { id } = req.params;
     // Get user's current plan first
-    const [userRows] = await db.query<UserRow[] & { length: number }>(
-      "SELECT subscriptionPlan FROM User WHERE id = ?",
+    const [userRows] = await db.query<any[] & { length: number }>(
+      "SELECT COALESCE(s.plan, 'free') as subscriptionPlan FROM User u LEFT JOIN Subscription s ON u.id = s.userId WHERE u.id = ?",
       [id]
     );
     if (userRows.length === 0) {

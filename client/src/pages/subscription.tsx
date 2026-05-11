@@ -21,6 +21,7 @@ import { useSubscription } from "../context/SubscriptionContext";
 import { api } from "../utils/api";
 import PaymentModal, { type PaymentBooking } from "../components/PaymentModal";
 import "../css/subscription.css";
+import { SUBSCRIPTION_PLAN_STYLES } from "../utils/styleMappings";
 
 /* ─── Types ─────────────────────────────────────────────────── */
 interface PlanFeature {
@@ -36,13 +37,7 @@ interface MembershipPlan {
   period: string;
   badge?: string;
   description: string;
-  icon: IconDefinition | string;
-  accentColor: string;
-  glowColor: string;
-  borderColor: string;
-  bgGradient: string;
   features: PlanFeature[];
-  cta: string;
   popular: boolean;
 }
 
@@ -74,16 +69,11 @@ function Subscription() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
   const [payingPlan, setPayingPlan] = useState<PaymentBooking | null>(null);
 
-  const icons: any = { faShieldHalved, faDumbbell, faTrophy };
-
   useEffect(() => {
     api.get("/api/subscriptions/plans")
       .then(res => {
         if (res.data.success) {
-          setPlans(res.data.data.map((p: any) => ({
-            ...p,
-            icon: icons[p.icon] || faDumbbell
-          })));
+          setPlans(res.data.data);
         }
       })
       .catch(err => console.error("Failed to load plans", err))
@@ -211,68 +201,71 @@ function Subscription() {
                 <span className="visually-hidden">Loading plans...</span>
               </div>
            </div>
-        ) : plans.map((plan) => (
-          <div
-            key={plan.id}
-            className={`sub-card${plan.popular ? " sub-card--popular" : ""}${subscription?.plan === plan.id ? " sub-card--active" : ""}`}
-            style={{
-              borderColor: subscription?.plan === plan.id ? "var(--accent-cyan)" : plan.borderColor,
-            }}
-          >
-            {subscription?.plan === plan.id && (
-              <div className="active-tag">Current Plan</div>
-            )}
-            {plan.popular && (
-              <div
-                className="sub-card-glow"
-                style={{ background: `radial-gradient(ellipse at top, ${plan.glowColor} 0%, transparent 65%)` }}
-              />
-            )}
-            {plan.badge && (
-              <div
-                className="sub-popular-badge"
-                style={{ color: plan.accentColor, borderColor: `${plan.accentColor}50`, background: `${plan.accentColor}15` }}
-              >
-                {plan.badge}
-              </div>
-            )}
-
-            <div className="sub-card-inner">
-              <div className="sub-plan-icon" style={{ color: plan.accentColor, background: `${plan.accentColor}14` }}>
-                <FontAwesomeIcon icon={plan.icon as any} />
-              </div>
-              <div className="sub-plan-name" style={{ color: plan.accentColor }}>{plan.name}</div>
-              <div className="sub-price-row">
-                <div className="sub-price" style={{ color: plan.popular ? "var(--text-primary)" : "var(--text-secondary)" }}>
-                  ${getPrice(plan)}
-                </div>
-                <div className="sub-period">{billingCycle === "annual" ? "/ year" : "/ month"}</div>
-              </div>
-              {billingCycle === "annual" && (
-                <div className="sub-annual-note">billed annually · save 20%</div>
+        ) : plans.map((plan) => {
+          const style = SUBSCRIPTION_PLAN_STYLES[plan.id] || SUBSCRIPTION_PLAN_STYLES.basic;
+          return (
+            <div
+              key={plan.id}
+              className={`sub-card${plan.popular ? " sub-card--popular" : ""}${subscription?.plan === plan.id ? " sub-card--active" : ""}`}
+              style={{
+                borderColor: subscription?.plan === plan.id ? "var(--accent-cyan)" : style.borderColor,
+              }}
+            >
+              {subscription?.plan === plan.id && (
+                <div className="active-tag">Current Plan</div>
               )}
-              <p className="sub-plan-desc">{plan.description}</p>
+              {plan.popular && (
+                <div
+                  className="sub-card-glow"
+                  style={{ background: `radial-gradient(ellipse at top, ${style.glowColor} 0%, transparent 65%)` }}
+                />
+              )}
+              {style.badge && (
+                <div
+                  className="sub-popular-badge"
+                  style={{ color: style.accentColor, borderColor: `${style.accentColor}50`, background: `${style.accentColor}15` }}
+                >
+                  {style.badge}
+                </div>
+              )}
 
-              <div className="sub-features">
-                {plan.features.map((feat, j) => (
-                  <div key={j} className={`sub-feature${feat.included ? "" : " sub-feature--excluded"}`}>
-                    <span className="sub-feature-icon" style={{ color: feat.included ? plan.accentColor : "#2a2a2a" }}>
-                      <FontAwesomeIcon icon={feat.included ? faCheck : faXmark} />
-                    </span>
-                    <span className="sub-feature-text">{feat.text}</span>
+              <div className="sub-card-inner">
+                <div className="sub-plan-icon" style={{ color: style.accentColor, background: `${style.accentColor}14` }}>
+                  <FontAwesomeIcon icon={style.icon} />
+                </div>
+                <div className="sub-plan-name" style={{ color: style.accentColor }}>{plan.name}</div>
+                <div className="sub-price-row">
+                  <div className="sub-price" style={{ color: plan.popular ? "var(--text-primary)" : "var(--text-secondary)" }}>
+                    ${getPrice(plan)}
                   </div>
-                ))}
-              </div>
+                  <div className="sub-period">{billingCycle === "annual" ? "/ year" : "/ month"}</div>
+                </div>
+                {billingCycle === "annual" && (
+                  <div className="sub-annual-note">billed annually · save 20%</div>
+                )}
+                <p className="sub-plan-desc">{plan.description}</p>
 
-              <button
-                className={`sub-cta-btn${subscription?.plan === plan.id ? " sub-cta-btn--active" : ""}`}
-                onClick={() => handleOpenPayment(plan)}
-              >
-                {subscription?.plan === plan.id ? "Current Plan" : plan.cta}
-              </button>
+                <div className="sub-features">
+                  {plan.features.map((feat, j) => (
+                    <div key={j} className={`sub-feature${feat.included ? "" : " sub-feature--excluded"}`}>
+                      <span className="sub-feature-icon" style={{ color: feat.included ? style.accentColor : "#2a2a2a" }}>
+                        <FontAwesomeIcon icon={feat.included ? faCheck : faXmark} />
+                      </span>
+                      <span className="sub-feature-text">{feat.text}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  className={`sub-cta-btn${subscription?.plan === plan.id ? " sub-cta-btn--active" : ""}`}
+                  onClick={() => handleOpenPayment(plan)}
+                >
+                  {subscription?.plan === plan.id ? "Current Plan" : style.cta}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* ── Facilities ── */}

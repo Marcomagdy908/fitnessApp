@@ -30,8 +30,7 @@ CREATE TABLE IF NOT EXISTS User (
   name VARCHAR(255) NOT NULL,
   username VARCHAR(255) UNIQUE DEFAULT NULL,
   avatar LONGTEXT DEFAULT NULL,
-  role VARCHAR(50) NOT NULL DEFAULT 'USER',
-  subscriptionPlan VARCHAR(255) NOT NULL DEFAULT 'free',
+  role ENUM('USER', 'ADMIN', 'TRAINER') NOT NULL DEFAULT 'USER',
   theme VARCHAR(20) NOT NULL DEFAULT 'dark',
   targetCalories INT DEFAULT 2400,
   targetProtein FLOAT DEFAULT 180,
@@ -48,13 +47,7 @@ CREATE TABLE IF NOT EXISTS SubscriptionPlan (
   price FLOAT NOT NULL,
   annualPrice FLOAT NOT NULL,
   description TEXT NOT NULL,
-  icon VARCHAR(100) NOT NULL,
-  accentColor VARCHAR(50) NOT NULL,
-  glowColor VARCHAR(50) NOT NULL,
-  borderColor VARCHAR(50) NOT NULL,
-  bgGradient VARCHAR(255) NOT NULL,
   popular BOOLEAN DEFAULT FALSE,
-  cta VARCHAR(255) DEFAULT 'Join Now',
   createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -83,8 +76,6 @@ CREATE TABLE IF NOT EXISTS Trainer (
   name VARCHAR(255) NOT NULL,
   title VARCHAR(255) NOT NULL DEFAULT '',
   specialty VARCHAR(255) NOT NULL,
-  specialtyIcon VARCHAR(100) NOT NULL DEFAULT 'faDumbbell',
-  specialtyColor VARCHAR(30) NOT NULL DEFAULT 'var(--accent-cyan)',
   avatar VARCHAR(10) NOT NULL DEFAULT '🏋️',
   bio TEXT NOT NULL,
   certifications TEXT NOT NULL,
@@ -107,7 +98,7 @@ CREATE TABLE IF NOT EXISTS WorkoutPlan (
   name VARCHAR(255) NOT NULL,
   description TEXT DEFAULT NULL,
   daysPerWeek INT NOT NULL DEFAULT 3,
-  level VARCHAR(50) DEFAULT 'Intermediate',
+  level ENUM('Beginner', 'Intermediate', 'Advanced') DEFAULT 'Intermediate',
   weeks INT DEFAULT 12,
   goal VARCHAR(100) DEFAULT 'Muscle & Strength',
   label VARCHAR(50) DEFAULT NULL,
@@ -160,8 +151,8 @@ CREATE TABLE IF NOT EXISTS Subscription (
   id INT AUTO_INCREMENT PRIMARY KEY,
   userId INT NOT NULL UNIQUE,
   plan VARCHAR(255) NOT NULL DEFAULT 'free',
-  status VARCHAR(255) NOT NULL DEFAULT 'active',
-  billingCycle VARCHAR(50) NOT NULL DEFAULT 'monthly',
+  status ENUM('active', 'inactive', 'cancelled') NOT NULL DEFAULT 'active',
+  billingCycle ENUM('monthly', 'yearly') NOT NULL DEFAULT 'monthly',
   autoRenew BOOLEAN NOT NULL DEFAULT TRUE,
   maxVisits INT NOT NULL DEFAULT 0,
   usedVisits INT NOT NULL DEFAULT 0,
@@ -180,7 +171,6 @@ CREATE TABLE IF NOT EXISTS GymClass (
   durationMins INT NOT NULL DEFAULT 60,
   maxSpots INT NOT NULL DEFAULT 20,
   spotsBooked INT NOT NULL DEFAULT 0,
-  color VARCHAR(30) NOT NULL DEFAULT 'var(--accent-cyan)',
   description TEXT DEFAULT NULL,
   requiredPlan VARCHAR(50) NOT NULL DEFAULT 'basic',
   createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -192,7 +182,7 @@ CREATE TABLE IF NOT EXISTS GymClassBooking (
   id INT AUTO_INCREMENT PRIMARY KEY,
   userId INT NOT NULL,
   classId INT NOT NULL,
-  status VARCHAR(50) NOT NULL DEFAULT 'confirmed',
+  status ENUM('confirmed', 'cancelled') NOT NULL DEFAULT 'confirmed',
   bookedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY unique_user_class (userId, classId),
   FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
@@ -205,8 +195,7 @@ CREATE TABLE IF NOT EXISTS TrainerBooking (
   trainerId INT NOT NULL,
   scheduledAt DATETIME NOT NULL,
   durationMins INT NOT NULL DEFAULT 60,
-  status VARCHAR(50) NOT NULL DEFAULT 'pending', -- pending, confirmed, cancelled, completed
-  paymentStatus VARCHAR(50) NOT NULL DEFAULT 'unpaid', -- unpaid, awaiting_payment, paid, refunded
+  status ENUM('pending', 'confirmed', 'cancelled', 'completed') NOT NULL DEFAULT 'pending',
   notes TEXT DEFAULT NULL,
   totalPrice FLOAT NOT NULL DEFAULT 0,
   createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -217,18 +206,20 @@ CREATE TABLE IF NOT EXISTS TrainerBooking (
 
 CREATE TABLE IF NOT EXISTS Payment (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  bookingId INT NOT NULL,
-  bookingType VARCHAR(50) NOT NULL DEFAULT 'trainer', -- 'trainer' | 'class' | 'subscription'
-  userId INT NOT NULL,
+  trainerBookingId INT DEFAULT NULL,
+  classBookingId INT DEFAULT NULL,
+  subscriptionId INT DEFAULT NULL,
   amount FLOAT NOT NULL DEFAULT 0,
   currency VARCHAR(10) NOT NULL DEFAULT 'USD',
-  status VARCHAR(50) NOT NULL DEFAULT 'pending', -- pending, completed, failed, refunded
+  status ENUM('pending', 'completed', 'failed', 'refunded') NOT NULL DEFAULT 'pending',
   method VARCHAR(50) DEFAULT NULL,  -- 'card', 'wallet', 'cash', etc.
   transactionRef VARCHAR(255) DEFAULT NULL,
   paidAt DATETIME DEFAULT NULL,
   createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+  FOREIGN KEY (trainerBookingId) REFERENCES TrainerBooking(id) ON DELETE CASCADE,
+  FOREIGN KEY (classBookingId) REFERENCES GymClassBooking(id) ON DELETE CASCADE,
+  FOREIGN KEY (subscriptionId) REFERENCES Subscription(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS AlternativeMeal (
@@ -276,19 +267,13 @@ CREATE TABLE IF NOT EXISTS DietPlan (
   id INT AUTO_INCREMENT PRIMARY KEY,
   userId INT DEFAULT NULL,
   planId VARCHAR(50) NOT NULL UNIQUE,
-  label VARCHAR(100) NOT NULL,
-  labelColor VARCHAR(50) NOT NULL,
   name VARCHAR(255) NOT NULL,
   goal VARCHAR(255) NOT NULL,
-  goalIcon VARCHAR(100) NOT NULL,
   description TEXT NOT NULL,
   calories INT NOT NULL,
   protein FLOAT NOT NULL,
   carbs FLOAT NOT NULL,
   fat FLOAT NOT NULL,
-  accentColor VARCHAR(50) NOT NULL,
-  gradientFrom VARCHAR(100) NOT NULL,
-  gradientTo VARCHAR(100) NOT NULL,
   createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -333,7 +318,7 @@ CREATE TABLE IF NOT EXISTS PTClient (
   trainerId INT NOT NULL,
   userId INT NOT NULL,
   goal VARCHAR(255) NOT NULL DEFAULT 'General Fitness',
-  status VARCHAR(50) NOT NULL DEFAULT 'active',
+  status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
   startDate DATE NOT NULL,
   endDate DATE DEFAULT NULL,
   sessionsPerWeek INT NOT NULL DEFAULT 3,
@@ -351,8 +336,8 @@ CREATE TABLE IF NOT EXISTS Injury (
   userId INT NOT NULL,
   type VARCHAR(255) NOT NULL, -- e.g., 'Knee', 'Shoulder', 'Back'
   description TEXT DEFAULT NULL,
-  severity VARCHAR(50) DEFAULT 'moderate', -- 'mild', 'moderate', 'severe'
-  status VARCHAR(50) DEFAULT 'active', -- 'active', 'recovering', 'healed'
+  severity ENUM('mild', 'moderate', 'severe') DEFAULT 'moderate',
+  status ENUM('active', 'recovering', 'healed') DEFAULT 'active',
   createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
@@ -361,15 +346,22 @@ CREATE TABLE IF NOT EXISTS Injury (
 CREATE TABLE IF NOT EXISTS InjuryRestriction (
   id INT AUTO_INCREMENT PRIMARY KEY,
   injuryType VARCHAR(255) NOT NULL UNIQUE,
-  avoidExercises TEXT NOT NULL, -- JSON array of strings
   tip TEXT NOT NULL,
   createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS InjuryExcludedExercise (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  restrictionId INT NOT NULL,
+  exerciseId INT NOT NULL,
+  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_restriction_exercise (restrictionId, exerciseId),
+  FOREIGN KEY (restrictionId) REFERENCES InjuryRestriction(id) ON DELETE CASCADE,
+  FOREIGN KEY (exerciseId) REFERENCES Exercise(id) ON DELETE CASCADE
+);
 CREATE TABLE IF NOT EXISTS NutritionTip (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  icon VARCHAR(50) NOT NULL,
-  color VARCHAR(50) NOT NULL,
   title VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP

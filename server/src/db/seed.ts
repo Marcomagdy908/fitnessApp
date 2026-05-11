@@ -148,9 +148,9 @@ async function main() {
   const trainerIds: number[] = [];
   for (const t of trainers) {
     const [res] = await db.query<ResultSetHeader>(
-      `INSERT INTO Trainer (userId, name, title, specialty, specialtyIcon, specialtyColor, avatar, rating, reviews, experience, pricePerSession, sessionsCompleted, bio, certifications, tags, available)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [(t as any).userId || null, t.name, t.title, t.specialty, t.specialtyIcon, t.specialtyColor, t.avatar, t.rating, t.reviews, t.experience, t.pricePerSession, t.sessionsCompleted, t.bio, t.certifications, t.tags, t.available]
+      `INSERT INTO Trainer (userId, name, title, specialty, avatar, rating, reviews, experience, pricePerSession, sessionsCompleted, bio, certifications, tags, available)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [(t as any).userId || null, t.name, t.title, t.specialty, t.avatar, t.rating, t.reviews, t.experience, t.pricePerSession, t.sessionsCompleted, t.bio, t.certifications, t.tags, t.available]
     );
     trainerIds.push(res.insertId);
   }
@@ -164,20 +164,20 @@ async function main() {
 
   // Classes for the next 3 days
   const classes = [
-    { name: "HIIT Blast", trainerIdx: 2, duration: 45, maxSpots: 20, booked: 18, color: "#ffc832", desc: "High intensity interval training to maximize calorie burn.", required: "pro", offsetHours: 2 },
-    { name: "Yoga Flow", trainerIdx: 1, duration: 60, maxSpots: 15, booked: 7, color: "#a98dff", desc: "Vinyasa flow focusing on breathing, mobility, and core strength.", required: "basic", offsetHours: 5 },
-    { name: "Strength & Power", trainerIdx: 0, duration: 60, maxSpots: 12, booked: 12, color: "#ff6b6b", desc: "Compound lifts focusing on raw strength.", required: "pro", offsetHours: 24 },
-    { name: "Pilates Core", trainerIdx: 3, duration: 50, maxSpots: 18, booked: 10, color: "#50e678", desc: "Deep core activation and postural alignment.", required: "basic", offsetHours: 28 },
-    { name: "Spin Cycle", trainerIdx: 4, duration: 45, maxSpots: 25, booked: 20, color: "#3dffff", desc: "High energy indoor cycling.", required: "pro", offsetHours: 48 },
+    { name: "HIIT Blast", trainerIdx: 2, duration: 45, maxSpots: 20, booked: 18, desc: "High intensity interval training to maximize calorie burn.", required: "pro", offsetHours: 2 },
+    { name: "Yoga Flow", trainerIdx: 1, duration: 60, maxSpots: 15, booked: 7, desc: "Vinyasa flow focusing on breathing, mobility, and core strength.", required: "basic", offsetHours: 5 },
+    { name: "Strength & Power", trainerIdx: 0, duration: 60, maxSpots: 12, booked: 12, desc: "Compound lifts focusing on raw strength.", required: "pro", offsetHours: 24 },
+    { name: "Pilates Core", trainerIdx: 3, duration: 50, maxSpots: 18, booked: 10, desc: "Deep core activation and postural alignment.", required: "basic", offsetHours: 28 },
+    { name: "Spin Cycle", trainerIdx: 4, duration: 45, maxSpots: 25, booked: 20, desc: "High energy indoor cycling.", required: "pro", offsetHours: 48 },
   ];
 
   const classIds: number[] = [];
   for (const c of classes) {
     const scheduled = new Date(now.getTime() + c.offsetHours * 60 * 60 * 1000);
     const [res] = await db.query<ResultSetHeader>(
-      `INSERT INTO GymClass (name, trainerId, scheduledAt, durationMins, maxSpots, spotsBooked, color, description, requiredPlan)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [c.name, trainerIds[c.trainerIdx], scheduled, c.duration, c.maxSpots, c.booked, c.color, c.desc, c.required]
+      `INSERT INTO GymClass (name, trainerId, scheduledAt, durationMins, maxSpots, spotsBooked, description, requiredPlan)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [c.name, trainerIds[c.trainerIdx], scheduled, c.duration, c.maxSpots, c.booked, c.desc, c.required]
     );
     classIds.push(res.insertId);
   }
@@ -377,13 +377,7 @@ async function main() {
       price: 29.99,
       annualPrice: 23.99,
       description: "Full access to our gym floor — cardio machines, free weights, and resistance equipment. Perfect for solo training.",
-      icon: "faShieldHalved",
-      accentColor: "#888",
-      glowColor: "rgba(136,136,136,0.15)",
-      borderColor: "rgba(136,136,136,0.15)",
-      bgGradient: "linear-gradient(135deg, #0d0d0d 0%, #111 100%)",
       popular: false,
-      cta: "Join Basic"
     },
     {
       planId: "pro",
@@ -391,13 +385,7 @@ async function main() {
       price: 59.99,
       annualPrice: 47.99,
       description: "The complete gym experience — unlimited classes, pool, sauna, and everything you need to transform your body.",
-      icon: "faDumbbell",
-      accentColor: "var(--accent-cyan)",
-      glowColor: "var(--accent-cyan-dim)",
-      borderColor: "var(--accent-cyan-border)",
-      bgGradient: "linear-gradient(135deg, #080f0f 0%, #0a1515 100%)",
       popular: true,
-      cta: "Join Pro — First Week Free"
     },
     {
       planId: "elite",
@@ -405,21 +393,15 @@ async function main() {
       price: 99.99,
       annualPrice: 79.99,
       description: "The ultimate membership. Everything in Pro plus dedicated personal training, nutrition coaching, and exclusive VIP perks.",
-      icon: "faTrophy",
-      accentColor: "#ffc832",
-      glowColor: "rgba(255,200,50,0.15)",
-      borderColor: "rgba(255,200,50,0.35)",
-      bgGradient: "linear-gradient(135deg, #111009 0%, #181400 100%)",
       popular: false,
-      cta: "Go VIP Elite"
     }
   ];
 
   for (const p of planData) {
     await db.query(
-      `INSERT INTO SubscriptionPlan (planId, name, price, annualPrice, description, icon, accentColor, glowColor, borderColor, bgGradient, popular, cta)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [p.planId, p.name, p.price, p.annualPrice, p.description, p.icon, p.accentColor, p.glowColor, p.borderColor, p.bgGradient, p.popular, p.cta]
+      `INSERT INTO SubscriptionPlan (planId, name, price, annualPrice, description, popular)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [p.planId, p.name, p.price, p.annualPrice, p.description, p.popular]
     );
   }
   console.log('✅ Seeded subscription plans');
@@ -474,19 +456,13 @@ async function seedDiet() {
   const plans = [
     {
       planId: "bulk",
-      label: "Mass Gain",
-      labelColor: "#ff6b6b",
       name: "Hypertrophy Bulking Plan",
       goal: "Muscle & Mass",
-      goalIcon: "faArrowTrendUp",
       description: "Designed for hardgainers and those looking to maximize muscle hypertrophy. This plan provides a significant caloric surplus with a focus on complex carbohydrates and high-quality protein sources.",
       calories: 3200,
       protein: 220,
       carbs: 380,
       fat: 80,
-      accentColor: "#ff6b6b",
-      gradientFrom: "rgba(255, 107, 107, 0.15)",
-      gradientTo: "rgba(255, 107, 107, 0.05)",
       meals: [
         { time: "7:00 AM", name: "Breakfast: Power Oats", foods: ["100g Rolled Oats", "2 scoops Whey Protein", "1tbsp Peanut Butter", "1 Large Banana"], calories: 750, protein: 48, carbs: 85, fat: 22 },
         { time: "10:30 AM", name: "Mid-Morning: Greek Yogurt & Nuts", foods: ["250g Greek Yogurt (0%)", "30g Almonds", "Blueberries"], calories: 420, protein: 32, carbs: 24, fat: 20 },
@@ -497,19 +473,13 @@ async function seedDiet() {
     },
     {
       planId: "cut",
-      label: "Fat Loss",
-      labelColor: "#3dffff",
       name: "Shredded Definition Plan",
       goal: "Weight Loss",
-      goalIcon: "faArrowTrendDown",
       description: "A calorie-restricted plan optimized for fat loss while preserving lean muscle mass. High protein intake keeps you satiated, while lower fats and controlled carbs drive the deficit.",
       calories: 2100,
       protein: 190,
       carbs: 160,
       fat: 65,
-      accentColor: "#3dffff",
-      gradientFrom: "rgba(61, 255, 255, 0.15)",
-      gradientTo: "rgba(61, 255, 255, 0.05)",
       meals: [
         { time: "8:00 AM", name: "Breakfast: Egg White Scramble", foods: ["2 Whole Eggs", "4 Egg Whites", "Spinach", "Mushrooms", "1 slice Sourdough"], calories: 450, protein: 38, carbs: 25, fat: 18 },
         { time: "1:00 PM", name: "Lunch: Salmon & Greens", foods: ["150g Grilled Salmon", "Large Mixed Leaf Salad", "Lemon Dressing", "50g Brown Rice"], calories: 520, protein: 35, carbs: 20, fat: 28 },
@@ -519,19 +489,13 @@ async function seedDiet() {
     },
     {
       planId: "maintain",
-      label: "Performance",
-      labelColor: "#50e678",
       name: "Athletic Maintenance",
       goal: "Body Recomp",
-      goalIcon: "faScaleBalanced",
       description: "Perfect for maintaining your current weight while focusing on improving athletic performance and body composition. Balanced macros provide steady energy throughout the day.",
       calories: 2600,
       protein: 180,
       carbs: 280,
       fat: 85,
-      accentColor: "#50e678",
-      gradientFrom: "rgba(80, 230, 120, 0.15)",
-      gradientTo: "rgba(80, 230, 120, 0.05)",
       meals: [
         { time: "7:30 AM", name: "Breakfast: Avocado Toast & Eggs", foods: ["2 Slices Toast", "Half Avocado", "2 Poached Eggs"], calories: 550, protein: 24, carbs: 45, fat: 32 },
         { time: "12:30 PM", name: "Lunch: Turkey Quinoa Bowl", foods: ["180g Ground Turkey", "150g Cooked Quinoa", "Peppers", "Zucchini"], calories: 620, protein: 42, carbs: 65, fat: 18 },
@@ -543,9 +507,9 @@ async function seedDiet() {
 
   for (const p of plans) {
     const [res] = await db.query<ResultSetHeader>(
-      `INSERT INTO DietPlan (planId, label, labelColor, name, goal, goalIcon, description, calories, protein, carbs, fat, accentColor, gradientFrom, gradientTo)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [p.planId, p.label, p.labelColor, p.name, p.goal, p.goalIcon, p.description, p.calories, p.protein, p.carbs, p.fat, p.accentColor, p.gradientFrom, p.gradientTo]
+      `INSERT INTO DietPlan (planId, name, goal, description, calories, protein, carbs, fat)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [p.planId, p.name, p.goal, p.description, p.calories, p.protein, p.carbs, p.fat]
     );
 
     for (const m of p.meals) {
@@ -562,6 +526,7 @@ async function seedDiet() {
 
 async function seedInjuryRestrictions() {
   console.log('🌱 Seeding injury restrictions…');
+  await db.query("DELETE FROM InjuryExcludedExercise");
   await db.query("DELETE FROM InjuryRestriction");
 
   const restrictions = [
@@ -598,10 +563,24 @@ async function seedInjuryRestrictions() {
   ];
 
   for (const r of restrictions) {
-    await db.query(
-      `INSERT INTO InjuryRestriction (injuryType, avoidExercises, tip) VALUES (?, ?, ?)`,
-      [r.type, JSON.stringify(r.avoid), r.tip]
+    const [res] = await db.query<ResultSetHeader>(
+      `INSERT INTO InjuryRestriction (injuryType, tip) VALUES (?, ?)`,
+      [r.type, r.tip]
     );
+    const restrictionId = res.insertId;
+
+    for (const exName of r.avoid) {
+      const [exRows] = await db.query<any[]>(
+        "SELECT id FROM Exercise WHERE name = ?",
+        [exName]
+      );
+      if (exRows.length > 0) {
+        await db.query(
+          "INSERT INTO InjuryExcludedExercise (restrictionId, exerciseId) VALUES (?, ?)",
+          [restrictionId, exRows[0].id]
+        );
+      }
+    }
   }
   console.log('✅ Seeded injury restrictions');
 }
@@ -688,36 +667,16 @@ async function seedNutritionTips() {
   await db.query("DELETE FROM NutritionTip");
 
   const tips = [
-    {
-      icon: "💧",
-      color: "rgba(61,255,255,0.12)",
-      title: "Stay Hydrated",
-      desc: "Drink 35–40 ml of water per kg of bodyweight daily. Dehydration kills performance."
-    },
-    {
-      icon: "⏰",
-      color: "rgba(255,200,50,0.12)",
-      title: "Meal Timing",
-      desc: "Eat a protein-rich meal within 2 hours post-workout to maximise muscle protein synthesis."
-    },
-    {
-      icon: "🥦",
-      color: "rgba(80,230,120,0.12)",
-      title: "Micronutrients",
-      desc: "Fill at least half your plate with vegetables to hit your vitamin and mineral targets."
-    },
-    {
-      icon: "🏷️",
-      color: "rgba(169,141,255,0.12)",
-      title: "Track Everything",
-      desc: "Use a calorie app for 2–4 weeks to build awareness of portion sizes and macro splits."
-    }
+    { title: "Stay Hydrated", desc: "Drink 35–40 ml of water per kg of bodyweight daily. Dehydration kills performance." },
+    { title: "Meal Timing", desc: "Eat a protein-rich meal within 2 hours post-workout to maximise muscle protein synthesis." },
+    { title: "Micronutrients", desc: "Fill at least half your plate with vegetables to hit your vitamin and mineral targets." },
+    { title: "Track Everything", desc: "Use a calorie app for 2–4 weeks to build awareness of portion sizes and macro splits." }
   ];
 
   for (const t of tips) {
     await db.query(
-      `INSERT INTO NutritionTip (icon, color, title, description) VALUES (?, ?, ?, ?)`,
-      [t.icon, t.color, t.title, t.desc]
+      `INSERT INTO NutritionTip (title, description) VALUES (?, ?)`,
+      [t.title, t.desc]
     );
   }
   console.log('✅ Seeded nutrition tips');

@@ -7,6 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { api } from "../../utils/api";
 import "../../css/trainerDiet.css";
+import { DIET_PLAN_STYLES } from "../../utils/styleMappings";
 
 /* ─── Types ───────────────────────────── */
 interface MealEntry {
@@ -25,30 +26,22 @@ interface DietPlan {
   userId: number | null;
   planId?: string;
   name: string;
-  label: string;
-  labelColor: string;
   goal: string;
-  goalIcon: string;
   description: string;
   calories: number;
   protein: number;
   carbs: number;
   fat: number;
-  accentColor: string;
-  gradientFrom: string;
-  gradientTo: string;
   meals: MealEntry[];
 }
 
 interface User { id: number; name: string; email: string; }
 
-const GOAL_OPTIONS = ["Weight Loss", "Muscle Gain", "Maintenance", "Body Recomp", "Performance", "General"];
-const ACCENT_COLORS = ["#3dffff", "#7b61ff", "#50e678", "#ffc832", "#ff6b6b", "#f97316"];
+const GOAL_OPTIONS = ["Muscle Gain", "Weight Loss", "Maintenance", "Body Recomp", "Performance", "General"];
 
 const emptyForm = () => ({
-  name: "", label: "Custom", labelColor: "#7b61ff", goal: "General", goalIcon: "faDumbbell",
+  name: "", goal: "General",
   description: "", calories: 2200, protein: 160, carbs: 220, fat: 70,
-  accentColor: "#7b61ff", gradientFrom: "rgba(123,97,255,0.15)", gradientTo: "rgba(123,97,255,0.05)",
   meals: [] as MealEntry[], targetUserId: null as number | null, isPublic: false,
 });
 
@@ -99,10 +92,9 @@ export default function TrainerDiet() {
   const openCreate = () => { setForm(emptyForm()); setEditingId(null); setModal("create"); };
   const openEdit = (diet: DietPlan) => {
     setForm({
-      name: diet.name, label: diet.label, labelColor: diet.labelColor,
-      goal: diet.goal, goalIcon: diet.goalIcon, description: diet.description,
+      name: diet.name,
+      goal: diet.goal, description: diet.description,
       calories: diet.calories, protein: diet.protein, carbs: diet.carbs, fat: diet.fat,
-      accentColor: diet.accentColor, gradientFrom: diet.gradientFrom, gradientTo: diet.gradientTo,
       meals: diet.meals.map(m => ({ ...m, foods: Array.isArray(m.foods) ? m.foods : [] })),
       targetUserId: diet.userId, isPublic: diet.userId === null,
     });
@@ -179,6 +171,7 @@ export default function TrainerDiet() {
       {/* GRID */}
       <div className="tr-diet-grid">
         {diets.map((diet, idx) => {
+          const planStyle = DIET_PLAN_STYLES[diet.goal.toLowerCase()] || DIET_PLAN_STYLES.default;
           const totalCals = totalMealCals(diet.meals);
           const pct = diet.calories > 0 ? Math.min(100, Math.round((totalCals / diet.calories) * 100)) : 0;
           const ownerName = getUserName(diet.userId);
@@ -186,12 +179,12 @@ export default function TrainerDiet() {
           return (
             <div key={diet.id} className="tr-diet-card" style={{
               animationDelay: `${idx * 0.08}s`,
-              borderTopColor: diet.accentColor || "var(--accent-cyan)",
+              borderTopColor: planStyle.accentColor,
             }}>
               <div className="tr-diet-top">
                 <div>
-                  <div style={{ fontSize: "0.65rem", fontWeight: 800, color: diet.accentColor, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.2rem" }}>
-                    {diet.label}
+                  <div style={{ fontSize: "0.65rem", fontWeight: 800, color: planStyle.accentColor, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.2rem" }}>
+                    {planStyle.label}
                   </div>
                   <h3>{diet.name}</h3>
                 </div>
@@ -207,7 +200,7 @@ export default function TrainerDiet() {
                     <FontAwesomeIcon icon={diet.userId === null ? faGlobe : faLock} />
                     {diet.userId === null ? "Public" : "Private"}
                   </span>
-                  <span className="tr-diet-badge" style={{ background: `${diet.accentColor}22`, color: diet.accentColor, borderColor: `${diet.accentColor}44` }}>
+                  <span className="tr-diet-badge" style={{ background: `${planStyle.accentColor}22`, color: planStyle.accentColor, borderColor: `${planStyle.accentColor}44` }}>
                     {diet.goal}
                   </span>
                 </div>
@@ -240,7 +233,7 @@ export default function TrainerDiet() {
                 <span className="tr-diet-cal-pct">{pct}%</span>
               </div>
               <div className="tr-diet-cal-bar">
-                <div className="tr-diet-cal-fill" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${diet.accentColor}, var(--accent-purple))` }} />
+                <div className="tr-diet-cal-fill" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${planStyle.accentColor}, var(--accent-purple))` }} />
               </div>
 
               {/* Meals */}
@@ -330,10 +323,6 @@ export default function TrainerDiet() {
                     {GOAL_OPTIONS.map(g => <option key={g}>{g}</option>)}
                   </select>
                 </div>
-                <div>
-                  <label className="tr-modal-label">Label Tag</label>
-                  <input className="tr-modal-input" placeholder="e.g. Fat Loss, Bulking" value={form.label} onChange={e => setForm({ ...form, label: e.target.value })} />
-                </div>
               </div>
 
               <div>
@@ -360,25 +349,6 @@ export default function TrainerDiet() {
                 ))}
               </div>
 
-              {/* Accent color */}
-              <div>
-                <label className="tr-modal-label">Accent Color</label>
-                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                  {ACCENT_COLORS.map(c => (
-                    <button key={c} onClick={() => setForm({
-                      ...form, accentColor: c,
-                      gradientFrom: `${c}26`, gradientTo: `${c}0d`
-                    })} style={{
-                      width: "32px", height: "32px", borderRadius: "50%", background: c, border: "none",
-                      cursor: "pointer", outline: form.accentColor === c ? `3px solid white` : "none",
-                      boxShadow: form.accentColor === c ? `0 0 0 4px ${c}66` : "none",
-                      transition: "all 0.2s ease", flexShrink: 0,
-                    }} />
-                  ))}
-                  <input type="color" value={form.accentColor} onChange={e => setForm({ ...form, accentColor: e.target.value, gradientFrom: `${e.target.value}26`, gradientTo: `${e.target.value}0d` })}
-                    style={{ width: "32px", height: "32px", borderRadius: "50%", border: "2px solid var(--border-color)", cursor: "pointer", padding: 0, background: "none" }} />
-                </div>
-              </div>
             </div>
 
             {/* Meals */}
