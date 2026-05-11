@@ -102,10 +102,10 @@ export const getAlternativeMeals = async (
     let query = 'SELECT * FROM AlternativeMeal';
     const params: any[] = [];
     if (injury) {
-      query += ' WHERE injury = ?';
+      query += ' WHERE injuryType = ?';
       params.push(injury);
     }
-    query += ' ORDER BY injury ASC, id ASC';
+    query += ' ORDER BY injuryType ASC, id ASC';
     const [meals] = await db.query<AlternativeMealRow[] & { length: number }>(query, params);
     res.json({ success: true, data: meals });
   } catch (err) {
@@ -127,9 +127,20 @@ export const getDietPlans = async (req: AuthRequest, res: Response, next: NextFu
           "SELECT * FROM DietPlanMeal WHERE dietPlanId = ? ORDER BY id ASC",
           [plan.id]
         );
+
+        const mealsWithParsedFoods = meals.map((m) => {
+          let mFoods = [];
+          try {
+            mFoods = typeof m.foods === 'string' ? JSON.parse(m.foods) : (m.foods || []);
+          } catch (e) {
+            mFoods = [m.foods];
+          }
+          return { ...m, foods: mFoods };
+        });
+
         return {
           ...plan,
-          meals: meals.map((m) => ({ ...m, foods: JSON.parse(m.foods) })),
+          meals: mealsWithParsedFoods,
         };
       })
     );
@@ -171,7 +182,18 @@ export const createDietPlan = async (req: AuthRequest, res: Response, next: Next
 
     const [rows] = await db.query<DietPlanRow[]>("SELECT * FROM DietPlan WHERE id = ?", [dietPlanId]);
     const [mealRows] = await db.query<DietPlanMealRow[]>("SELECT * FROM DietPlanMeal WHERE dietPlanId = ? ORDER BY id ASC", [dietPlanId]);
-    res.status(201).json({ success: true, data: { ...rows[0], meals: mealRows.map(m => ({ ...m, foods: JSON.parse(m.foods) })) } });
+    
+    const processedMeals = mealRows.map(m => {
+      let mFoods = [];
+      try {
+        mFoods = typeof m.foods === 'string' ? JSON.parse(m.foods) : (m.foods || []);
+      } catch (e) {
+        mFoods = [m.foods];
+      }
+      return { ...m, foods: mFoods };
+    });
+
+    res.status(201).json({ success: true, data: { ...rows[0], meals: processedMeals } });
   } catch (err) {
     next(err);
   }
@@ -242,8 +264,11 @@ export const deleteDietPlan = async (req: AuthRequest, res: Response, next: Next
 };
 export const getNutritionTips = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const [tips] = await db.query("SELECT * FROM NutritionTip");
-    res.json({ success: true, data: tips });
+    const [tips] = await db.query<any[]>("SELECT * FROM NutritionTip");
+    // Shuffle and pick 3
+    const shuffled = [...tips].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 3);
+    res.json({ success: true, data: selected });
   } catch (err) {
     next(err);
   }

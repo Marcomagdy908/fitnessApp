@@ -175,8 +175,8 @@ export default function Dashboard() {
               <span className="ud-title-icon"><FontAwesomeIcon icon={faCrown} /></span>
               Membership
             </div>
-            <div className={`ud-membership-status ${dash.subscription.plan}`}>
-              {dash.subscription.plan.toUpperCase()} PLAN
+            <div className={`ud-membership-status ${dash.subscription.plan || 'free'}`}>
+              {(dash.subscription.plan || 'free').toUpperCase()} PLAN
             </div>
             <div className="ud-membership-info">
               {dash.subscription.plan === 'free' ? (

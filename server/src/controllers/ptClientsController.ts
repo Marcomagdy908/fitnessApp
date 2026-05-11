@@ -248,7 +248,7 @@ export const getTrainerDashboard = async (
     const [sessionCount] = await db.query<any[]>("SELECT COUNT(*) as total FROM TrainerBooking WHERE trainerId = ? AND DATE(scheduledAt) = CURDATE() AND status != 'cancelled'", [trainerId]);
     
     const [clients] = await db.query<any[]>(
-      `SELECT u.id, u.name, u.avatar, s.plan as membership, ptc.goal,
+      `SELECT u.id, u.name, u.avatar, s.planId as membership, ptc.goal,
        (SELECT name FROM WorkoutPlan WHERE userId = u.id AND isActive = 1 LIMIT 1) as activePlan,
        (SELECT MAX(date) FROM WorkoutSession WHERE userId = u.id) as lastSession
        FROM PTClient ptc

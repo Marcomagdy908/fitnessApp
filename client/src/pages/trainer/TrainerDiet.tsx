@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAppleWhole, faFire, faPlus, faTrash, faPen, faUtensils,
@@ -47,6 +48,8 @@ const emptyForm = () => ({
 
 /* ─── Component ───────────────────────── */
 export default function TrainerDiet() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [diets, setDiets] = useState<DietPlan[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -90,6 +93,14 @@ export default function TrainerDiet() {
   };
 
   const openCreate = () => { setForm(emptyForm()); setEditingId(null); setModal("create"); };
+
+  useEffect(() => {
+    if ((location.state as any)?.openCreate) {
+      openCreate();
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
+
   const openEdit = (diet: DietPlan) => {
     setForm({
       name: diet.name,

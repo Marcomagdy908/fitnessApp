@@ -5,7 +5,7 @@ import { AuthRequest } from "../middleware/auth";
 import { SubscriptionRow } from "../types/db";
 
 const subscribeSchema = z.object({
-  plan: z.string(),
+  planId: z.string(),
   billingCycle: z.enum(["monthly", "annual"]).default("monthly"),
   paymentMethod: z.string().optional(),
   transactionRef: z.string().optional(),
@@ -19,15 +19,21 @@ export const getSubscriptionPlans = async (
 ): Promise<void> => {
   try {
     const [plans] = await db.query<any[]>("SELECT * FROM SubscriptionPlan");
-    const [benefits] = await db.query<any[]>("SELECT * FROM SubscriptionBenefit");
 
-    const data = plans.map(p => ({
-      ...p,
-      id: p.planId, // Align with frontend expectations
-      features: benefits
-        .filter(b => b.planId === p.planId)
-        .map(b => ({ text: b.benefitText, included: !!b.isIncluded }))
-    }));
+    const data = plans.map(p => {
+      let planBenefits = [];
+      if (p.benefits) {
+        planBenefits = typeof p.benefits === 'string' ? JSON.parse(p.benefits) : p.benefits;
+      }
+      return {
+        ...p,
+        id: p.planId, // Align with frontend expectations
+        features: planBenefits.map((b: any) => ({ 
+          text: b.text || b.benefitText, 
+          included: b.included !== undefined ? !!b.included : true 
+        }))
+      };
+    });
 
     res.json({ success: true, data });
   } catch (err) {
@@ -57,7 +63,7 @@ export const subscribe = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { plan, billingCycle, paymentMethod, transactionRef, amount } = subscribeSchema.parse(req.body);
+    const { planId, billingCycle, paymentMethod, transactionRef, amount } = subscribeSchema.parse(req.body);
 
     // Set expiresAt based on billing cycle
     const expiresAt = new Date();
@@ -68,14 +74,14 @@ export const subscribe = async (
     }
 
     await db.query(
-      `INSERT INTO Subscription (userId, plan, status, billingCycle, autoRenew, startsAt, expiresAt) 
+      `INSERT INTO Subscription (userId, planId, status, billingCycle, autoRenew, startsAt, expiresAt) 
        VALUES (?, ?, 'active', ?, true, NOW(), ?) 
        ON DUPLICATE KEY UPDATE 
-        plan = VALUES(plan), 
+        planId = VALUES(planId), 
         status = VALUES(status), 
         billingCycle = VALUES(billingCycle),
         expiresAt = VALUES(expiresAt)`,
-      [req.user!.id, plan, billingCycle, expiresAt]
+      [req.user!.id, planId, billingCycle, expiresAt]
     );
 
     const [subRows] = await db.query<any[]>("SELECT id FROM Subscription WHERE userId = ?", [req.user!.id]);
@@ -84,9 +90,9 @@ export const subscribe = async (
     // Record Payment if provided
     if (transactionRef && subscriptionId) {
       await db.query(
-        `INSERT INTO Payment (userId, bookingId, bookingType, amount, status, method, transactionRef, paidAt)
-         VALUES (?, ?, 'subscription', ?, 'completed', ?, ?, NOW())`,
-        [req.user!.id, subscriptionId, amount || 0, paymentMethod || 'card', transactionRef]
+        `INSERT INTO Payment (subscriptionId, amount, status, method, transactionRef, paidAt)
+         VALUES (?, ?, 'completed', ?, ?, NOW())`,
+        [subscriptionId, amount || 0, paymentMethod || 'card', transactionRef]
       );
     }
 

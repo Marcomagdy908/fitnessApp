@@ -68,7 +68,7 @@ export const bookClass = async (
       [req.user!.id]
     );
 
-    if (subs.length === 0 || subs[0].plan === 'free') {
+    if (subs.length === 0 || subs[0].planId === 'free') {
       res.status(403).json({ success: false, message: "Active subscription required to book classes" });
       return;
     }
@@ -76,7 +76,7 @@ export const bookClass = async (
     // Check if plan matches required plan
     // Simple logic: elite > pro > basic
     const planLevels: Record<string, number> = { 'free': 0, 'basic': 1, 'pro': 2, 'elite': 3 };
-    if (planLevels[subs[0].plan] < planLevels[gymClass.requiredPlan]) {
+    if (planLevels[subs[0].planId] < planLevels[gymClass.requiredPlan]) {
       res.status(403).json({ success: false, message: `This class requires a ${gymClass.requiredPlan} plan or higher` });
       return;
     }

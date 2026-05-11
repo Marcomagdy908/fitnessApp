@@ -184,7 +184,9 @@ export const getDashboard = async (
       "SELECT * FROM Subscription WHERE userId = ? LIMIT 1",
       [uid]
     );
-    const subscription = subs[0] ?? { plan: 'free', status: 'active' };
+    const subscription = subs[0] 
+      ? { ...subs[0], plan: subs[0].planId } 
+      : { plan: 'free', status: 'active' };
 
     const [upcomingClass] = await db.query<any[]>(
       `SELECT gc.name, gc.scheduledAt, 'class' as type

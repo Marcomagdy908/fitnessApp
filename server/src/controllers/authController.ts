@@ -66,7 +66,7 @@ export const register = async (
 
     const [newUsers] = await db.query<any[] & { length: number }>(
       `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.targetCalories, u.targetProtein, u.targetCarbs, u.targetFat, u.createdAt, 
-              COALESCE(s.plan, 'free') as subscriptionPlan,
+              COALESCE(s.planId, 'free') as subscriptionPlan,
               t.id as trainerId 
        FROM User u 
        LEFT JOIN Trainer t ON u.id = t.userId 
@@ -92,7 +92,7 @@ export const login = async (
   try {
     const body = loginSchema.parse(req.body);
     const [rows] = await db.query<any[] & { length: number }>(
-      `SELECT u.*, COALESCE(s.plan, 'free') as subscriptionPlan, t.id as trainerId 
+      `SELECT u.*, COALESCE(s.planId, 'free') as subscriptionPlan, t.id as trainerId 
        FROM User u 
        LEFT JOIN Trainer t ON u.id = t.userId 
        LEFT JOIN Subscription s ON u.id = s.userId
@@ -125,7 +125,7 @@ export const getMe = async (
   try {
     const [rows] = await db.query<any[] & { length: number }>(
       `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.targetCalories, u.targetProtein, u.targetCarbs, u.targetFat, u.createdAt, 
-              COALESCE(s.plan, 'free') as subscriptionPlan,
+              COALESCE(s.planId, 'free') as subscriptionPlan,
               t.id as trainerId 
        FROM User u 
        LEFT JOIN Trainer t ON u.id = t.userId 

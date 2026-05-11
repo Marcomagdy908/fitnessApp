@@ -115,13 +115,13 @@ function Subscription() {
   return (
     <div className="sub-page">
       {/* ── Active Membership Status ── */}
-      {subscription && subscription.plan !== 'free' && (
+      {subscription && subscription.plan && subscription.plan !== 'free' && (
         <div className="active-mem-container">
           <div className="active-mem-card">
             <div className="active-mem-header">
               <div className="active-mem-badge">
                 <FontAwesomeIcon icon={faCrown} />
-                Current Status: {subscription.status.toUpperCase()}
+                Current Status: {(subscription.status || 'active').toUpperCase()}
               </div>
               <div className="active-mem-plan">
                 {subscription.plan.toUpperCase()} PLAN

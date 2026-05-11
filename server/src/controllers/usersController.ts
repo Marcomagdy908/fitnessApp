@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { db } from "../services/db";
 import { AuthRequest } from "../middleware/auth";
 import { UserRow } from "../types/db";
+import { ResultSetHeader } from "mysql2";
 
 const updateProfileSchema = z.object({
   name: z.string().min(2).optional(),
@@ -104,7 +105,7 @@ export const getAllUsers = async (
   try {
     const [rows] = await db.query<any[] & { length: number }>(
       `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.theme, u.createdAt,
-              COALESCE(s.plan, 'free') as subscriptionPlan,
+              COALESCE(s.planId, 'free') as subscriptionPlan,
               s.maxVisits, s.usedVisits
        FROM User u
        LEFT JOIN Subscription s ON u.id = s.userId
@@ -165,7 +166,7 @@ export const adminUpdateUser = async (
       const subFields: string[] = [];
       const subValues: any[] = [];
       if (body.subscriptionPlan !== undefined) {
-        subFields.push("plan = ?");
+        subFields.push("planId = ?");
         subValues.push(body.subscriptionPlan);
       }
       if (body.maxVisits !== undefined) {
@@ -179,7 +180,7 @@ export const adminUpdateUser = async (
       subValues.push(id);
       
       await connection.query(
-        `INSERT INTO Subscription (userId, plan, maxVisits, usedVisits, status) 
+        `INSERT INTO Subscription (userId, planId, maxVisits, usedVisits, status) 
          VALUES (?, ?, ?, ?, 'active')
          ON DUPLICATE KEY UPDATE ${subFields.join(", ")}`,
         [id, body.subscriptionPlan || 'free', body.maxVisits || 0, body.usedVisits || 0, ...subValues.slice(0, -1)]
@@ -211,7 +212,7 @@ export const adminUpdateUser = async (
 
     const [rows] = await connection.query<any[] & { length: number }>(
       `SELECT u.id, u.name, u.username, u.email, u.role, u.avatar, u.theme, u.updatedAt,
-              COALESCE(s.plan, 'free') as subscriptionPlan,
+              COALESCE(s.planId, 'free') as subscriptionPlan,
               s.maxVisits, s.usedVisits
        FROM User u
        LEFT JOIN Subscription s ON u.id = s.userId
@@ -234,30 +235,58 @@ export const getUserBenefits = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    // Get user's current plan first
-    const [userRows] = await db.query<any[] & { length: number }>(
-      "SELECT COALESCE(s.plan, 'free') as subscriptionPlan FROM User u LEFT JOIN Subscription s ON u.id = s.userId WHERE u.id = ?",
+    
+    // 1. Get user's current plan and its JSON benefits
+    // We use COALESCE and a JOIN to ensure even users without a Subscription row get the 'free' plan benefits
+    const [planRows] = await db.query<any[] & { length: number }>(
+      `SELECT s.id as subscriptionId, 
+              COALESCE(s.planId, 'free') as planId, 
+              sp.benefits 
+       FROM User u 
+       LEFT JOIN Subscription s ON u.id = s.userId 
+       LEFT JOIN SubscriptionPlan sp ON COALESCE(s.planId, 'free') = sp.planId
+       WHERE u.id = ?`,
       [id]
     );
-    if (userRows.length === 0) {
+
+    if (planRows.length === 0) {
       res.status(404).json({ success: false, message: "User not found" });
       return;
     }
-    const planId = userRows[0].subscriptionPlan;
 
-    // Get all benefits for this plan, joining with user-specific tracking data
-    const [rows] = await db.query(
-      `SELECT sb.id as benefitId, sb.benefitText, sb.planId, 
-              ub.id as userBenefitId, 
-              COALESCE(ub.usedCount, 0) as usedCount, 
-              COALESCE(ub.maxCount, 0) as maxCount, 
-              ub.expiresAt
-       FROM SubscriptionBenefit sb
-       LEFT JOIN UserBenefit ub ON sb.id = ub.benefitId AND ub.userId = ?
-       WHERE sb.planId = ?`,
-      [id, planId]
-    );
-    res.json({ success: true, benefits: rows });
+    const { subscriptionId, benefits: planBenefitsJson } = planRows[0];
+    
+    // Safe JSON parsing: MySQL driver might return string or object
+    let planBenefits = [];
+    if (planBenefitsJson) {
+      planBenefits = typeof planBenefitsJson === 'string' ? JSON.parse(planBenefitsJson) : planBenefitsJson;
+    }
+
+    // 2. Get user's usage tracking from UserBenefit table
+    // If no subscriptionId yet, usage is obviously 0
+    let usageRows: any[] = [];
+    if (subscriptionId) {
+      [usageRows] = await db.query<any[]>(
+        "SELECT * FROM UserBenefit WHERE subscriptionId = ?",
+        [subscriptionId]
+      );
+    }
+
+    // 3. Merge: Map usage onto the plan templates
+    const mergedBenefits = planBenefits.map((pb: any) => {
+      const usage = usageRows.find(u => u.benefitKey === pb.key);
+      return {
+        ...pb,
+        benefitId: pb.key, // UI expects benefitId, we use the key
+        benefitText: pb.text || pb.benefitText || pb.key, // Map name for UI compatibility
+        usedCount: usage ? usage.usedCount : 0,
+        maxCount: pb.limit || pb.maxCount || 0,
+        expiresAt: usage ? usage.expiresAt : null,
+        isIncluded: true
+      };
+    });
+
+    res.json({ success: true, benefits: mergedBenefits });
   } catch (err) {
     next(err);
   }
@@ -271,12 +300,28 @@ export const updateUserBenefit = async (
   try {
     const { id } = req.params;
     const { benefitId, usedCount, maxCount, expiresAt } = req.body;
+    // benefitId here refers to the benefitKey (e.g. 'pt_sessions')
+
+    // 1. Resolve subscriptionId
+    let [subRows] = await db.query<any[]>("SELECT id FROM Subscription WHERE userId = ?", [id]);
     
+    // 2. If no subscription row exists, create a default 'free' one so we can track usage
+    if (subRows.length === 0) {
+      const [insertResult] = await db.query<ResultSetHeader>(
+        "INSERT INTO Subscription (userId, planId, status) VALUES (?, 'free', 'active')",
+        [id]
+      );
+      subRows = [{ id: insertResult.insertId }];
+    }
+    
+    const subscriptionId = subRows[0].id;
+    
+    // 3. Update the benefit usage
     await db.query(
-      `INSERT INTO UserBenefit (userId, benefitId, usedCount, maxCount, expiresAt)
+      `INSERT INTO UserBenefit (subscriptionId, benefitKey, usedCount, maxCount, expiresAt)
        VALUES (?, ?, ?, ?, ?)
        ON DUPLICATE KEY UPDATE usedCount = VALUES(usedCount), maxCount = VALUES(maxCount), expiresAt = VALUES(expiresAt)`,
-      [id, benefitId, usedCount, maxCount, expiresAt]
+      [subscriptionId, benefitId, usedCount, maxCount, expiresAt]
     );
     res.json({ success: true });
   } catch (err) {

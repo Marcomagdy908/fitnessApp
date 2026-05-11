@@ -45,11 +45,14 @@ interface Plan {
 /* ─── Plan Data ──────────────────────────────────────────────── */
 
 /* ─── Tips Data ──────────────────────────────────────────────── */
-const trainingTips = [
+const trainingTipsRaw = [
   { title: "Stay Hydrated", desc: "Drink 0.5–1 L of water before training and sip throughout your session." },
   { title: "Sleep 7–9 hrs", desc: "Muscle is built during rest. Prioritise sleep over extra training volume.", customStyle: { icon: "😴", color: "rgba(123,97,255,0.12)" } },
   { title: "Protein Intake", desc: "Target 1.6–2.2 g of protein per kg of bodyweight every day.", customStyle: { icon: "🥩", color: "rgba(255,107,107,0.12)" } },
   { title: "Track Everything", desc: "Add weight or reps every 1–2 weeks to keep gaining strength." },
+  { title: "Warm Up", desc: "Spend 5-10 minutes warming up to prevent injuries and improve performance." },
+  { title: "Form Over Weight", desc: "Always prioritize perfect form over lifting heavier weights." },
+  { title: "Consistent Schedule", desc: "Training at the same time daily helps build a sustainable habit." }
 ];
 
 /* ─── Badge colour map ────────────────────────────────────────── */
@@ -76,6 +79,13 @@ function Plans() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [randomTips, setRandomTips] = useState<any[]>([]);
+
+  const categories = ["All", ...new Set(plans.map(p => p.goal))];
+  const filteredPlans = activeCategory === "All" 
+    ? plans 
+    : plans.filter(p => p.goal === activeCategory);
 
   useEffect(() => {
     api.get("/api/plans")
@@ -139,6 +149,10 @@ function Plans() {
           });
           setPlans(formattedPlans);
           if (formattedPlans.length > 0) setActiveId(formattedPlans[0].id);
+          
+          // Randomize tips
+          const shuffled = [...trainingTipsRaw].sort(() => 0.5 - Math.random());
+          setRandomTips(shuffled.slice(0, 3));
         }
       })
       .finally(() => setLoading(false));
@@ -167,9 +181,26 @@ function Plans() {
         </p>
       </div>
 
-      {/* ── Tabs ── */}
-      <div className="plans-tabs">
-        {plans.map((p) => (
+      {/* ── Category Filter ── */}
+      <div className="plans-category-tabs">
+        {categories.map(cat => (
+          <button
+            key={cat}
+            className={`cat-tab-btn ${activeCategory === cat ? "active" : ""}`}
+            onClick={() => {
+              setActiveCategory(cat);
+              const firstInCat = cat === "All" ? plans[0] : plans.find(p => p.goal === cat);
+              if (firstInCat) setActiveId(firstInCat.id);
+            }}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Tabs (Filtered) ── */}
+      {/* <div className="plans-tabs">
+        {filteredPlans.map((p) => (
           <button
             key={p.id}
             className={`plan-tab-btn${activeId === p.id ? " active" : ""}`}
@@ -178,7 +209,7 @@ function Plans() {
             {p.name}
           </button>
         ))}
-      </div>
+      </div> */}
 
       {/* ── Hero ── */}
       <div className="plan-hero" style={{ borderColor: `${planStyle.accentColor}33` }}>
@@ -321,7 +352,7 @@ function Plans() {
         Training Tips
       </div>
       <div className="plan-tips">
-        {trainingTips.map((tip, i) => {
+        {randomTips.map((tip, i) => {
           const style = tip.customStyle || NUTRITION_TIP_STYLES[tip.title] || { icon: "💡", color: "rgba(255,255,255,0.05)" };
           return (
             <div key={i} className="tip-card">

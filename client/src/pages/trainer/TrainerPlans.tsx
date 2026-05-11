@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLayerGroup, faDumbbell, faUser, faPen, faTrash, faPlus,
@@ -23,6 +24,8 @@ const emptyPlan = () => ({
 
 /* ─── Component ─────────────────────────────────────── */
 export default function TrainerPlans() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [dbExercises, setDbExercises] = useState<DbExercise[]>([]);
@@ -58,6 +61,15 @@ export default function TrainerPlans() {
   const getUserName = (userId: number | null) => userId ? (users.find(u => u.id === userId)?.name ?? `User #${userId}`) : null;
 
   const openCreate = () => { setForm(emptyPlan()); setPlanExercises([]); setEditingId(null); setModal("create"); setActiveTab("info"); };
+
+  useEffect(() => {
+    if ((location.state as any)?.openCreate) {
+      openCreate();
+      // Clear the state so it doesn't open again on reload
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
+
   const openEdit = (plan: Plan) => {
     setForm({
       name: plan.name, description: plan.description || "", daysPerWeek: plan.daysPerWeek,

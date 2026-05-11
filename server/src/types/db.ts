@@ -3,6 +3,7 @@ import { RowDataPacket } from 'mysql2';
 export interface DietPlanRow extends RowDataPacket {
   id: number;
   userId: number | null;
+  trainerId: number | null;
   planId: string;
   name: string;
   goal: string;
@@ -12,6 +13,7 @@ export interface DietPlanRow extends RowDataPacket {
   carbs: number;
   fat: number;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface DietPlanMealRow extends RowDataPacket {
@@ -63,7 +65,7 @@ export interface ExerciseRow extends RowDataPacket {
 
 export interface AlternativeMealRow extends RowDataPacket {
   id: number;
-  injury: string;
+  injuryType: string;
   icon: string;
   name: string;
   benefit: string;
@@ -101,6 +103,7 @@ export interface WorkoutSessionSetRow extends RowDataPacket {
 export interface WorkoutPlanRow extends RowDataPacket {
   id: number;
   userId: number | null;
+  trainerId: number | null;
   name: string;
   description: string | null;
   daysPerWeek: number;
@@ -168,7 +171,7 @@ export interface TrainerRow extends RowDataPacket {
 export interface SubscriptionRow extends RowDataPacket {
   id: number;
   userId: number;
-  plan: string;
+  planId: string;
   status: string;
   billingCycle: string;
   autoRenew: boolean | number;
@@ -252,6 +255,7 @@ export interface SubscriptionPlanRow extends RowDataPacket {
   annualPrice: number;
   description: string;
   popular: boolean | number;
+  benefits: string | null; // JSON string
   createdAt: Date;
 }
 
@@ -275,4 +279,15 @@ export interface InjuryExcludedExerciseRow extends RowDataPacket {
   restrictionId: number;
   exerciseId: number;
   createdAt: Date;
+}
+
+export interface UserBenefitRow extends RowDataPacket {
+  id: number;
+  subscriptionId: number;
+  benefitKey: string;
+  usedCount: number;
+  maxCount: number;
+  expiresAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 }

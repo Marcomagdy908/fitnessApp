@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUsers,
@@ -26,21 +27,8 @@ const iconMap: any = {
 };
 
 export default function TrainerDashboard() {
-  type ModalState = {
-    open: boolean;
-    type: string;
-    data: ActionItem | null;
-  };
-  type ActionItem = {
-    label: string;
-    description: string;
-  };
+  const navigate = useNavigate();
 
-  const [modal, setModal] = useState<ModalState>({
-    open: false,
-    type: "",
-    data: null,
-  });
 
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<any[]>([]);
@@ -63,13 +51,13 @@ export default function TrainerDashboard() {
   }, []);
 
   const actions = [
-    { label: "Add Exercise", icon: faDumbbell, description: "Create a new workout exercise" },
-    { label: "Create Plan", icon: faLayerGroup, description: "Build a full training plan" },
-    { label: "Add Diet Plan", icon: faAppleWhole, description: "Add nutrition plan for client" },
+    { label: "Add Exercise", icon: faDumbbell, description: "Create a new workout exercise", path: "/exercises" },
+    { label: "Create Plan", icon: faLayerGroup, description: "Build a full training plan", path: "/trainer/plans" },
+    { label: "Add Diet Plan", icon: faAppleWhole, description: "Add nutrition plan for client", path: "/trainer/diet" },
   ];
 
-  const openModal = (item: ActionItem) => {
-    setModal({ open: true, type: item.label, data: item });
+  const handleAction = (item: any) => {
+    navigate(item.path, { state: { openCreate: true } });
   };
 
   return (
@@ -210,7 +198,7 @@ export default function TrainerDashboard() {
                   key={i}
                   className="tr-action-btn"
                   style={{ animationDelay: `${0.3 + i * 0.1}s` }}
-                  onClick={() => openModal(a)}
+                  onClick={() => handleAction(a)}
                 >
                   <div className="tr-action-btn-icon">
                     <FontAwesomeIcon icon={a.icon} />
@@ -227,31 +215,7 @@ export default function TrainerDashboard() {
         </div>
       </div>
 
-      {/* ── Modal ── */}
-      {modal.open && (
-        <div className="tr-modal-overlay" onClick={() => setModal({ open: false, type: "", data: null })}>
-          <div className="tr-modal-box" onClick={(e) => e.stopPropagation()}>
-            <h2>{modal.type}</h2>
-            <p style={{ fontSize: "0.85rem", opacity: 0.6, marginBottom: "1rem" }}>
-              {modal.data?.description}
-            </p>
-            <div className="tr-modal-form">
-              <label>Name</label>
-              <input type="text" placeholder="Enter name" />
-              <label>Description</label>
-              <textarea placeholder="Enter details" />
-              <label>Category</label>
-              <input type="text" placeholder="e.g Chest / Fat Loss" />
-            </div>
-            <div className="tr-modal-actions">
-              <button onClick={() => setModal({ open: false, type: "", data: null })}>Cancel</button>
-              <button onClick={() => { console.log("Saved:", modal); setModal({ open: false, type: "", data: null }); }}>
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }

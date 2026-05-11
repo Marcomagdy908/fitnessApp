@@ -135,6 +135,7 @@ function Diet() {
         setDietPlans(res.data.data);
         if (res.data.data.length > 0) {
           setActivePlanId(res.data.data[0].planId);
+          setActiveCategory("All");
         }
       }
     });
@@ -159,7 +160,13 @@ function Diet() {
       }
     });
   }, []);
-  const [activePlanId, setActivePlanId] = useState<string>("bulk");
+  const [activePlanId, setActivePlanId] = useState<string>("");
+  const [activeCategory, setActiveCategory] = useState<string>("All");
+
+  const categories = ["All", ...new Set(dietPlans.map(p => p.goal))];
+  const filteredPlans = activeCategory === "All" 
+    ? dietPlans 
+    : dietPlans.filter(p => p.goal === activeCategory);
 
 
   /* Tracker State */
@@ -325,9 +332,26 @@ function Diet() {
 
       {primaryTab === "programs" ? (
         <div className="programs-view">
-          {/* ── Tabs ── */}
-          <div className="diet-tabs">
-            {dietPlans.map((p: any) => {
+          {/* ── Category Filter ── */}
+          <div className="diet-category-tabs">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                className={`cat-tab-btn ${activeCategory === cat ? "active" : ""}`}
+                onClick={() => {
+                  setActiveCategory(cat);
+                  const firstInCat = cat === "All" ? dietPlans[0] : dietPlans.find(p => p.goal === cat);
+                  if (firstInCat) setActivePlanId(firstInCat.planId);
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* ── Tabs (Filtered) ── */}
+          {/* <div className="diet-tabs">
+            {filteredPlans.map((p: any) => {
               const style = DIET_PLAN_STYLES[p.planId] || DIET_PLAN_STYLES.default;
               return (
                 <button
@@ -344,7 +368,7 @@ function Diet() {
                 </button>
               );
             })}
-          </div>
+          </div> */}
 
           {/* ── Hero Banner ── */}
           <div

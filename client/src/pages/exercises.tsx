@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Row, Col, Card } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -93,6 +93,7 @@ const makeSet = (id: number, weight: string, reps: string, done = false): ExSet 
 /* ─── Component ──────────────────────────────────────────────── */
 function Exercises() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [primaryTab, setPrimaryTab] = useState<"library" | "tracker">("library");
 
   /* Library State */
@@ -113,6 +114,14 @@ function Exercises() {
   const [dismissedInjuries, setDismissedInjuries] = useState<string[]>([]);
   const [profileInjuries, setProfileInjuries] = useState<string[]>([]);
   const [injuryRestrictions, setInjuryRestrictions] = useState<Record<string, { avoid: string[]; tip: string }>>({});
+
+  useEffect(() => {
+    if ((location.state as any)?.openCreate) {
+      setPrimaryTab("tracker");
+      setShowQuickAdd(true);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
 
   useEffect(() => {
     api.get("/api/injuries")

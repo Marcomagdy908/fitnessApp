@@ -5,29 +5,7 @@ import { AuthRequest } from "../middleware/auth";
 import { TrainerBookingRow, TrainerRow, PaymentRow } from "../types/db";
 import { ResultSetHeader } from "mysql2";
 
-/* Ensure Payment table exists */
-const ensurePaymentTable = async () => {
-  await db.query(`
-    CREATE TABLE IF NOT EXISTS Payment (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      trainerBookingId INT DEFAULT NULL,
-      classBookingId INT DEFAULT NULL,
-      subscriptionId INT DEFAULT NULL,
-      amount FLOAT NOT NULL DEFAULT 0,
-      currency VARCHAR(10) NOT NULL DEFAULT 'USD',
-      status ENUM('pending', 'completed', 'failed', 'refunded') NOT NULL DEFAULT 'pending',
-      method VARCHAR(50) DEFAULT NULL,
-      transactionRef VARCHAR(255) DEFAULT NULL,
-      paidAt DATETIME DEFAULT NULL,
-      createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      FOREIGN KEY (trainerBookingId) REFERENCES TrainerBooking(id) ON DELETE CASCADE,
-      FOREIGN KEY (classBookingId) REFERENCES GymClassBooking(id) ON DELETE CASCADE,
-      FOREIGN KEY (subscriptionId) REFERENCES Subscription(id) ON DELETE CASCADE
-    )
-  `);
-};
-ensurePaymentTable().catch(() => {});
+// Table creation is handled by schema.sql and init.ts
 
 const bookingSchema = z.object({
   trainerId: z.number(),
@@ -53,7 +31,7 @@ export const getMyBookings = async (
     const [rows] = await db.query<TrainerBookingRow[] & { length: number }>(
       `SELECT tb.*,
          t.name as trainerName, t.avatar as trainerAvatar,
-         t.specialty as trainerSpecialty, t.specialtyColor as trainerSpecialtyColor,
+         t.specialty as trainerSpecialty, 
          t.imageUrl as trainerImageUrl,
          p.id as paymentId, p.status as paymentStatus, p.method as paymentMethod,
          p.amount as paymentAmount, p.paidAt
