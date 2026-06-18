@@ -19,6 +19,7 @@ import TrainerProfile from "./pages/trainer/trainerProfile";
 import { useAuth, AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { SubscriptionProvider } from "./context/SubscriptionContext";
+import { SearchProvider } from "./context/SearchContext";
 import { Navigate } from "react-router-dom";
 import TrainerDashboard from "./pages/trainer/TrainerDashboard";
 import TrainerPlans from "./pages/trainer/TrainerPlans";
@@ -66,8 +67,9 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <SubscriptionProvider>
-          <BrowserRouter>
-            <Routes>
+          <SearchProvider>
+            <BrowserRouter>
+              <Routes>
               {/* Auth routes without sidebar/navbar */}
               {/* Root logic: landing if guest, dashboard if logged in */}
               <Route path="/" element={<RootRoute />} />
@@ -105,6 +107,7 @@ function App() {
               </Route>
             </Routes>
           </BrowserRouter>
+          </SearchProvider>
         </SubscriptionProvider>
       </ThemeProvider>
     </AuthProvider>

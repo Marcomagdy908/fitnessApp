@@ -15,6 +15,7 @@ import {
   faCheckCircle,
   faLightbulb,
   faWeight,
+  faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/exerciseDetails.css";
 
@@ -594,7 +595,7 @@ function ExerciseDetails() {
             {/* Common Mistakes */}
             <div className="ed-card">
               <h3 className="ed-card-title ed-mistakes-title">
-                <span className="ed-mistakes-icon">⚠</span>
+                <span className="ed-mistakes-icon"><FontAwesomeIcon icon={faTriangleExclamation} /></span>
                 Common Mistakes
               </h3>
               <ul className="ed-list">

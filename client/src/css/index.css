@@ -1,26 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Syne:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap");
+
 :root {
   /* ── Dark Theme (Default) ──────────────── */
-  --bg-primary: #000000;
-  --bg-secondary: #0d0d0d;
-  --bg-navbar: #050505;
-  --bg-card: linear-gradient(135deg, #0d0d0d 0%, #141414 100%);
+  --bg-primary: #07080b;
+  --bg-secondary: #0c0d12;
+  --bg-navbar: rgba(13, 14, 18, 0.75);
+  --bg-card: rgba(13, 14, 18, 0.75);
   --bg-surface: rgba(255, 255, 255, 0.03);
   
-  --text-primary: #f0f0f0;
-  --text-secondary: #888888;
-  --text-dim: #555555;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-dim: rgba(255, 255, 255, 0.35);
   --text-inverse: #000000;
   
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-light: rgba(255, 255, 255, 0.04);
+  --border-color: rgba(255, 255, 255, 0.07);
+  --border-light: rgba(255, 255, 255, 0.03);
   
-  --accent-cyan: #3dffff;
-  --accent-cyan-dim: rgba(61, 255, 255, 0.15);
-  --accent-cyan-border: rgba(61, 255, 255, 0.3);
+  --accent-cyan: #05ffda;
+  --accent-cyan-dim: rgba(5, 255, 218, 0.08);
+  --accent-cyan-border: rgba(5, 255, 218, 0.3);
+  --accent-cyan-rgb: 5, 255, 218;
   
   --accent-purple: #a98dff;
-  --accent-purple-dim: rgba(123, 97, 255, 0.18);
-  --accent-purple-border: rgba(123, 97, 255, 0.35);
+  --accent-purple-dim: rgba(169, 141, 255, 0.15);
+  --accent-purple-border: rgba(169, 141, 255, 0.3);
   
   --danger: #ff5050;
   --danger-dim: rgba(255, 80, 80, 0.1);
@@ -34,10 +37,10 @@
   --accent-gold: #ffc832;
   --accent-gold-dim: rgba(255, 200, 50, 0.15);
 
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+  --shadow-sm: 0 10px 30px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 15px 45px rgba(0, 0, 0, 0.5);
 
-  font-family: "Courier New", Courier, monospace;
+  font-family: "Inter", sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -53,13 +56,13 @@
 
 :root[data-theme="light"] {
   /* ── Light Theme ───────────────────────── */
-  --bg-primary: #f8f9fa;
+  --bg-primary: #f3f4f6;
   --bg-secondary: #ffffff;
-  --bg-navbar: #111827; /* Darker Navy/Gray for contrast in Light Mode */
-  --bg-card: linear-gradient(135deg, #ffffff 0%, #f1f3f5 100%);
+  --bg-navbar: rgba(255, 255, 255, 0.75);
+  --bg-card: rgba(255, 255, 255, 0.85);
   --bg-surface: rgba(0, 0, 0, 0.03);
   
-  --text-primary: #1a1d23;
+  --text-primary: #0b0c10;
   --text-secondary: #4b5563;
   --text-dim: #9ca3af;
   --text-inverse: #ffffff;
@@ -67,13 +70,14 @@
   --border-color: rgba(0, 0, 0, 0.08);
   --border-light: rgba(0, 0, 0, 0.04);
   
-  --accent-cyan: #0e7490;
-  --accent-cyan-dim: rgba(14, 116, 144, 0.1);
-  --accent-cyan-border: rgba(14, 116, 144, 0.2);
+  --accent-cyan: #0a848f;
+  --accent-cyan-dim: rgba(10, 132, 143, 0.06);
+  --accent-cyan-border: rgba(10, 132, 143, 0.2);
+  --accent-cyan-rgb: 10, 132, 143;
   
-  --accent-purple: #7c3aed;
-  --accent-purple-dim: rgba(124, 58, 237, 0.1);
-  --accent-purple-border: rgba(124, 58, 237, 0.2);
+  --accent-purple: #6d28d9;
+  --accent-purple-dim: rgba(109, 40, 217, 0.06);
+  --accent-purple-border: rgba(109, 40, 217, 0.2);
   
   --danger: #dc2626;
   --danger-dim: rgba(220, 38, 38, 0.08);
@@ -87,8 +91,8 @@
   --accent-gold: #b45309;
   --accent-gold-dim: rgba(180, 83, 9, 0.1);
 
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --shadow-sm: 0 10px 30px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 15px 45px rgba(0, 0, 0, 0.08);
 }
 
 body {
@@ -97,9 +101,10 @@ body {
   margin: 0;
 }
 
-.navbar-container {
-  width: 85% !important;
-  height: 8vh !important;
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Space Grotesk", sans-serif;
+  letter-spacing: -0.02em;
 }
 
 h5 {
@@ -109,23 +114,17 @@ h5 {
 /* Desktop (>1200px): sidebar is fixed 220px, main content offset */
 .main-content {
   margin-left: 220px;
-  padding-top: 8vh;
+  padding-top: 6.5rem;
   min-height: 100vh;
   width: calc(100% - 220px);
 }
 
 /* Overlay mode & mobile: sidebar is not in flow, content is full-width */
 @media (max-width: 1200px) {
-  .navbar-container {
-    width: 100% !important;
-    left: 0 !important;
-    right: 0 !important;
-  }
-
   .main-content {
     margin-left: 0;
     width: 100%;
-    padding-top: 8vh;
+    padding-top: 6.5rem;
   }
 }
 

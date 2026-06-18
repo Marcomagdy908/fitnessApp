@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { usePageFadeIn } from "../hooks/usePageFadeIn";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Row, Col, Card } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -25,6 +26,7 @@ import {
 import "../css/exercises.css";
 import { api } from "../utils/api";
 import { nameToId } from "../utils/exerciseUtils";
+import { useSearch } from "../context/SearchContext";
 
 /* ─── Types ──────────────────────────────────────────────────── */
 interface Exercise {
@@ -101,7 +103,7 @@ function Exercises() {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeDifficulty, setActiveDifficulty] = useState("all");
-  const [search, setSearch] = useState("");
+  const { searchQuery: search, setSearchQuery: setSearch } = useSearch();
 
   /* Tracker State */
   const [trackedExercises, setTrackedExercises] = useState<ExEntry[]>([]);
@@ -114,6 +116,11 @@ function Exercises() {
   const [dismissedInjuries, setDismissedInjuries] = useState<string[]>([]);
   const [profileInjuries, setProfileInjuries] = useState<string[]>([]);
   const [injuryRestrictions, setInjuryRestrictions] = useState<Record<string, { avoid: string[]; tip: string }>>({});
+
+  const containerRef = usePageFadeIn<HTMLDivElement>(
+    ".exercise-card, .ex-stat, .ex-card, .ex-injury-card",
+    [primaryTab, activeCategory, activeDifficulty, trackedExercises.length]
+  );
 
   useEffect(() => {
     if ((location.state as any)?.openCreate) {
@@ -257,7 +264,7 @@ function Exercises() {
   const exerciseNames = trackedExercises.map((e) => e.name);
 
   return (
-    <div className="exercises-page">
+    <div className="exercises-page" ref={containerRef}>
       {/* ── Header ── */}
       <h1 className="exercises-title">
         <FontAwesomeIcon icon={faDumbbell} className="me-2" style={{ color: "var(--accent-cyan)" }} />
@@ -499,7 +506,7 @@ function Exercises() {
           <div className="ex-list">
             {trackedExercises.length === 0 && (
               <div className="ex-empty">
-                <div className="ex-empty-icon">💪</div>
+                <div className="ex-empty-icon"><FontAwesomeIcon icon={faDumbbell} /></div>
                 <div>No exercises in this session.</div>
               </div>
             )}

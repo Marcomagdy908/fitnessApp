@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
 import "../css/dashboard.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDumbbell, faBullseye, faFire, faChartLine,
   faClipboardList, faArrowTrendDown, faCalendarWeek,
-  faStopwatch, faCrown, faCalendarCheck, faUserTie, faCalendarAlt
+  faStopwatch, faCrown, faCalendarCheck, faUserTie, faCalendarAlt,
+  faPause, faPlay, faRotateRight, faCheck
 } from "@fortawesome/free-solid-svg-icons";
 import { api } from "../utils/api";
 import {
@@ -126,11 +128,27 @@ function TimerRing({ timer }: { timer: ReturnType<typeof useTimer> }) {
       </div>
       <div className="ud-timer-btns">
         <button className="ud-timer-btn" onClick={timer.toggle}>
-          {timer.running ? "⏸ Pause" : timer.seconds === 0 ? "🔁 Again" : "▶ Start"}
+          {timer.running ? (
+            <>
+              <FontAwesomeIcon icon={faPause} className="me-1" /> Pause
+            </>
+          ) : timer.seconds === 0 ? (
+            <>
+              <FontAwesomeIcon icon={faRotateRight} className="me-1" /> Again
+            </>
+          ) : (
+            <>
+              <FontAwesomeIcon icon={faPlay} className="me-1" /> Start
+            </>
+          )}
         </button>
         <button className="ud-timer-btn ud-timer-btn-ghost" onClick={timer.reset}>Reset</button>
       </div>
-      {done && <div className="ud-timer-done-msg">✅ Next set!</div>}
+      {done && (
+        <div className="ud-timer-done-msg">
+          <FontAwesomeIcon icon={faCheck} className="me-1" /> Next set!
+        </div>
+      )}
     </div>
   );
 }
@@ -164,8 +182,35 @@ export default function Dashboard() {
   const today = new Date().getDay();
   const doneIndices = dash.weeklyActivity;
 
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (wrapperRef.current && dash !== INITIAL) {
+      const ctx = gsap.context(() => {
+        gsap.fromTo(
+          ".ud-dash-card",
+          {
+            opacity: 0,
+            y: 40,
+            scale: 0.95,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.6,
+            stagger: 0.05,
+            ease: "back.out(1.2)",
+            clearProps: "all",
+          }
+        );
+      }, wrapperRef);
+      return () => ctx.revert();
+    }
+  }, [dash]);
+
   return (
-    <div className="ud-dashboard-wrapper">
+    <div className="ud-dashboard-wrapper" ref={wrapperRef}>
       <div className="ud-dash-grid">
         {/* ══ COLUMN 1 ══════════════════════════ */}
         <div className="ud-dash-col">
@@ -329,7 +374,10 @@ export default function Dashboard() {
               </div>
               <div className="ud-stat-box">
                 <div className="ud-stat-label">Streak</div>
-                <div className="ud-stat-value">🔥 {dash.streak}</div>
+                <div className="ud-stat-value">
+                  <FontAwesomeIcon icon={faFire} className="me-1" style={{ color: "#ffc832" }} />
+                  {dash.streak}
+                </div>
                 <div className="ud-progress-track">
                   <div className="ud-progress-fill" style={{ width: `${Math.min(100, (dash.streak / 7) * 100)}%` }} />
                 </div>
@@ -347,7 +395,7 @@ export default function Dashboard() {
               {[
                 { label: "Weight", value: dash.todayWeight ? `${dash.todayWeight}` : "—", unit: "kg", pct: dash.todayWeight ? Math.min(100, (dash.todayWeight / 100) * 100) : 0 },
                 { label: "Calories", value: `${dash.todayCaloriesLogged}`, unit: "kcal", pct: Math.min(100, (dash.todayCaloriesLogged / 2400) * 100) },
-                { label: "Streak", value: `🔥${dash.streak}`, unit: "days", pct: Math.min(100, (dash.streak / 7) * 100) },
+                { label: "Streak", value: `${dash.streak}`, unit: "days", pct: Math.min(100, (dash.streak / 7) * 100) },
               ].map((s) => (
                 <div className="ud-stat-box" key={s.label}>
                   <div className="ud-stat-label">{s.label}</div>

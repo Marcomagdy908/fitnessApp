@@ -78,11 +78,47 @@
 }
 
 /* ── Program Tabs (Internal) ──────────────────────────────── */
-.diet-category-tabs {
+.diet-category-tabs,
+.diet-tabs {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+}
+
+.diet-category-tabs {
+  margin-bottom: 0.75rem;
+}
+
+.diet-tabs {
+  margin-bottom: 1.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Custom sleek scrollbars for tabs */
+.diet-category-tabs::-webkit-scrollbar,
+.diet-tabs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.diet-category-tabs::-webkit-scrollbar-track,
+.diet-tabs::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 999px;
+}
+
+.diet-category-tabs::-webkit-scrollbar-thumb,
+.diet-tabs::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+}
+
+.diet-category-tabs::-webkit-scrollbar-thumb:hover,
+.diet-tabs::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-cyan);
 }
 
 .cat-tab-btn {
@@ -97,6 +133,7 @@
   transition: all 0.2s;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  flex-shrink: 0;
 }
 
 .cat-tab-btn:hover {
@@ -111,15 +148,6 @@
   box-shadow: 0 0 15px var(--accent-cyan-dim);
 }
 
-.diet-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  padding-top: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
 .diet-tab-btn {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
@@ -132,6 +160,7 @@
   padding: 0.4rem 1.2rem;
   cursor: pointer;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .diet-tab-btn:hover {

@@ -77,7 +77,9 @@ function SidebarNavigation() {
       onClick={() => handleNavigate("/")}
     >
       <Link to="/" className="lp-nav-brand">
-        <div className="lp-nav-icon">⚡</div>
+        <div className="lp-nav-icon">
+          <img src="/vite.svg" alt="logo" style={{ width: "24px", height: "24px" }} />
+        </div>
         <span className="lp-nav-name">
           Fit<span>Forge</span>
         </span>

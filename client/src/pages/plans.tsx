@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { usePageFadeIn } from "../hooks/usePageFadeIn";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { api } from "../utils/api";
+import { useSearch } from "../context/SearchContext";
 import {
   faCalendarDays,
   faClock,
@@ -9,6 +11,10 @@ import {
   faRotate,
   faBolt,
   faChartLine,
+  faMoon,
+  faUtensils,
+  faBed,
+  faLightbulb
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/plans.css";
 import { DIET_PLAN_STYLES, NUTRITION_TIP_STYLES } from "../utils/styleMappings";
@@ -47,8 +53,8 @@ interface Plan {
 /* ─── Tips Data ──────────────────────────────────────────────── */
 const trainingTipsRaw = [
   { title: "Stay Hydrated", desc: "Drink 0.5–1 L of water before training and sip throughout your session." },
-  { title: "Sleep 7–9 hrs", desc: "Muscle is built during rest. Prioritise sleep over extra training volume.", customStyle: { icon: "😴", color: "rgba(123,97,255,0.12)" } },
-  { title: "Protein Intake", desc: "Target 1.6–2.2 g of protein per kg of bodyweight every day.", customStyle: { icon: "🥩", color: "rgba(255,107,107,0.12)" } },
+  { title: "Sleep 7–9 hrs", desc: "Muscle is built during rest. Prioritise sleep over extra training volume.", customStyle: { icon: faMoon, color: "rgba(123,97,255,0.12)" } },
+  { title: "Protein Intake", desc: "Target 1.6–2.2 g of protein per kg of bodyweight every day.", customStyle: { icon: faUtensils, color: "rgba(255,107,107,0.12)" } },
   { title: "Track Everything", desc: "Add weight or reps every 1–2 weeks to keep gaining strength." },
   { title: "Warm Up", desc: "Spend 5-10 minutes warming up to prevent injuries and improve performance." },
   { title: "Form Over Weight", desc: "Always prioritize perfect form over lifting heavier weights." },
@@ -82,10 +88,19 @@ function Plans() {
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [randomTips, setRandomTips] = useState<any[]>([]);
 
+  const { searchQuery } = useSearch();
+
+  const containerRef = usePageFadeIn<HTMLDivElement>(".day-card, .tip-card, .plan-hero", [activeId]);
+
   const categories = ["All", ...new Set(plans.map(p => p.goal))];
-  const filteredPlans = activeCategory === "All" 
-    ? plans 
-    : plans.filter(p => p.goal === activeCategory);
+  const filteredPlans = plans.filter(p => {
+    const matchesCategory = activeCategory === "All" || p.goal === activeCategory;
+    const matchesSearch = searchQuery.trim() === "" ||
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (p.goal && p.goal.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
 
   useEffect(() => {
     api.get("/api/plans")
@@ -169,7 +184,7 @@ function Plans() {
   const totalSets = activeDays.reduce((s, d) => s + d.totalSets, 0);
 
   return (
-    <div className="plans-page">
+    <div className="plans-page" ref={containerRef}>
       {/* ── Header ── */}
       <div className="plans-header">
         <h1 className="plans-title">
@@ -199,7 +214,7 @@ function Plans() {
       </div>
 
       {/* ── Tabs (Filtered) ── */}
-      {/* <div className="plans-tabs">
+      <div className="plans-tabs">
         {filteredPlans.map((p) => (
           <button
             key={p.id}
@@ -209,7 +224,7 @@ function Plans() {
             {p.name}
           </button>
         ))}
-      </div> */}
+      </div>
 
       {/* ── Hero ── */}
       <div className="plan-hero" style={{ borderColor: `${planStyle.accentColor}33` }}>
@@ -286,7 +301,9 @@ function Plans() {
                 </span>
               </div>
               <div className="rest-content">
-                <div className="rest-icon">🛌</div>
+                <div className="rest-icon">
+                  <FontAwesomeIcon icon={faBed} />
+                </div>
                 Recovery & light stretching
               </div>
             </div>
@@ -353,11 +370,11 @@ function Plans() {
       </div>
       <div className="plan-tips">
         {randomTips.map((tip, i) => {
-          const style = tip.customStyle || NUTRITION_TIP_STYLES[tip.title] || { icon: "💡", color: "rgba(255,255,255,0.05)" };
+          const style = tip.customStyle || NUTRITION_TIP_STYLES[tip.title] || { icon: faLightbulb, color: "rgba(255,255,255,0.05)" };
           return (
             <div key={i} className="tip-card">
               <div className="tip-icon-wrap" style={{ background: style.color }}>
-                {style.icon}
+                {typeof style.icon === "string" ? style.icon : <FontAwesomeIcon icon={style.icon} />}
               </div>
               <div className="tip-text-wrap">
                 <div className="tip-title">{tip.title}</div>

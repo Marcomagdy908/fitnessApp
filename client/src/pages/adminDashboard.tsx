@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageFadeIn } from "../hooks/usePageFadeIn";
 import { Row, Col, Card, Table, Badge, Modal, Form, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,6 +11,7 @@ import { Tabs, Tab } from "react-bootstrap";
 import "../css/dashboard.css";
 import "../css/admin.css";
 import { api } from "../utils/api";
+import { useSearch } from "../context/SearchContext";
 
 type User = {
   id: number;
@@ -57,7 +59,7 @@ export default function AdminDashboard() {
     theme: "dark"
   });
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const { searchQuery: searchTerm, setSearchQuery: setSearchTerm } = useSearch();
   const [userBenefits, setUserBenefits] = useState<UserBenefit[]>([]);
   const [loadingBenefits, setLoadingBenefits] = useState(false);
 
@@ -70,6 +72,11 @@ export default function AdminDashboard() {
     benefitText: '',
     isIncluded: true
   });
+
+  const containerRef = usePageFadeIn<HTMLDivElement>(
+    ".ud-dash-card",
+    [activeTab, users.length, benefits.length]
+  );
 
   const stats = [
     { label: "Total Users", value: users.length.toString(), icon: faUsers, color: "var(--accent-cyan)" },
@@ -179,7 +186,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="ud-dashboard-wrapper">
+    <div className="ud-dashboard-wrapper" ref={containerRef}>
       <div className="admin-header d-flex justify-content-between align-items-end">
         <div>
           <div className="ud-dash-card-title mb-1">

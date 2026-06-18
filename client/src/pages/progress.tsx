@@ -1,4 +1,5 @@
 import { Row, Col, Card } from "react-bootstrap";
+import { usePageFadeIn } from "../hooks/usePageFadeIn";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFire,
@@ -79,6 +80,11 @@ function Progress() {
     date: new Date().toISOString().slice(0, 16)
   });
 
+  const containerRef = usePageFadeIn<HTMLDivElement>(
+    ".prog-stat-card, .prog-card",
+    [loading]
+  );
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -154,7 +160,7 @@ function Progress() {
   };
 
   return (
-    <div className="progress-page">
+    <div className="progress-page" ref={containerRef}>
       <div className="prog-header-row mb-4">
         <div>
           <h1 className="prog-page-title mb-0">
@@ -452,7 +458,10 @@ function Progress() {
                 <div className="prog-cstat-label">Adherence</div>
               </div>
               <div className="prog-cstat">
-                <div className="prog-cstat-val">🔥{summary.streak}</div>
+                <div className="prog-cstat-val">
+                  <FontAwesomeIcon icon={faFire} className="me-1" style={{ color: "#ff6b6b" }} />
+                  {summary.streak}
+                </div>
                 <div className="prog-cstat-label">Streak</div>
               </div>
             </div>

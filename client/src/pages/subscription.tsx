@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageFadeIn } from "../hooks/usePageFadeIn";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCrown,
@@ -11,12 +12,9 @@ import {
   faUsers,
   faUserTie,
   faCalendarCheck,
-  faShieldHalved,
-  faTrophy,
   faPhoneVolume,
   faDroplet,
 } from "@fortawesome/free-solid-svg-icons";
-import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { useSubscription } from "../context/SubscriptionContext";
 import { api } from "../utils/api";
 import PaymentModal, { type PaymentBooking } from "../components/PaymentModal";
@@ -67,6 +65,11 @@ function Subscription() {
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
+
+  const containerRef = usePageFadeIn<HTMLDivElement>(
+    ".active-mem-card, .sub-card, .sub-stat-card, .facility-card",
+    [billingCycle, loading, subscription]
+  );
   const [payingPlan, setPayingPlan] = useState<PaymentBooking | null>(null);
 
   useEffect(() => {
@@ -113,9 +116,9 @@ function Subscription() {
   };
 
   return (
-    <div className="sub-page">
+    <div className="sub-page" ref={containerRef}>
       {/* ── Active Membership Status ── */}
-      {subscription && subscription.plan && subscription.plan !== 'free' && (
+      {subscription ? (
         <div className="active-mem-container">
           <div className="active-mem-card">
             <div className="active-mem-header">
@@ -124,7 +127,7 @@ function Subscription() {
                 Current Status: {(subscription.status || 'active').toUpperCase()}
               </div>
               <div className="active-mem-plan">
-                {subscription.plan.toUpperCase()} PLAN
+                {(subscription.plan || 'free').toUpperCase()} PLAN
               </div>
             </div>
             <div className="active-mem-body">
@@ -136,17 +139,45 @@ function Subscription() {
               </div>
               <div className="active-mem-info">
                 <span className="label">Billing Cycle:</span>
-                <span className="value">{subscription.billingCycle}</span>
+                <span className="value">{subscription.billingCycle || 'N/A'}</span>
+              </div>
+              {subscription.plan && subscription.plan !== 'free' && (
+                <>
+                  <div className="active-mem-info">
+                    <span className="label">Auto Renew:</span>
+                    <span className="value">{subscription.autoRenew ? 'Enabled' : 'Disabled'}</span>
+                  </div>
+                  {subscription.autoRenew ? (
+                    <button className="active-mem-manage-btn cancel" onClick={handleCancel}>Cancel Subscription</button>
+                  ) : (
+                    <p className="cancel-note">Your subscription will end on {subscription.expiresAt ? new Date(subscription.expiresAt).toLocaleDateString() : 'N/A'}</p>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="active-mem-container">
+          <div className="active-mem-card">
+            <div className="active-mem-header">
+              <div className="active-mem-badge">
+                <FontAwesomeIcon icon={faCrown} />
+                Current Status: ACTIVE
+              </div>
+              <div className="active-mem-plan">
+                FREE PLAN
+              </div>
+            </div>
+            <div className="active-mem-body">
+              <div className="active-mem-info">
+                <span className="label">Next Billing:</span>
+                <span className="value">N/A</span>
               </div>
               <div className="active-mem-info">
-                <span className="label">Auto Renew:</span>
-                <span className="value">{subscription.autoRenew ? 'Enabled' : 'Disabled'}</span>
+                <span className="label">Billing Cycle:</span>
+                <span className="value">N/A</span>
               </div>
-              {subscription.autoRenew ? (
-                <button className="active-mem-manage-btn cancel" onClick={handleCancel}>Cancel Subscription</button>
-              ) : (
-                <p className="cancel-note">Your subscription will end on {new Date(subscription.expiresAt!).toLocaleDateString()}</p>
-              )}
             </div>
           </div>
         </div>

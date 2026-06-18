@@ -68,10 +68,10 @@ function maskCardNumber(num: string) {
 
 function detectNetwork(num: string): string {
   const d = num.replace(/\D/g, "");
-  if (d.startsWith("4")) return "💳 VISA";
-  if (d.startsWith("5")) return "💳 MC";
-  if (d.startsWith("3")) return "💳 AMEX";
-  return "💳";
+  if (d.startsWith("4")) return "VISA";
+  if (d.startsWith("5")) return "MC";
+  if (d.startsWith("3")) return "AMEX";
+  return "";
 }
 
 function formatDate(iso: string) {
@@ -121,7 +121,7 @@ export default function PaymentModal({ booking, onClose, onPaid }: Props) {
 
       if (booking.type === 'subscription') {
         await api.post("/api/subscriptions", {
-          plan: booking.planId,
+          planId: booking.planId,
           billingCycle: booking.billingCycle,
           paymentMethod: method,
           transactionRef: ref,
@@ -296,6 +296,7 @@ export default function PaymentModal({ booking, onClose, onPaid }: Props) {
                     <div className="pm-card-value-sm">{expiry || "MM/YY"}</div>
                   </div>
                   <div className="pm-card-network">
+                    <FontAwesomeIcon icon={faCreditCard} style={{ marginRight: "4px" }} />
                     {detectNetwork(cardNumber)}
                   </div>
                 </div>

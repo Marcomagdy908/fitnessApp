@@ -11,7 +11,10 @@ import {
   faPersonRunning,
   faMedal,
   faAppleWhole,
-  faUtensils
+  faUtensils,
+  faDroplet,
+  faClock,
+  faTag
 } from "@fortawesome/free-solid-svg-icons";
 
 export const SUBSCRIPTION_PLAN_STYLES: Record<string, any> = {
@@ -84,20 +87,20 @@ export const DIET_PLAN_STYLES: Record<string, any> = {
 };
 
 export const TRAINER_STYLES: Record<string, any> = {
-  "Powerlifting & Strength": { icon: faDumbbell, color: "#ff6b6b", avatar: "🏋️" },
-  "Yoga & Flexibility": { icon: faLeaf, color: "#a98dff", avatar: "🧘" },
-  "HIIT & Fat Loss": { icon: faFire, color: "#ffc832", avatar: "🔥" },
-  "Pilates & Core": { icon: faHeartPulse, color: "#50e678", avatar: "🌿" },
-  "Running & Endurance": { icon: faPersonRunning, color: "#3dffff", avatar: "🏃" },
-  "Hypertrophy & Aesthetics": { icon: faMedal, color: "#ff9f43", avatar: "💎" },
-  "General Fitness": { icon: faAppleWhole, color: "var(--accent-cyan)", avatar: "🏋️" },
+  "Powerlifting & Strength": { icon: faDumbbell, color: "#ff6b6b", avatar: "P" },
+  "Yoga & Flexibility": { icon: faLeaf, color: "#a98dff", avatar: "Y" },
+  "HIIT & Fat Loss": { icon: faFire, color: "#ffc832", avatar: "H" },
+  "Pilates & Core": { icon: faHeartPulse, color: "#50e678", avatar: "P" },
+  "Running & Endurance": { icon: faPersonRunning, color: "#3dffff", avatar: "R" },
+  "Hypertrophy & Aesthetics": { icon: faMedal, color: "#ff9f43", avatar: "H" },
+  "General Fitness": { icon: faAppleWhole, color: "var(--accent-cyan)", avatar: "G" },
 };
 
 export const NUTRITION_TIP_STYLES: Record<string, any> = {
-  "Stay Hydrated": { icon: "💧", color: "rgba(61,255,255,0.12)" },
-  "Meal Timing": { icon: "⏰", color: "rgba(255,200,50,0.12)" },
-  "Micronutrients": { icon: "🥦", color: "rgba(80,230,120,0.12)" },
-  "Track Everything": { icon: "🏷️", color: "rgba(169,141,255,0.12)" },
+  "Stay Hydrated": { icon: faDroplet, color: "rgba(61,255,255,0.12)" },
+  "Meal Timing": { icon: faClock, color: "rgba(255,200,50,0.12)" },
+  "Micronutrients": { icon: faLeaf, color: "rgba(80,230,120,0.12)" },
+  "Track Everything": { icon: faTag, color: "rgba(169,141,255,0.12)" },
 };
 
 export const GYM_CLASS_STYLES: Record<string, string> = {

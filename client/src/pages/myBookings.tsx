@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageFadeIn } from "../hooks/usePageFadeIn";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarCheck,
@@ -20,6 +21,7 @@ import "../css/myBookings.css";
 import { api } from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import PaymentModal, { type PaymentBooking } from "../components/PaymentModal";
+import { useSearch } from "../context/SearchContext";
 
 /* ─── Types ─────────────────────────────────────────────────── */
 interface TrainerBooking {
@@ -123,8 +125,43 @@ function MyBookings() {
   const [trainers, setTrainers] = useState<TrainerCard[]>([]);
   const [trainersLoading, setTrainersLoading] = useState(true);
 
+  const containerRef = usePageFadeIn<HTMLDivElement>(
+    ".booking-card, .class-card, .trainer-card",
+    [primaryTab, bookingsLoading, classesLoading, trainersLoading]
+  );
+
   /* Payment modal */
   const [payingBooking, setPayingBooking] = useState<PaymentBooking | null>(null);
+
+  const { searchQuery } = useSearch();
+
+  const filteredBookings = bookings.filter(b => {
+    if (searchQuery.trim() === "") return true;
+    const q = searchQuery.toLowerCase();
+    return b.trainerName.toLowerCase().includes(q) ||
+      (b.trainerSpecialty && b.trainerSpecialty.toLowerCase().includes(q)) ||
+      (b.status && b.status.toLowerCase().includes(q)) ||
+      (b.notes && b.notes.toLowerCase().includes(q));
+  });
+
+  const filteredClasses = classes.filter(c => {
+    if (searchQuery.trim() === "") return true;
+    const q = searchQuery.toLowerCase();
+    return c.name.toLowerCase().includes(q) ||
+      (c.description && c.description.toLowerCase().includes(q)) ||
+      (c.trainerName && c.trainerName.toLowerCase().includes(q)) ||
+      (c.requiredPlan && c.requiredPlan.toLowerCase().includes(q));
+  });
+
+  const filteredTrainers = trainers.filter(t => {
+    if (searchQuery.trim() === "") return true;
+    const q = searchQuery.toLowerCase();
+    const tagMatch = Array.isArray(t.tags) && t.tags.some(tag => tag.toLowerCase().includes(q));
+    return t.name.toLowerCase().includes(q) ||
+      (t.specialty && t.specialty.toLowerCase().includes(q)) ||
+      (t.bio && t.bio.toLowerCase().includes(q)) ||
+      tagMatch;
+  });
 
   /* ── Load real data ── */
   useEffect(() => {
@@ -177,7 +214,7 @@ function MyBookings() {
   };
 
   return (
-    <div className="bookings-page">
+    <div className="bookings-page" ref={containerRef}>
       <div className="bookings-header">
         <h1 className="bookings-title">
           <FontAwesomeIcon icon={faCalendarCheck} className="me-2" />
@@ -220,14 +257,20 @@ function MyBookings() {
             <div className="section-empty">
               You have no bookings yet. Browse our trainers to book your first session!
             </div>
+          ) : filteredBookings.length === 0 ? (
+            <div className="section-empty">
+              No sessions found matching your search.
+            </div>
           ) : (
             <div className="bookings-list">
-              {bookings.map(b => (
+              {filteredBookings.map(b => (
                 <div key={b.id} className={`booking-card ${b.status}`}>
                   <StatusBadge status={b.status} />
                   <div className="booking-card-main">
                     <div className="trainer-info">
-                      <div className="trainer-avatar-mini">{b.trainerAvatar || "🏋️"}</div>
+                      <div className="trainer-avatar-mini">
+                        {b.trainerAvatar || <FontAwesomeIcon icon={faUserTie} />}
+                      </div>
                       <div>
                         <div className="trainer-name">{b.trainerName}</div>
                         <div className="trainer-spec" style={{ color: b.trainerSpecialtyColor }}>
@@ -300,9 +343,11 @@ function MyBookings() {
             <div style={{ padding: "3rem", textAlign: "center", color: "var(--text-dim)" }}>Loading…</div>
           ) : classes.length === 0 ? (
             <div className="section-empty">No upcoming classes available.</div>
+          ) : filteredClasses.length === 0 ? (
+            <div className="section-empty">No classes found matching your search.</div>
           ) : (
             <div className="classes-grid">
-              {classes.map(c => (
+              {filteredClasses.map(c => (
                 <div key={c.id} className="class-card" style={{ borderTopColor: c.color }}>
                   <div className="class-card-header">
                     <span className="class-time-badge">
@@ -351,9 +396,13 @@ function MyBookings() {
 
           {trainersLoading ? (
             <div style={{ padding: "3rem", textAlign: "center", color: "var(--text-dim)" }}>Loading…</div>
+          ) : trainers.length === 0 ? (
+            <div className="section-empty">No trainers available.</div>
+          ) : filteredTrainers.length === 0 ? (
+            <div className="section-empty">No trainers found matching your search.</div>
           ) : (
             <div className="trainers-grid">
-              {trainers.map(t => (
+              {filteredTrainers.map(t => (
                 <div key={t.id} className="trainer-card" onClick={() => navigate(`/trainer/${t.id}`)}>
                   <div className={`trainer-availability ${t.available ? "available" : "unavailable"}`}>
                     <span className="avail-dot" /> {t.available ? "Available" : "Busy"}

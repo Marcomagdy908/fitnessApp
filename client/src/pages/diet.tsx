@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageFadeIn } from "../hooks/usePageFadeIn";
 import { useAuth } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { api } from "../utils/api";
@@ -10,9 +11,6 @@ import {
   faDroplet,
   faLeaf,
   faClock,
-  faArrowTrendUp,
-  faArrowTrendDown,
-  faScaleBalanced,
   faPlus,
   faTrash,
   faCheck,
@@ -164,9 +162,7 @@ function Diet() {
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
   const categories = ["All", ...new Set(dietPlans.map(p => p.goal))];
-  const filteredPlans = activeCategory === "All" 
-    ? dietPlans 
-    : dietPlans.filter(p => p.goal === activeCategory);
+
 
 
   /* Tracker State */
@@ -179,6 +175,11 @@ function Diet() {
     time: "", name: "", calories: "", protein: "", carbs: "", fat: "",
     category: "snack" as LoggedMeal["category"],
   });
+
+  const containerRef = usePageFadeIn<HTMLDivElement>(
+    ".meal-card, .diet-tip-card, .diet-hero, .macro-box, .meal-log-row, .alt-meal-item, .meals-summary-card, .alt-meals-card",
+    [primaryTab, activePlanId, loggedMeals.length, activeInjury]
+  );
 
   /* Fetch today's meals */
   useEffect(() => {
@@ -304,7 +305,7 @@ function Diet() {
   const profileInjuries = [...new Set(altMeals.map((m) => m.injury))].filter(inj => userInjuries.includes(inj));
 
   return (
-    <div className="diet-page">
+    <div className="diet-page" ref={containerRef}>
       {/* ── Header ── */}
       <div className="diet-header">
         <h1 className="diet-title">

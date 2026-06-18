@@ -99,7 +99,7 @@ export const getDashboard = async (
          ORDER BY wss.id ASC`,
         [lastSession[0].id]
       );
-      setsHistory = sets.map((s) => ({
+      setsHistory = sets.slice(-5).map((s) => ({
         id: s.id,
         name: s.name,
         reps: `${s.reps}×${s.setNumber}`,

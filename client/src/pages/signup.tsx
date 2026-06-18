@@ -2,6 +2,19 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFire,
+  faAppleWhole,
+  faChartLine,
+  faExclamationTriangle,
+  faCheck,
+  faUser,
+  faEnvelope,
+  faLock,
+  faEye,
+  faEyeSlash
+} from "@fortawesome/free-solid-svg-icons";
 import "../css/auth.css";
 
 type Strength = { label: string; color: string; width: string };
@@ -66,7 +79,9 @@ export default function SignUp() {
         <div className="auth-left-grid" />
         <div className="auth-left-content">
           <div className="auth-brand">
-            <div className="auth-brand-icon">⚡</div>
+            <div className="auth-brand-icon">
+              <img src="/vite.svg" alt="logo" style={{ width: "24px", height: "24px" }} />
+            </div>
             <span className="auth-brand-name">
               Fit<span>Forge</span>
             </span>
@@ -83,15 +98,21 @@ export default function SignUp() {
 
           <div className="auth-stats">
             <div className="auth-stat-pill">
-              <span className="auth-stat-pill-icon">🔥</span>
+              <span className="auth-stat-pill-icon">
+                <FontAwesomeIcon icon={faFire} />
+              </span>
               <span>50k+ Members</span>
             </div>
             <div className="auth-stat-pill">
-              <span className="auth-stat-pill-icon">🍎</span>
+              <span className="auth-stat-pill-icon">
+                <FontAwesomeIcon icon={faAppleWhole} />
+              </span>
               <span>Meal Tracking</span>
             </div>
             <div className="auth-stat-pill">
-              <span className="auth-stat-pill-icon">📈</span>
+              <span className="auth-stat-pill-icon">
+                <FontAwesomeIcon icon={faChartLine} />
+              </span>
               <span>Progress Insights</span>
             </div>
           </div>
@@ -108,12 +129,12 @@ export default function SignUp() {
 
           {error && (
             <div className="auth-msg auth-msg--error">
-              <span>⚠</span> {error}
+              <span><FontAwesomeIcon icon={faExclamationTriangle} /></span> {error}
             </div>
           )}
           {success && (
             <div className="auth-msg auth-msg--success">
-              <span>✓</span> Account created! You can now log in.
+              <span><FontAwesomeIcon icon={faCheck} /></span> Account created! You can now log in.
             </div>
           )}
 
@@ -133,7 +154,9 @@ export default function SignUp() {
                   onChange={(e) => setName(e.target.value)}
                   autoComplete="name"
                 />
-                <span className="auth-input-icon">👤</span>
+                 <span className="auth-input-icon">
+                  <FontAwesomeIcon icon={faUser} />
+                </span>
               </div>
             </div>
 
@@ -152,7 +175,9 @@ export default function SignUp() {
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
                 />
-                <span className="auth-input-icon">✉</span>
+                 <span className="auth-input-icon">
+                  <FontAwesomeIcon icon={faEnvelope} />
+                </span>
               </div>
             </div>
 
@@ -171,14 +196,16 @@ export default function SignUp() {
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="new-password"
                 />
-                <span className="auth-input-icon">🔒</span>
+                 <span className="auth-input-icon">
+                  <FontAwesomeIcon icon={faLock} />
+                </span>
                 <button
                   type="button"
                   className="auth-pw-toggle"
                   onClick={() => setShowPassword((v) => !v)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? "🙈" : "👁"}
+                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </button>
               </div>
               {/* Strength bar */}
@@ -225,14 +252,16 @@ export default function SignUp() {
                       : {}
                   }
                 />
-                <span className="auth-input-icon">🔒</span>
+                 <span className="auth-input-icon">
+                  <FontAwesomeIcon icon={faLock} />
+                </span>
                 <button
                   type="button"
                   className="auth-pw-toggle"
                   onClick={() => setShowConfirm((v) => !v)}
                   aria-label={showConfirm ? "Hide password" : "Show password"}
                 >
-                  {showConfirm ? "🙈" : "👁"}
+                  <FontAwesomeIcon icon={showConfirm ? faEyeSlash : faEye} />
                 </button>
               </div>
             </div>

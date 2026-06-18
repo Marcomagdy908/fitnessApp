@@ -51,7 +51,8 @@ export const getMySubscription = async (
       "SELECT * FROM Subscription WHERE userId = ?",
       [req.user!.id]
     );
-    res.json({ success: true, data: rows[0] ?? null });
+    const data = rows[0] ? { ...rows[0], plan: rows[0].planId } : null;
+    res.json({ success: true, data });
   } catch (err) {
     next(err);
   }
@@ -101,7 +102,8 @@ export const subscribe = async (
       [req.user!.id]
     );
 
-    res.json({ success: true, data: rows[0] });
+    const data = rows[0] ? { ...rows[0], plan: rows[0].planId } : null;
+    res.json({ success: true, data });
   } catch (err) {
     next(err);
   }

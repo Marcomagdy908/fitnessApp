@@ -1,73 +1,91 @@
 .navbar-container {
-  width: calc(100% - 209px) !important;
-  height: 8vh !important;
-  background-color: var(--bg-primary) !important;
   position: fixed !important;
-  top: 0 !important;
-  right: 0 !important;
-  box-shadow: var(--shadow-sm) !important;
-  padding: 0 2rem 0 3.5rem;
+  top: 1.25rem !important;
+  /* Centered within the content area on desktop (>1200px) */
+  left: calc(220px + (100% - 220px) / 2) !important;
+  transform: translateX(-50%) !important;
+  width: 90% !important;
+  max-width: 1050px !important;
+  height: 4.2rem !important;
+  background-color: var(--bg-navbar) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 999px !important;
   z-index: 1000;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 1.6rem !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35) !important;
+  transition: all 0.3s ease !important;
+  margin: 0 !important;
 }
 
+:root[data-theme="light"] .navbar-container {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Search Box */
 .search-box {
-  position: relative;
   display: flex;
   align-items: center;
-  width: 400px;
+  position: relative;
+  width: 300px;
 }
 
 .search-icon {
   position: absolute;
-  left: 15px;
-  color: var(--text-dim);
-  font-size: 1rem;
+  left: 14px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  pointer-events: none;
 }
 
 .search-input {
   width: 100%;
-  padding: 8px 15px 8px 45px;
+  padding: 0.45rem 1rem 0.45rem 2.3rem;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
-  border-radius: 20px;
+  border-radius: 999px;
   color: var(--text-primary);
+  font-size: 0.8rem;
   outline: none;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
 }
 
 .search-input:focus {
   border-color: var(--accent-cyan-border);
+  box-shadow: 0 0 12px var(--accent-cyan-dim);
 }
 
 .search-input::placeholder {
-  color: #666;
+  color: var(--text-dim);
 }
 
-/* ── Overlay / tablet: sidebar not in flow ── */
-@media (max-width: 1200px) {
-  .navbar-container {
-    width: 100% !important;
-    right: 0 !important;
-    /* Leave room for the hamburger button on the left */
-    padding: 0 1.5rem 0 4rem;
-  }
-
-  .search-box {
-    width: 100%;
-    max-width: 320px;
-  }
+/* Nav Actions Container */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
 }
 
-@media (max-width: 768px) {
-  .navbar-container {
-    padding: 0 1rem 0 1rem;
-  }
+.nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  font-size: 1.05rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@media (max-width: 480px) {
-  .search-box {
-    display: none;
-  }
+.nav-btn:hover {
+  color: var(--text-primary);
+  transform: scale(1.08);
 }
 
 /* Avatar Dropdown Styles */
@@ -86,12 +104,12 @@
   top: calc(100% + 15px);
   right: 0;
   width: 220px;
-  background: var(--bg-surface);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
   padding: 12px 0;
   z-index: 1001;
   display: flex;
@@ -148,6 +166,7 @@
   border: none;
   width: 100%;
   text-align: left;
+  cursor: pointer;
 }
 
 .dropdown-item:hover {
@@ -162,18 +181,46 @@
 }
 
 .dropdown-item.logout {
-  color: #ff4d4d;
+  color: var(--danger);
   border-top: 1px solid var(--border-color);
   margin-top: 8px;
   padding-top: 15px;
 }
 
 .dropdown-item.logout:hover {
-  background: rgba(255, 77, 77, 0.1);
+  background: var(--danger-dim);
 }
 
 .dropdown-divider {
   height: 1px;
   background-color: var(--border-color);
   margin: 8px 0;
+}
+
+/* Tablet & Mobile Layout overrides */
+@media (max-width: 1200px) {
+  .navbar-container {
+    left: 50% !important;
+    width: 92% !important;
+    max-width: none !important;
+    padding: 0 1.2rem 0 3.5rem !important; /* extra padding on left to clear hamburger toggle */
+  }
+  
+  .search-box {
+    max-width: 260px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-container {
+    width: 94% !important;
+    padding: 0 1rem !important; /* normal padding since bottom nav is used */
+    top: 0.75rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-box {
+    display: none;
+  }
 }

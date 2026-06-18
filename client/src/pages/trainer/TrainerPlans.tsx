@@ -3,11 +3,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLayerGroup, faDumbbell, faUser, faPen, faTrash, faPlus,
-  faSearch, faArrowTrendUp, faGlobe, faLock, faTimes, faCheck, faSpinner,
-  faCalendarDays, faClock, faBolt, faListUl
+  faGlobe, faLock, faTimes, faCheck, faSpinner,
+  faCalendarDays, faClock, faBolt
 } from "@fortawesome/free-solid-svg-icons";
 import { api } from "../../utils/api";
 import "../../css/trainerPlans.css";
+import { useSearch } from "../../context/SearchContext";
 
 /* ─── Types ─────────────────────────────────────────── */
 interface Exercise { id?: number; exerciseId: number; name?: string; sets: number; reps: number; restSecs?: number; day: number; orderIndex?: number; exercise?: { name: string; category: string; } }
@@ -31,7 +32,7 @@ export default function TrainerPlans() {
   const [dbExercises, setDbExercises] = useState<DbExercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [search, setSearch] = useState("");
+  const { searchQuery: search } = useSearch();
   const [filterOwner, setFilterOwner] = useState<"all" | "public" | "private">("all");
   const [modal, setModal] = useState<"closed" | "create" | "edit">("closed");
   const [form, setForm] = useState(emptyPlan());

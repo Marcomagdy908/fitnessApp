@@ -2,6 +2,17 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFire,
+  faDumbbell,
+  faBolt,
+  faEnvelope,
+  faLock,
+  faEye,
+  faEyeSlash,
+  faExclamationTriangle
+} from "@fortawesome/free-solid-svg-icons";
 import "../css/auth.css";
 
 export default function Login() {
@@ -37,7 +48,9 @@ export default function Login() {
         <div className="auth-left-grid" />
         <div className="auth-left-content">
           <div className="auth-brand">
-            <div className="auth-brand-icon">⚡</div>
+            <div className="auth-brand-icon">
+              <img src="/vite.svg" alt="logo" style={{ width: "24px", height: "24px" }} />
+            </div>
             <span className="auth-brand-name">
               Fit<span>Forge</span>
             </span>
@@ -54,15 +67,21 @@ export default function Login() {
 
           <div className="auth-stats">
             <div className="auth-stat-pill">
-              <span className="auth-stat-pill-icon">🔥</span>
+              <span className="auth-stat-pill-icon">
+                <FontAwesomeIcon icon={faFire} />
+              </span>
               <span>50k+ Members</span>
             </div>
             <div className="auth-stat-pill">
-              <span className="auth-stat-pill-icon">🏋️</span>
+              <span className="auth-stat-pill-icon">
+                <FontAwesomeIcon icon={faDumbbell} />
+              </span>
               <span>300+ Exercises</span>
             </div>
             <div className="auth-stat-pill">
-              <span className="auth-stat-pill-icon">⚡</span>
+              <span className="auth-stat-pill-icon">
+                <FontAwesomeIcon icon={faBolt} />
+              </span>
               <span>AI-Powered Plans</span>
             </div>
           </div>
@@ -77,7 +96,7 @@ export default function Login() {
 
           {error && (
             <div className="auth-msg auth-msg--error">
-              <span>⚠</span> {error}
+              <span><FontAwesomeIcon icon={faExclamationTriangle} /></span> {error}
             </div>
           )}
 
@@ -97,7 +116,9 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
                 />
-                <span className="auth-input-icon">✉</span>
+                <span className="auth-input-icon">
+                  <FontAwesomeIcon icon={faEnvelope} />
+                </span>
               </div>
             </div>
 
@@ -116,14 +137,16 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
                 />
-                <span className="auth-input-icon">🔒</span>
+                <span className="auth-input-icon">
+                  <FontAwesomeIcon icon={faLock} />
+                </span>
                 <button
                   type="button"
                   className="auth-pw-toggle"
                   onClick={() => setShowPassword((v) => !v)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? "🙈" : "👁"}
+                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </button>
               </div>
             </div>

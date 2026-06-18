@@ -20,6 +20,7 @@ import {
   faSave,
   faPersonRunning,
   faCalendarDay,
+  faClipboardList,
 } from "@fortawesome/free-solid-svg-icons";
 import { api } from "../../utils/api";
 import "../../css/trainerClasses.css";
@@ -323,7 +324,9 @@ export default function TrainerClasses() {
             </div>
           ) : classes.length === 0 ? (
             <div className="tc-empty">
-              <div className="tc-empty-icon">🗓️</div>
+              <div className="tc-empty-icon">
+                <FontAwesomeIcon icon={faCalendarDay} />
+              </div>
               <h3>No classes yet</h3>
               <p>Create your first group class to start accepting bookings from members.</p>
             </div>
@@ -425,7 +428,9 @@ export default function TrainerClasses() {
             </div>
           ) : filteredBookings.length === 0 ? (
             <div className="tc-empty">
-              <div className="tc-empty-icon">📋</div>
+              <div className="tc-empty-icon">
+                <FontAwesomeIcon icon={faClipboardList} />
+              </div>
               <h3>No {bookingFilter !== "all" ? bookingFilter : ""} bookings</h3>
               <p>When clients book personal training sessions with you, they'll appear here.</p>
             </div>
@@ -515,7 +520,9 @@ export default function TrainerClasses() {
             <div className="tc-spinner-wrap"><div className="tc-spinner" /></div>
           ) : ptClients.length === 0 ? (
             <div className="tc-empty">
-              <div className="tc-empty-icon">🏋️</div>
+              <div className="tc-empty-icon">
+                <FontAwesomeIcon icon={faDumbbell} />
+              </div>
               <h3>No PT clients yet</h3>
               <p>Add clients by their account email to start tracking their long-term progress.</p>
             </div>
