@@ -449,7 +449,7 @@ function Diet() {
                 </div>
                 <div className="meal-name">{meal.name}</div>
                 <ul className="meal-foods">
-                  {meal.foods.map((food, j) => (
+                  {Array.isArray(meal.foods) && meal.foods.map((food, j) => (
                     <li key={j} className="meal-food-item">
                       <span className="meal-food-dot" style={{ background: planStyle.accentColor }} />
                       {food}

@@ -4,6 +4,7 @@ import { ResultSetHeader } from 'mysql2';
 
 async function main() {
   console.log('🌱 Starting ULTRA-REALISTIC Database Seed…');
+  await db.query('SET FOREIGN_KEY_CHECKS = 0');
   const hashedPassword = await bcrypt.hash('password123', 10);
 
   const pick = (arr: any[]) => arr[Math.floor(Math.random() * arr.length)];
@@ -179,28 +180,28 @@ async function main() {
     { 
       name: 'Keto Fat Shredder', goal: 'Fat Loss', desc: 'Very low carb, high fat diet designed for rapid ketosis.', 
       meals: [
-        { t: 'Breakfast', n: 'Avocado & Bacon Omelette', f: ['3 Eggs', 'Half Avocado', '2 Bacon Strips'], cal: 550, p: 35, c: 5, f: 45 },
-        { t: 'Lunch', n: 'Chicken Thigh Salad', f: ['200g Chicken Thigh', 'Leafy Greens', 'Olive Oil Dressing'], cal: 600, p: 45, c: 8, f: 40 },
-        { t: 'Dinner', n: 'Salmon & Asparagus', f: ['250g Salmon Fillet', 'Asparagus', 'Grass-fed Butter'], cal: 700, p: 50, c: 4, f: 55 },
-        { t: 'Snack', n: 'Macadamia Nuts', f: ['30g Macadamias'], cal: 200, p: 3, c: 4, f: 21 }
+        { t: 'Breakfast', n: 'Avocado & Bacon Omelette', foods: ['3 Eggs', 'Half Avocado', '2 Bacon Strips'], cal: 550, p: 35, c: 5, fat: 45 },
+        { t: 'Lunch', n: 'Chicken Thigh Salad', foods: ['200g Chicken Thigh', 'Leafy Greens', 'Olive Oil Dressing'], cal: 600, p: 45, c: 8, fat: 40 },
+        { t: 'Dinner', n: 'Salmon & Asparagus', foods: ['250g Salmon Fillet', 'Asparagus', 'Grass-fed Butter'], cal: 700, p: 50, c: 4, fat: 55 },
+        { t: 'Snack', n: 'Macadamia Nuts', foods: ['30g Macadamias'], cal: 200, p: 3, c: 4, fat: 21 }
       ]
     },
     { 
       name: 'Clean Bulk Protocol', goal: 'Mass Gain', desc: 'Caloric surplus with high quality whole food sources.', 
       meals: [
-        { t: 'Breakfast', n: 'Oatmeal & Peanut Butter', f: ['100g Oats', '30g Peanut Butter', '1 Banana'], cal: 650, p: 25, c: 80, f: 25 },
-        { t: 'Lunch', n: 'Lean Beef & White Rice', f: ['200g Extra Lean Beef', '150g Rice', 'Broccoli'], cal: 800, p: 55, c: 100, f: 15 },
-        { t: 'Dinner', n: 'Turkey Meatballs & Pasta', f: ['200g Turkey Meatballs', '100g Pasta', 'Tomato Sauce'], cal: 850, p: 60, c: 110, f: 12 },
-        { t: 'Snack', n: 'Mass Gainer Shake', f: ['Whey Protein', 'Milk', 'Blueberries'], cal: 400, p: 40, c: 50, f: 5 }
+        { t: 'Breakfast', n: 'Oatmeal & Peanut Butter', foods: ['100g Oats', '30g Peanut Butter', '1 Banana'], cal: 650, p: 25, c: 80, fat: 25 },
+        { t: 'Lunch', n: 'Lean Beef & White Rice', foods: ['200g Extra Lean Beef', '150g Rice', 'Broccoli'], cal: 800, p: 55, c: 100, fat: 15 },
+        { t: 'Dinner', n: 'Turkey Meatballs & Pasta', foods: ['200g Turkey Meatballs', '100g Pasta', 'Tomato Sauce'], cal: 850, p: 60, c: 110, fat: 12 },
+        { t: 'Snack', n: 'Mass Gainer Shake', foods: ['Whey Protein', 'Milk', 'Blueberries'], cal: 400, p: 40, c: 50, fat: 5 }
       ]
     },
     { 
       name: 'Mediterranean Wellness', goal: 'Fitness', desc: 'Heart-healthy balance of unsaturated fats and fiber.', 
       meals: [
-        { t: 'Breakfast', n: 'Greek Yogurt & Honey', f: ['200g Greek Yogurt', 'Honey', 'Walnuts'], cal: 400, p: 25, c: 35, f: 18 },
-        { t: 'Lunch', n: 'Quinoa Tabbouleh', f: ['Quinoa', 'Chickpeas', 'Cucumber', 'Lemon'], cal: 500, p: 20, c: 75, f: 12 },
-        { t: 'Dinner', n: 'Grilled Sea Bass', f: ['Sea Bass Fillet', 'Roasted Vegetables', 'Feta Cheese'], cal: 600, p: 40, c: 30, f: 28 },
-        { t: 'Snack', n: 'Apple & Almonds', f: ['1 Apple', '15 Almonds'], cal: 250, p: 5, c: 25, f: 15 }
+        { t: 'Breakfast', n: 'Greek Yogurt & Honey', foods: ['200g Greek Yogurt', 'Honey', 'Walnuts'], cal: 400, p: 25, c: 35, fat: 18 },
+        { t: 'Lunch', n: 'Quinoa Tabbouleh', foods: ['Quinoa', 'Chickpeas', 'Cucumber', 'Lemon'], cal: 500, p: 20, c: 75, fat: 12 },
+        { t: 'Dinner', n: 'Grilled Sea Bass', foods: ['Sea Bass Fillet', 'Roasted Vegetables', 'Feta Cheese'], cal: 600, p: 40, c: 30, fat: 28 },
+        { t: 'Snack', n: 'Apple & Almonds', foods: ['1 Apple', '15 Almonds'], cal: 250, p: 5, c: 25, fat: 15 }
       ]
     }
   ];
@@ -215,7 +216,7 @@ async function main() {
     for (const m of dd.meals) {
       await db.query(
         'INSERT INTO DietPlanMeal (dietPlanId, time, name, foods, calories, protein, carbs, fat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [res.insertId, m.t, m.n, JSON.stringify(m.f), m.cal, m.p, m.c, m.f]
+        [res.insertId, m.t, m.n, JSON.stringify(m.foods), m.cal, m.p, m.c, m.fat]
       );
     }
   }
@@ -253,6 +254,7 @@ async function main() {
     await db.query('INSERT INTO NutritionTip (title, description) VALUES (?, ?)', [t.title, t.desc]);
   }
 
+  await db.query('SET FOREIGN_KEY_CHECKS = 1');
   console.log('\n🚀 ULTRA-REALISTIC SEED COMPLETE!');
 }
 

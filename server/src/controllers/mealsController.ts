@@ -132,6 +132,9 @@ export const getDietPlans = async (req: AuthRequest, res: Response, next: NextFu
           let mFoods = [];
           try {
             mFoods = typeof m.foods === 'string' ? JSON.parse(m.foods) : (m.foods || []);
+            if (!Array.isArray(mFoods)) {
+              mFoods = [String(mFoods)];
+            }
           } catch (e) {
             mFoods = [m.foods];
           }
@@ -187,6 +190,9 @@ export const createDietPlan = async (req: AuthRequest, res: Response, next: Next
       let mFoods = [];
       try {
         mFoods = typeof m.foods === 'string' ? JSON.parse(m.foods) : (m.foods || []);
+        if (!Array.isArray(mFoods)) {
+          mFoods = [String(mFoods)];
+        }
       } catch (e) {
         mFoods = [m.foods];
       }
