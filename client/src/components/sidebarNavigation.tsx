@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faChartLine,
   faClipboardList,
   faCog,
   faDumbbell,
@@ -39,10 +38,8 @@ function SidebarNavigation() {
     { name: "Exercises", icon: faDumbbell, path: "/exercises" },
     { name: "Diet", icon: faUtensils, path: "/diet" },
     { name: "Bookings", icon: faCalendarCheck, path: "/bookings" },
-    { name: "Progress", icon: faChartLine, path: "/progress" },
     { name: "Plans", icon: faClipboardList, path: "/plans" },
     { name: "Membership", icon: faCrown, path: "/subscription" },
-    { name: "Settings", icon: faCog, path: "/settings" },
   ];
 
   const trainerMenu = [
@@ -56,7 +53,6 @@ function SidebarNavigation() {
 
   const adminMenu = [
     { name: "Admin", icon: faUserShield, path: "/admin" },
-    { name: "Settings", icon: faCog, path: settingsPath },
   ];
   const navigationList =
     user?.role === "ADMIN"

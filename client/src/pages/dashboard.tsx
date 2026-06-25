@@ -316,9 +316,12 @@ export default function Dashboard() {
 
           {/* Weight Trend Area Chart */}
           <div className="ud-dash-card">
-            <div className="ud-dash-card-title">
-              <span className="ud-title-icon"><FontAwesomeIcon icon={faArrowTrendDown} /></span>
-              Weight Trend
+            <div className="ud-dash-card-title d-flex justify-content-between align-items-center">
+              <div>
+                <span className="ud-title-icon"><FontAwesomeIcon icon={faArrowTrendDown} /></span>
+                Weight Trend
+              </div>
+              <a href="/progress" className="ud-card-link-btn" style={{ fontSize: "0.75rem", textDecoration: "none", color: "var(--accent-cyan)" }}>Track Weight →</a>
             </div>
             {dash.weightProgress.length > 0 ? (
               <ResponsiveContainer width="100%" height={220}>
@@ -351,9 +354,12 @@ export default function Dashboard() {
         <div className="ud-dash-col">
           {/* Daily Progress */}
           <div className="ud-dash-card">
-            <div className="ud-dash-card-title">
-              <span className="ud-title-icon"><FontAwesomeIcon icon={faChartLine} /></span>
-              Daily Progress
+            <div className="ud-dash-card-title d-flex justify-content-between align-items-center">
+              <div>
+                <span className="ud-title-icon"><FontAwesomeIcon icon={faChartLine} /></span>
+                Daily Progress
+              </div>
+              <a href="/progress" className="ud-card-link-btn" style={{ fontSize: "0.75rem", textDecoration: "none", color: "var(--accent-cyan)" }}>View Details →</a>
             </div>
             <div className="ud-avatar-wrap">
               <div className="ud-avatar-ring">

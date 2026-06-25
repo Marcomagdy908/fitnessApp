@@ -51,6 +51,24 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
+app.get("/api/diag", async (_req, res) => {
+  try {
+    const { db } = await import("./services/db");
+    const [result] = await db.query("SELECT COUNT(*) as count FROM WorkoutPlan");
+    res.json({
+      success: true,
+      message: "Database connection successful",
+      plansCount: (result as any)[0].count,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: "Database connection failed",
+      error: err.message,
+    });
+  }
+});
+
 // ── Feature Routes ─────────────────────────────────────────────────────────────
 
 app.use("/api/auth", authRoutes);

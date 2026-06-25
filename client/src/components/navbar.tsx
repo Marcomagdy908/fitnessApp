@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faBell, faMoon, faSun, faUser, faCog, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faMoon, faSun, faUser, faCog, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import "../css/navbar.css";
 import { useAuth } from "../context/AuthContext";
@@ -58,8 +58,8 @@ function Navbar() {
         >
           <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} />
         </button>
-        <button className="nav-btn notification-btn" title="Notifications">
-          <FontAwesomeIcon icon={faBell} />
+        <button onClick={goToSettings} className="nav-btn settings-btn" title="Settings">
+          <FontAwesomeIcon icon={faCog} />
         </button>
         
         <div className="avatar-container" ref={dropdownRef}>
@@ -78,19 +78,19 @@ function Navbar() {
                 <span className="header-email">{user?.email || ""}</span>
               </div>
               
-              <Link to="/settings" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+              <Link to="/settings" className="avatar-dropdown-item" onClick={() => setDropdownOpen(false)}>
                 <FontAwesomeIcon icon={faUser} />
                 <span>Profile</span>
               </Link>
               
-              <button className="dropdown-item" onClick={goToSettings}>
+              <button className="avatar-dropdown-item" onClick={goToSettings}>
                 <FontAwesomeIcon icon={faCog} />
                 <span>Settings</span>
               </button>
               
               <div className="dropdown-divider"></div>
               
-              <button className="dropdown-item logout" onClick={handleLogout}>
+              <button className="avatar-dropdown-item logout" onClick={handleLogout}>
                 <FontAwesomeIcon icon={faSignOutAlt} />
                 <span>Logout</span>
               </button>
