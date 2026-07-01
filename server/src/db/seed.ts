@@ -254,6 +254,40 @@ async function main() {
     await db.query('INSERT INTO NutritionTip (title, description) VALUES (?, ?)', [t.title, t.desc]);
   }
 
+  /* ─── 10. PT Clients & Trainer Bookings ────────────── */
+  await db.query('DELETE FROM PTClient');
+  await db.query('DELETE FROM TrainerBooking');
+
+  // Let's find trainer@test.com's trainerId
+  const [[testTrainer]] = await db.query<any[]>(
+    'SELECT id FROM Trainer WHERE userId = (SELECT id FROM User WHERE email = ?)',
+    ['trainer@test.com']
+  );
+  if (testTrainer) {
+    const trainerId = testTrainer.id;
+    // Find some user IDs
+    const [users] = await db.query<any[]>('SELECT id, name FROM User WHERE role = ? LIMIT 5', ['USER']);
+    
+    // Add clients to roster
+    for (const u of users) {
+      await db.query(
+        'INSERT INTO PTClient (trainerId, userId, goal, sessionsPerWeek, startDate) VALUES (?, ?, ?, ?, NOW())',
+        [trainerId, u.id, pick(['Muscle Gain', 'Fat Loss', 'General Fitness', 'Endurance']), randomInt(2, 4)]
+      );
+
+      // Add a couple of bookings
+      const date = new Date();
+      date.setDate(date.getDate() + randomInt(-2, 5));
+      date.setHours(randomInt(9, 17), 0, 0, 0);
+
+      await db.query(
+        "INSERT INTO TrainerBooking (userId, trainerId, scheduledAt, durationMins, status, notes, totalPrice) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [u.id, trainerId, date, 60, 'pending', 'Regular check-in session.', 75]
+      );
+    }
+    console.log(`✅ Seeded PT clients and bookings for Trainer Account`);
+  }
+
   await db.query('SET FOREIGN_KEY_CHECKS = 1');
   console.log('\n🚀 ULTRA-REALISTIC SEED COMPLETE!');
 }

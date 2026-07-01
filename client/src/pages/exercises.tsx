@@ -240,7 +240,7 @@ function Exercises() {
         durationSecs: Math.floor((new Date().getTime() - sessionStartTime.getTime()) / 1000),
         caloriesBurned: Math.round(totalVol * 0.05), // Rough estimate
         sets: trackedExercises.flatMap(ex => {
-          const exercise = exercises.find(e => e.name === ex.name);
+          const exercise = exercises.find(e => e.name.toLowerCase() === ex.name.toLowerCase());
           return ex.sets.map(s => ({
             exerciseId: exercise?.id || 0,
             setNumber: ex.sets.indexOf(s) + 1,
